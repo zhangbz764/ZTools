@@ -128,6 +128,18 @@ public class ZTransform {
     }
 
     /**
+     * @return wblut.geom.WB_Polygon
+     * @description transform jts Polygon to WB_Polygon
+     */
+    public static WB_PolyLine JtsLineStringToWB_PolyLine(final LineString p) {
+        WB_Coord[] points = new WB_Point[p.getNumPoints()];
+        for (int i = 0; i < p.getNumPoints(); i++) {
+            points[i] = new WB_Point(p.getCoordinates()[i].x, p.getCoordinates()[i].y, p.getCoordinates()[i].z);
+        }
+        return new WB_PolyLine(points);
+    }
+
+    /**
      * @return org.locationtech.jts.geom.LineString
      * @description transform WB_Polygon to jts LineString
      */

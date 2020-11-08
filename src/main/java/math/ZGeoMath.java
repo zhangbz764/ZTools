@@ -434,6 +434,10 @@ public final class ZGeoMath {
         return new WB_Polygon(newPoints);
     }
 
+    /**
+     * @return wblut.geom.WB_Polygon
+     * @description 让WB_Polygon法向量朝向Z轴正向
+     */
     public static WB_Polygon faceUp(final WB_Polygon polygon) {
         if (polygon.getNormal().zd() < 0) {
             return reversePolygon(polygon);
@@ -443,10 +447,12 @@ public final class ZGeoMath {
     }
 
     // FIXME: 2020/11/8 正逆时针有问题
+
     /**
      * @return wblut.geom.WB_Polygon
      * @description 使 WB_Polygon 点序顺时针
      */
+    @Deprecated
     public static WB_Polygon toClockWise(final WB_Polygon polygon) {
         if (polygon.isCW2D()) {
             return polygon;
@@ -459,6 +465,7 @@ public final class ZGeoMath {
      * @return wblut.geom.WB_Polygon
      * @description 使 WB_Polygon 点序逆时针
      */
+    @Deprecated
     public static WB_Polygon toCounterClockWise(final WB_Polygon polygon) {
         if (polygon.isCW2D()) {
             return reversePolygon(polygon);
@@ -562,7 +569,7 @@ public final class ZGeoMath {
      * @return java.util.List<generalTools.ZPoint>
      * @description 将多边形或多段线轮廓等分为若干点(WB_PolyLine)
      */
-    public static List<ZPoint> splitPolygonEdge(final WB_PolyLine poly, final int splitNum) {
+    public static List<ZPoint> splitPolyLineEdge(final WB_PolyLine poly, final int splitNum) {
         // 计算步长
         double length = 0;
         for (int i = 0; i < poly.getNumberSegments(); i++) {

@@ -15,20 +15,6 @@ public class ZMath {
     /*-------- array methods --------*/
 
     /**
-     * @return java.lang.Object[]
-     * @description reverse array
-     */
-    // TODO: 2020/11/1 泛型有问题
-    @Deprecated
-    public static Object[] reverseArray(final Object[] original) {
-        Object[] newArray = new Object[original.length];
-        for (int i = 0; i < original.length; i++) {
-            newArray[i] = original[original.length - 1 - i];
-        }
-        return newArray;
-    }
-
-    /**
      * @return int
      * @description get max index of a float array
      */
