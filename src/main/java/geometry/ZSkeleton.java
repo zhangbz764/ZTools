@@ -302,7 +302,7 @@ public class ZSkeleton {
 
     public void display(PApplet app) {
         app.pushStyle();
-        app.stroke(57, 137, 203);
+        app.stroke(0,0,200);
         for (ZLine line : allEdges) {
             line.display(app, 1);
         }

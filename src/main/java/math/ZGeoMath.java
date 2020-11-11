@@ -1,5 +1,6 @@
 package math;
 
+import com.sun.istack.internal.NotNull;
 import geometry.ZLine;
 import geometry.ZPoint;
 import org.locationtech.jts.geom.*;
@@ -81,6 +82,7 @@ public final class ZGeoMath {
      * @description 从一系列向量中找到与目标向量夹角最小的（不区分正反）
      */
     public static ZPoint findClosetVec(final ZPoint target, final List<ZPoint> other) {
+
         assert other != null && other.size() != 0 : "invalid input vectors";
         double[] dotValue = new double[other.size()];
         for (int i = 0; i < other.size(); i++) {
@@ -529,12 +531,13 @@ public final class ZGeoMath {
         }
     }
 
+    // FIXME: 2020/11/9 按步长剖分多边形
+
     /**
      * @return java.util.List<geometry.ZPoint>
-     * @description 将多边形轮廓等分为若干点(Polygon)
+     * @description 设置步长，剖分多边形的边 (Polygon)
      */
-    public static List<ZPoint> splitPolygonEdge(final Polygon poly, final int splitNum) {
-        double step = poly.getLength() / splitNum;
+    public static List<ZPoint> splitPolygonEdgeByStep(final Polygon poly, final double step) {
         // 得到多边形所有点
         Coordinate[] polyPoints = poly.getCoordinates();
 
@@ -566,17 +569,10 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return java.util.List<generalTools.ZPoint>
-     * @description 将多边形或多段线轮廓等分为若干点(WB_PolyLine)
+     * @return java.util.List<geometry.ZPoint>
+     * @description 设置步长，剖分多段线或多边形的边 (WB_PolyLine)
      */
-    public static List<ZPoint> splitPolyLineEdge(final WB_PolyLine poly, final int splitNum) {
-        // 计算步长
-        double length = 0;
-        for (int i = 0; i < poly.getNumberSegments(); i++) {
-            length = length + poly.getSegment(i).getLength();
-        }
-        double step = length / splitNum;
-
+    public static List<ZPoint> splitWB_PolyLineEdgeByStep(final WB_PolyLine poly, final double step) {
         // 得到多边形所有点
         WB_Coord[] polyPoints = poly.getPoints().toArray();
 
@@ -616,5 +612,29 @@ public final class ZGeoMath {
         }
 
         return result;
+    }
+
+    /**
+     * @return java.util.List<geometry.ZPoint>
+     * @description 将多边形轮廓等分为若干点(Polygon)
+     */
+    public static List<ZPoint> splitPolygonEdge(final Polygon poly, final int splitNum) {
+        double step = poly.getLength() / splitNum;
+        return splitPolygonEdgeByStep(poly, step);
+    }
+
+    /**
+     * @return java.util.List<generalTools.ZPoint>
+     * @description 将多边形或多段线轮廓等分为若干点(WB_PolyLine)
+     */
+    public static List<ZPoint> splitWB_PolyLineEdge(final WB_PolyLine poly, final int splitNum) {
+        // 计算步长
+        double length = 0;
+        for (int i = 0; i < poly.getNumberSegments(); i++) {
+            length = length + poly.getSegment(i).getLength();
+        }
+        double step = length / splitNum;
+
+        return splitWB_PolyLineEdgeByStep(poly, step);
     }
 }
