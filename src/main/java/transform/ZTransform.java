@@ -28,6 +28,14 @@ public class ZTransform {
     }
 
     /**
+     * @return wblut.geom.WB_Point
+     * @description load a single point to WB_Point
+     */
+    public static WB_Point IPointToWB(final IPoint point, final double scale) {
+        return new WB_Point(point.x(), point.y(), point.z()).scale(scale);
+    }
+
+    /**
      * @return wblut.geom.WB_Geometry
      * @description load ICurve to WB_Polyline or WB_Polygon or WB_Segment
      */
@@ -47,6 +55,33 @@ public class ZTransform {
         } else if (curve.cpNum() == 2) {
             WB_Point start = new WB_Point(curve.cp(0).x(), curve.cp(0).y(), curve.cp(0).z());
             WB_Point end = new WB_Point(curve.cp(1).x(), curve.cp(1).y(), curve.cp(1).z());
+            return new WB_Segment(start, end);
+        } else {
+            System.out.println("***MAYBE OTHER TYPE OF GEOMETRY***");
+            return null;
+        }
+    }
+
+    /**
+     * @return wblut.geom.WB_Geometry
+     * @description load ICurve to WB_Polyline or WB_Polygon or WB_Segment (with a scale rate)
+     */
+    public static WB_Geometry2D ICurveToWB(final ICurve curve, final double scale) {
+        if (curve.cpNum() > 2 && !curve.isClosed()) {
+            WB_Point[] points = new WB_Point[curve.cpNum()];
+            for (int i = 0; i < curve.cpNum(); i++) {
+                points[i] = new WB_Point(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z()).scale(scale);
+            }
+            return wbgf.createPolyLine(points);
+        } else if (curve.cpNum() > 2 && curve.isClosed()) {
+            WB_Point[] points = new WB_Point[curve.cpNum()];
+            for (int i = 0; i < curve.cpNum(); i++) {
+                points[i] = new WB_Point(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z()).scale(scale);
+            }
+            return wbgf.createSimplePolygon(points);
+        } else if (curve.cpNum() == 2) {
+            WB_Point start = new WB_Point(curve.cp(0).x(), curve.cp(0).y(), curve.cp(0).z()).scale(scale);
+            WB_Point end = new WB_Point(curve.cp(1).x(), curve.cp(1).y(), curve.cp(1).z()).scale(scale);
             return new WB_Segment(start, end);
         } else {
             System.out.println("***MAYBE OTHER TYPE OF GEOMETRY***");

@@ -1,6 +1,5 @@
 package math;
 
-import com.sun.istack.internal.NotNull;
 import geometry.ZLine;
 import geometry.ZPoint;
 import org.locationtech.jts.geom.*;
@@ -15,6 +14,23 @@ import java.util.List;
  * @date 2020/9/29
  * @time 15:38
  * @description some custom geometry methods
+ * 1.求到角的角平分线向量
+ * 2.按极角排序一组向量（返回原列表序号）
+ * 3.按极角排序一组向量（返回排好的新组）
+ * 4.从一组向量中找与输入目标夹角最小者，不区分正负角（返回向量）
+ * 5.求任意两个线型对象交点（需输入类型：line, ray, segment）
+ * 6.判断点是否在直线/射线/线段上（有epsilon）
+ * 7.找到点在多边形哪条边上（可返回WB_Segment, Zline, 或两顶点序号）
+ * 8.从一组多边形中找到包含输入点的那一个（返回序号）
+ * 9.输入Geometry，设置Jts的Precision Model
+ * 10.使WB_Polygon点序反向
+ * 11.使WB_Polygon法向量Z轴为正（不是拍平到xy平面，只是翻个面）
+ * 12.输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点
+ * 13.输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）
+ * 14.输入步长阈值，将多边形或多段线按阈值内最大值等分，得到所有点
+ * 15.输入等分数量，将多边形或多段线等分，得到所有点
+ *
+ * ...增加中
  */
 public final class ZGeoMath {
     private static final GeometryFactory gf = new GeometryFactory();
@@ -82,7 +98,6 @@ public final class ZGeoMath {
      * @description 从一系列向量中找到与目标向量夹角最小的（不区分正反）
      */
     public static ZPoint findClosetVec(final ZPoint target, final List<ZPoint> other) {
-
         assert other != null && other.size() != 0 : "invalid input vectors";
         double[] dotValue = new double[other.size()];
         for (int i = 0; i < other.size(); i++) {
@@ -386,29 +401,29 @@ public final class ZGeoMath {
 
     /*-------- 二维距离相关 --------*/
     // TODO: 2020/10/29 找距离和找最近点 
-    public static double pointLineDistSq(ZPoint p, ZPoint[] line) {
-        return p.distanceSq(line[0]) - (line[1].dot2D(p.sub(line[0]))) * (line[1].dot2D(p.sub(line[0])));
-    }
-
-    public static ZPoint pointLineClosest(ZPoint p, ZPoint[] line) {
-        return null;
-    }
-
-    public static double pointRayDistSq(ZPoint p, ZPoint[] ray) {
-        return 0;
-    }
-
-    public static ZPoint pointRayClosest(ZPoint p, ZPoint[] line) {
-        return null;
-    }
-
-    public static double pointSegmentDistSq(ZPoint p, ZPoint[] segment) {
-        return 0;
-    }
-
-    public static ZPoint pointSegmentClosest(ZPoint p, ZPoint[] line) {
-        return null;
-    }
+//    public static double pointLineDistSq(ZPoint p, ZPoint[] line) {
+//        return p.distanceSq(line[0]) - (line[1].dot2D(p.sub(line[0]))) * (line[1].dot2D(p.sub(line[0])));
+//    }
+//
+//    public static ZPoint pointLineClosest(ZPoint p, ZPoint[] line) {
+//        return null;
+//    }
+//
+//    public static double pointRayDistSq(ZPoint p, ZPoint[] ray) {
+//        return 0;
+//    }
+//
+//    public static ZPoint pointRayClosest(ZPoint p, ZPoint[] line) {
+//        return null;
+//    }
+//
+//    public static double pointSegmentDistSq(ZPoint p, ZPoint[] segment) {
+//        return 0;
+//    }
+//
+//    public static ZPoint pointSegmentClosest(ZPoint p, ZPoint[] line) {
+//        return null;
+//    }
 
     /*-------- 其他几何运算 --------*/
 
@@ -531,8 +546,6 @@ public final class ZGeoMath {
         }
     }
 
-    // FIXME: 2020/11/9 按步长剖分多边形
-
     /**
      * @return java.util.List<geometry.ZPoint>
      * @description 设置步长，剖分多边形的边 (Polygon)
@@ -612,6 +625,49 @@ public final class ZGeoMath {
         }
 
         return result;
+    }
+
+    /**
+     * @return java.util.List<geometry.ZPoint>
+     * @description 给定阈值上下限，剖分多边形(Polygon)
+     */
+    public static List<ZPoint> splitPolygonEdgeByThreshold(final Polygon poly, final double maxStep, final double minStep) {
+        double finalStep = 0;
+        for (int i = 1; i < Integer.MAX_VALUE; i++) {
+            double curr_step = poly.getLength() / i;
+            if (curr_step >= minStep && curr_step <= maxStep) {
+                finalStep = curr_step;
+                break;
+            } else if (curr_step < minStep) {
+                return null;
+            }
+        }
+        System.out.println("step:" + finalStep);
+        return splitPolygonEdgeByStep(poly, finalStep);
+    }
+
+    /**
+     * @return java.util.List<geometry.ZPoint>
+     * @description 给定阈值上下限，剖分多段线(WB_PolyLine)
+     */
+    public static List<ZPoint> splitWB_PolyLineEdgeByThreshold(final WB_PolyLine poly, final double maxStep, final double minStep) {
+        assert maxStep >= minStep : "please input valid threshold";
+        double length = 0;
+        for (int i = 0; i < poly.getNumberSegments(); i++) {
+            length = length + poly.getSegment(i).getLength();
+        }
+        double finalStep = 0;
+        for (int i = 1; i < Integer.MAX_VALUE; i++) {
+            double curr_step = length / i;
+            if (curr_step >= minStep && curr_step <= maxStep) {
+                finalStep = curr_step;
+                break;
+            } else if (curr_step < minStep) {
+                return new ArrayList<ZPoint>();
+            }
+        }
+        System.out.println("step:" + finalStep);
+        return splitWB_PolyLineEdgeByStep(poly, finalStep);
     }
 
     /**

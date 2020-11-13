@@ -60,4 +60,11 @@ public class ZEdge extends ZLine {
         this.neighborEdgesAll = neighborEdgesStart;
         neighborEdgesAll.addAll(neighborEdgesEnd);
     }
+
+    /* ------------- geometry method ------------- */
+
+    @Override
+    public ZEdge reverse() {
+        return new ZEdge(this.end, this.start);
+    }
 }

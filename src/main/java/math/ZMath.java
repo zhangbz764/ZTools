@@ -9,6 +9,10 @@ import java.util.HashMap;
  * @date 2020/10/19
  * @time 22:40
  * @description some advanced math methods
+ * 1.从一组double数组中找到最大值的序号
+ * 2.从一组double数组中找到最小值的序号
+ * 3.把一组double数组按升序排序（返回一组序号）
+ * 4.将目标数字从一个范围映射到另一个范围内的对应数字
  */
 public class ZMath {
 

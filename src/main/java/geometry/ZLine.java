@@ -6,6 +6,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.triangulate.Segment;
 import processing.core.PApplet;
 import wblut.geom.WB_Point;
+import wblut.geom.WB_Ray;
 import wblut.geom.WB_Segment;
 
 /**
@@ -51,6 +52,10 @@ public class ZLine {
     public ZLine scaleTo(double multiple) {
         ZPoint newDir = direction.scaleTo(multiple);
         return new ZLine(pt0, pt0.add(newDir));
+    }
+
+    public ZLine reverse() {
+        return new ZLine(this.pt1, this.pt0);
     }
 
     /* ------------- set & get ------------- */
@@ -119,6 +124,10 @@ public class ZLine {
 
     public WB_Segment toWB_Segment() {
         return new WB_Segment();
+    }
+
+    public WB_Ray toWB_Ray() {
+        return new WB_Ray(pt0.toWB_Point(), direction.toWB_Point());
     }
 
     /* ------------- draw -------------*/

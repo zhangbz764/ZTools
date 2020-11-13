@@ -1,5 +1,6 @@
 package geometry;
 
+import math.ZMath;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
@@ -30,7 +31,14 @@ public class ZGeoFactory {
             lineStrings.add(line.toJtsLineString());
         }
         lineMerger.add(lineStrings);
-        if (lineMerger.getMergedLineStrings().size() > 0) {
+        if (lineMerger.getMergedLineStrings().size() > 1) {
+            double[] lineStringLengths = new double[lineMerger.getMergedLineStrings().toArray().length];
+            for (int i = 0; i < lineMerger.getMergedLineStrings().toArray().length; i++) {
+                LineString l = (LineString) lineMerger.getMergedLineStrings().toArray()[i];
+                lineStringLengths[i] = l.getLength();
+            }
+            return (LineString) lineMerger.getMergedLineStrings().toArray()[ZMath.getMaxIndex(lineStringLengths)];
+        } else if (lineMerger.getMergedLineStrings().size() == 1) {
             return (LineString) lineMerger.getMergedLineStrings().toArray()[0];
         } else {
             return null;
@@ -44,7 +52,15 @@ public class ZGeoFactory {
             lineStrings.add(line.toJtsLineString());
         }
         lineMerger.add(lineStrings);
-        if (lineMerger.getMergedLineStrings().size() > 0) {
+        if (lineMerger.getMergedLineStrings().size() > 1) {
+            double[] lineStringLengths = new double[lineMerger.getMergedLineStrings().toArray().length];
+            for (int i = 0; i < lineMerger.getMergedLineStrings().toArray().length; i++) {
+                LineString l = (LineString) lineMerger.getMergedLineStrings().toArray()[i];
+                lineStringLengths[i] = l.getLength();
+            }
+            LineString merged = (LineString) lineMerger.getMergedLineStrings().toArray()[ZMath.getMaxIndex(lineStringLengths)];
+            return ZTransform.JtsLineStringToWB_PolyLine(merged);
+        } else if (lineMerger.getMergedLineStrings().size() == 1) {
             LineString merged = (LineString) lineMerger.getMergedLineStrings().toArray()[0];
             return ZTransform.JtsLineStringToWB_PolyLine(merged);
         } else {

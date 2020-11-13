@@ -13,11 +13,12 @@ import wblut.geom.WB_Point;
  * @project shopping_mall
  * @date 2020/10/11
  * @time 17:55
- * @description to describe a coordinate, point, vector or graph node
+ * @description to describe a coordinate, point, vector
  */
 public class ZPoint {
     private double x, y, z;
     private final float r = 15;
+    private final float vecCap = 3;
 
     private static final GeometryFactory gf = new GeometryFactory();
 
@@ -267,7 +268,7 @@ public class ZPoint {
         app.noFill();
         app.stroke(255, 0, 0);
         app.line((float) base.x(), (float) base.y(), (float) base.z(), (float) dest.x(), (float) dest.y(), (float) dest.z());
-        app.ellipse((float) dest.x(), (float) dest.y(), r, r);
+        app.ellipse((float) dest.x(), (float) dest.y(), vecCap, vecCap);
         app.popStyle();
     }
 
@@ -281,7 +282,7 @@ public class ZPoint {
         app.noFill();
         app.stroke(255, 0, 0);
         app.line((float) base.x(), (float) base.y(), (float) base.z(), (float) dest.x(), (float) dest.y(), (float) dest.z());
-        app.ellipse((float) dest.x(), (float) dest.y(), r, r);
+        app.ellipse((float) dest.x(), (float) dest.y(), vecCap, vecCap);
         app.popStyle();
     }
 }

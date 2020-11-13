@@ -312,4 +312,18 @@ public class ZSkeleton {
         }
         app.popStyle();
     }
+
+    public void displayAllEdges(PApplet app){
+        app.stroke(0,0,200);
+        for (ZLine line : allEdges) {
+            line.display(app, 1);
+        }
+    }
+
+    public void displayRidges(PApplet app){
+        app.stroke(137, 57, 50);
+        for (ZLine ridge : ridges) {
+            ridge.display(app, 5);
+        }
+    }
 }
