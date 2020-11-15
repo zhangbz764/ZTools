@@ -3,6 +3,7 @@ package math;
 import geometry.ZLine;
 import geometry.ZPoint;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.linemerge.LineMerger;
 import wblut.geom.*;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
  * @description some custom geometry methods
  * 1.求到角的角平分线向量
  * 2.按极角排序一组向量（返回原列表序号）
- * 3.按极角排序一组向量（返回排好的新组）
+ * 3.按极角排序一组向量（返回排好的新向量或单位向量）
  * 4.从一组向量中找与输入目标夹角最小者，不区分正负角（返回向量）
  * 5.求任意两个线型对象交点（需输入类型：line, ray, segment）
  * 6.判断点是否在直线/射线/线段上（有epsilon）
@@ -24,12 +25,12 @@ import java.util.List;
  * 8.从一组多边形中找到包含输入点的那一个（返回序号）
  * 9.输入Geometry，设置Jts的Precision Model
  * 10.使WB_Polygon点序反向
- * 11.使WB_Polygon法向量Z轴为正（不是拍平到xy平面，只是翻个面）
+ * 11.使WB_Polygon法向量Z坐标为正或为负（不是拍平到xy平面，只是翻个面）
  * 12.输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点
  * 13.输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）
  * 14.输入步长阈值，将多边形或多段线按阈值内最大值等分，得到所有点
  * 15.输入等分数量，将多边形或多段线等分，得到所有点
- *
+ * <p>
  * ...增加中
  */
 public final class ZGeoMath {
@@ -50,12 +51,12 @@ public final class ZGeoMath {
     public static ZPoint getAngleBisectorOrdered(final ZPoint v0, final ZPoint v1) {
         if (v0.cross2D(v1) > 0) {  // v0->v1小于180度
             return v0.unit().add(v1.unit()).unit();
-        } else if (v0.cross2D(v1) < 0) {
-            return v0.scaleTo(-1).unit().add(v1.scaleTo(-1).unit()).unit();
+        } else if (v0.cross2D(v1) < 0) { // v0->v1大于180度
+            return v0.unit().add(v1.unit()).unit().scaleTo(-1);
         } else {
-            if (v0.dot2D(v1) > 0) {
+            if (v0.dot2D(v1) > 0) { // v0->v1为0度
                 return v0.unit();
-            } else {
+            } else { // v0->v1为180度
                 ZPoint vertical = new ZPoint(v0.y(), -v0.x());
                 if (!(v0.cross2D(vertical) > 0)) {
                     vertical.scaleSelf(-1);
@@ -89,6 +90,20 @@ public final class ZGeoMath {
         ZPoint[] sorted = new ZPoint[vectors.size()];
         for (int i = 0; i < newOrder.length; i++) {
             sorted[i] = vectors.get(newOrder[i]);
+        }
+        return sorted;
+    }
+
+    /**
+     * @return java.util.List<generalTools.ZPoint>
+     * @description 按极角排序一系列向量（以第0条为基准），返回排好的单位向量
+     */
+    public static ZPoint[] sortPolarAngleUnit(final List<ZPoint> vectors) {
+        assert vectors.size() > 0 : "input list must at least include 1 vector";
+        int[] newOrder = sortPolarAngleIndices(vectors);
+        ZPoint[] sorted = new ZPoint[vectors.size()];
+        for (int i = 0; i < newOrder.length; i++) {
+            sorted[i] = vectors.get(newOrder[i]).unit();
         }
         return sorted;
     }
@@ -457,6 +472,18 @@ public final class ZGeoMath {
      */
     public static WB_Polygon faceUp(final WB_Polygon polygon) {
         if (polygon.getNormal().zd() < 0) {
+            return reversePolygon(polygon);
+        } else {
+            return polygon;
+        }
+    }
+
+    /**
+     * @return wblut.geom.WB_Polygon
+     * @description 让WB_Polygon法向量朝向Z轴负向
+     */
+    public static WB_Polygon faceDown(final WB_Polygon polygon) {
+        if (polygon.getNormal().zd() > 0) {
             return reversePolygon(polygon);
         } else {
             return polygon;

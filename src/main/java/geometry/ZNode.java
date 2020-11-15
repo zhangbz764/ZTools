@@ -17,6 +17,7 @@ import java.util.List;
  */
 public class ZNode extends ZPoint {
     private List<ZNode> neighbors;
+    private List<ZPoint> vecToNeighbor;
     private List<ZEdge> linkedEdge;
 
     /* ------------- constructor ------------- */
@@ -50,14 +51,19 @@ public class ZNode extends ZPoint {
     public void setRelationReady() {
         this.linkedEdge = new ArrayList<>();
         this.neighbors = new ArrayList<>();
+        this.vecToNeighbor = new ArrayList<>();
     }
 
     public void setNeighbor(ZNode neighbor) {  // set one node
         this.neighbors.add(neighbor);
+        this.vecToNeighbor.add(neighbor.sub(this));
     }
 
     public void setNeighbors(List<ZNode> neighbors) {  // set all nodes
         this.neighbors = neighbors;
+        for (ZNode neighbor : neighbors) {
+            this.vecToNeighbor.add(neighbor.sub(this));
+        }
     }
 
     public void setNeighborFromEdge(ZEdge link) { // set one node from a linked edge
@@ -86,6 +92,10 @@ public class ZNode extends ZPoint {
         return this.neighbors.size();
     }
 
+    public List<ZPoint> getVecToNeighbor() {
+        return this.vecToNeighbor;
+    }
+
     public List<ZEdge> getLinkedEdge() {
         return this.linkedEdge;
     }
@@ -94,6 +104,15 @@ public class ZNode extends ZPoint {
         return this.linkedEdge.size();
     }
 
+    public boolean isEnd() {
+        if (this.neighbors.size() == 1) {
+            return true;
+        } else if (this.neighbors.size() > 1) {
+            return false;
+        } else {
+            throw new NullPointerException("no neighbors");
+        }
+    }
 
     /* ------------- draw ------------- */
 

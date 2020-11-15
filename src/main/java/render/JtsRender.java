@@ -20,7 +20,7 @@ public class JtsRender {
         this.app = app;
     }
 
-    public void draw(Geometry geo) {
+    public void drawGeometry(Geometry geo) {
         String type = geo.getGeometryType();
         switch (type) {
             case "Point":
@@ -36,6 +36,7 @@ public class JtsRender {
                 PApplet.println("not a basic geo type");
                 break;
         }
+
     }
 
     /**
@@ -98,7 +99,7 @@ public class JtsRender {
         Geometry triangles = delaunayBuilder.getTriangles(JtsRender.gf);
         int num = triangles.getNumGeometries();
         for (int i = 0; i < num; i++) {
-            this.draw(triangles.getGeometryN(i));
+            this.drawGeometry(triangles.getGeometryN(i));
         }
     }
 
@@ -110,7 +111,7 @@ public class JtsRender {
         Geometry voronois = voronoiBuilder.getDiagram(JtsRender.gf);
         int num = voronois.getNumGeometries();
         for (int i = 0; i < num; i++) {
-            this.draw(voronois.getGeometryN(i));
+            this.drawGeometry(voronois.getGeometryN(i));
         }
     }
 }

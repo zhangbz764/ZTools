@@ -8,6 +8,8 @@ import processing.core.PApplet;
 import wblut.geom.WB_Coord;
 import wblut.geom.WB_Point;
 
+import java.util.List;
+
 /**
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -220,6 +222,20 @@ public class ZPoint {
      */
     public boolean isCollineation(ZPoint v) {
         return cross2D(v) == 0;
+    }
+
+    /**
+     * @return boolean
+     * @description check if point is too close to other points
+     */
+    @Deprecated
+    public boolean isTooClose(List<ZPoint> other, double dist) {
+        for (ZPoint p : other) {
+            if (this.distance(p) < dist) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /* ------------- geometry method -------------*/
