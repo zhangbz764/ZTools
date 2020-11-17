@@ -2,6 +2,7 @@ package math;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author ZHANG Bai-zhou zhangbz
@@ -20,7 +21,7 @@ public class ZMath {
 
     /**
      * @return int
-     * @description get max index of a float array
+     * @description 从一组double数组中找到最大值的序号
      */
     public static int getMaxIndex(double[] arr) {
         if (arr == null || arr.length == 0) {
@@ -37,7 +38,7 @@ public class ZMath {
 
     /**
      * @return int
-     * @description get min index of a float array
+     * @description 从一组double数组中找到最小值的序号
      */
     public static int getMinIndex(double[] arr) {
         if (arr == null || arr.length == 0) {
@@ -54,7 +55,7 @@ public class ZMath {
 
     /**
      * @return int[]
-     * @description get ascending sort indices of a double array
+     * @description 把一组double数组按升序排序（返回一组序号）
      */
     public static int[] getArraySortedIndices(double[] arr) {
         int[] sortedIndices = new int[arr.length];

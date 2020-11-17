@@ -16,6 +16,7 @@ import wblut.geom.*;
 public class ZTransform {
     private static final GeometryFactory gf = new GeometryFactory();
     private static final WB_GeometryFactory wbgf = new WB_GeometryFactory();
+    private static final double epsilon = 0.00000001;
 
     /*-------- IGeo <-> WB --------*/
 
@@ -143,11 +144,20 @@ public class ZTransform {
      * @description transform WB_Polygon to jts Polygon
      */
     public static Polygon WB_PolygonToJtsPolygon(final WB_Polygon wbp) {
-        Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints()];
-        for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
-            coords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
+        if (wbp.getPoint(0).getDistance2D(wbp.getPoint(wbp.getNumberOfPoints() - 1)) < epsilon) {
+            Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints()];
+            for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
+                coords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
+            }
+            return gf.createPolygon(coords);
+        } else {
+            Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints() + 1];
+            for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
+                coords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
+            }
+            coords[wbp.getNumberOfPoints()] = coords[0];
+            return gf.createPolygon(coords);
         }
-        return gf.createPolygon(coords);
     }
 
     /**

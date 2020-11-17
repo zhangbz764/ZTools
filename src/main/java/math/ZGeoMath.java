@@ -4,6 +4,7 @@ import geometry.ZLine;
 import geometry.ZPoint;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.operation.linemerge.LineMerger;
+import transform.ZTransform;
 import wblut.geom.*;
 
 import java.util.ArrayList;
@@ -15,21 +16,25 @@ import java.util.List;
  * @date 2020/9/29
  * @time 15:38
  * @description some custom geometry methods
- * 1.求到角的角平分线向量
- * 2.按极角排序一组向量（返回原列表序号）
- * 3.按极角排序一组向量（返回排好的新向量或单位向量）
- * 4.从一组向量中找与输入目标夹角最小者，不区分正负角（返回向量）
- * 5.求任意两个线型对象交点（需输入类型：line, ray, segment）
- * 6.判断点是否在直线/射线/线段上（有epsilon）
- * 7.找到点在多边形哪条边上（可返回WB_Segment, Zline, 或两顶点序号）
- * 8.从一组多边形中找到包含输入点的那一个（返回序号）
- * 9.输入Geometry，设置Jts的Precision Model
- * 10.使WB_Polygon点序反向
- * 11.使WB_Polygon法向量Z坐标为正或为负（不是拍平到xy平面，只是翻个面）
- * 12.输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点
- * 13.输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）
- * 14.输入步长阈值，将多边形或多段线按阈值内最大值等分，得到所有点
- * 15.输入等分数量，将多边形或多段线等分，得到所有点
+ * 求到角的角平分线向量
+ * 按极角排序一组向量（返回原列表序号）
+ * 按极角排序一组向量（返回排好的新向量或单位向量）
+ * 找到多边形内的所有凹点（返回点list或者序号list）
+ * 从一组向量中找与输入目标夹角最小者，不区分正负角（返回向量）
+ * 求任意两个线型对象交点（需输入类型：line, ray, segment）
+ * 求射线与多边形交点
+ * 求射线与多边形交点，返回按照与指定点升序排序的交点所在边序号
+ * 将线段延长或剪切至多边形最近的交点
+ * 判断点是否在直线/射线/线段上（有epsilon）
+ * 找到点在多边形哪条边上（可返回WB_Segment, ZLine, 或两顶点序号）
+ * 从一组多边形中找到包含输入点的那一个（返回序号）
+ * 输入Geometry，设置Jts的Precision Model
+ * 使WB_Polygon点序反向
+ * 使WB_Polygon法向量Z坐标为正或为负（不是拍平到xy平面，只是翻个面）
+ * 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点
+ * 输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）
+ * 输入步长阈值，将多边形或多段线按阈值内最大值等分，得到所有点
+ * 输入等分数量，将多边形或多段线等分，得到所有点
  * <p>
  * ...增加中
  */
@@ -38,8 +43,6 @@ public final class ZGeoMath {
     private static final WB_GeometryFactory wbgf = new WB_GeometryFactory();
     // 精度阈值
     private static final double epsilon = 0.00000001;
-
-    /*-------- 基本向量几何 --------*/
 
 
     /*-------- 向量角度相关 --------*/
@@ -64,6 +67,78 @@ public final class ZGeoMath {
                 return vertical.unit();
             }
         }
+    }
+
+    /**
+     * @return java.util.List<geometry.ZPoint>
+     * @description 找到一个多边形里所有凹顶点(WB)
+     */
+    public static List<ZPoint> getConcavePoints(WB_Polygon polygon) {
+        List<ZPoint> concavePoints = new ArrayList<>();
+        WB_Polygon faceUp = faceUp(polygon); // 保证正向
+        for (int i = 1; i < faceUp.getNumberOfPoints(); i++) {
+            ZPoint prev = new ZPoint(faceUp.getPoint(i - 1).sub(faceUp.getPoint(i)));
+            ZPoint next = new ZPoint(faceUp.getPoint((i + 1) % (faceUp.getNumberOfPoints() - 1)).sub(faceUp.getPoint(i)));
+            double crossValue = next.cross2D(prev);
+            if (crossValue < 0) {
+                concavePoints.add(new ZPoint(faceUp.getPoint(i)));
+            }
+        }
+        return concavePoints;
+    }
+
+    /**
+     * @return java.util.List<geometry.ZPoint>
+     * @description 找到一个多边形里所有凹顶点(jts)
+     */
+    public static List<ZPoint> getConcavePoints(Polygon polygon) {
+        WB_Polygon wbPolygon = ZTransform.JtsPolygonToWB_Polygon(polygon);
+        return getConcavePoints(wbPolygon);
+    }
+
+    /**
+     * @return java.util.List<java.lang.Integer>
+     * @description 找到一个多边形里所有凹顶点的序号(WB)
+     */
+    public static List<Integer> getConcavePointIndices(WB_Polygon polygon) {
+        List<Integer> concavePoints = new ArrayList<>();
+        if (polygon.getNormal().zd() > 0) {
+            for (int i = 1; i < polygon.getNumberOfPoints(); i++) {
+                ZPoint prev = new ZPoint(polygon.getPoint(i - 1).sub(polygon.getPoint(i)));
+                ZPoint next = new ZPoint(polygon.getPoint((i + 1) % (polygon.getNumberOfPoints() - 1)).sub(polygon.getPoint(i)));
+                double crossValue = next.cross2D(prev);
+                if (crossValue < 0) {
+                    if (i == polygon.getNumberOfPoints() - 1) {
+                        concavePoints.add(0);
+                    } else {
+                        concavePoints.add(i);
+                    }
+                }
+            }
+        } else {
+            for (int i = 1; i < polygon.getNumberOfPoints(); i++) {
+                ZPoint prev = new ZPoint(polygon.getPoint(i - 1).sub(polygon.getPoint(i)));
+                ZPoint next = new ZPoint(polygon.getPoint((i + 1) % (polygon.getNumberOfPoints() - 1)).sub(polygon.getPoint(i)));
+                double crossValue = prev.cross2D(next);
+                if (crossValue < 0) {
+                    if (i == polygon.getNumberOfPoints() - 1) {
+                        concavePoints.add(0);
+                    } else {
+                        concavePoints.add(i);
+                    }
+                }
+            }
+        }
+        return concavePoints;
+    }
+
+    /**
+     * @return java.util.List<java.lang.Integer>
+     * @description 找到一个多边形里所有凹顶点的序号(jts)
+     */
+    public static List<Integer> getConcavePointIndices(Polygon polygon) {
+        WB_Polygon wbPolygon = ZTransform.JtsPolygonToWB_Polygon(polygon);
+        return getConcavePointIndices(wbPolygon);
     }
 
     /**
@@ -125,6 +200,14 @@ public final class ZGeoMath {
     /*-------- 二维相交相关 --------*/
 
     /**
+     * @return geometry.ZPoint
+     * @description 根据输入线型对象类型算交点 line, ray or segment
+     */
+    public static ZPoint simpleLineElementsIntersect2D(ZLine l0, String type0, ZLine l1, String type1) {
+        return simpleLineElementsIntersect2D(l0.toLinePD(), type0, l1.toLinePD(), type1);
+    }
+
+    /**
      * @return generalTools.ZPoint
      * @description 根据输入线型对象类型算交点 line, ray or segment
      */
@@ -161,7 +244,7 @@ public final class ZGeoMath {
         double crossDelta = delta.cross2D(line0[1]);
         double crossBase = line0[1].cross2D(line1[1]);
         if (Math.abs(crossBase) < epsilon) {
-            System.out.println("parallel or same or overlap");
+//            System.out.println("parallel or same or overlap");
             return null;
         } else {
             double t = crossDelta / crossBase;
@@ -180,7 +263,7 @@ public final class ZGeoMath {
         double crossDelta1 = delta.cross2D(ray1[1]);
 
         if (Math.abs(crossBase) < epsilon) {
-            System.out.println("parallel or same or overlap");
+//            System.out.println("parallel or same or overlap");
             return null;
         } else {
             double s = crossDelta1 / crossBase; // ray0
@@ -188,7 +271,7 @@ public final class ZGeoMath {
             if (s >= 0 && t >= 0) {
                 return ray1[0].add(ray1[1].scaleTo(t));
             } else {
-                System.out.println("intersection is not on one of these line elements");
+//                System.out.println("intersection is not on one of these line elements");
                 return null;
             }
         }
@@ -205,7 +288,7 @@ public final class ZGeoMath {
         double crossDelta1 = delta.cross2D(seg1[1]);
 
         if (Math.abs(crossBase) < epsilon) {
-            System.out.println("parallel or same or overlap");
+//            System.out.println("parallel or same or overlap");
             return null;
         } else {
             double s = crossDelta1 / crossBase; // seg0
@@ -213,7 +296,7 @@ public final class ZGeoMath {
             if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
                 return seg1[0].add(seg1[1].scaleTo(t));
             } else {
-                System.out.println("intersection is not on one of these line elements");
+//                System.out.println("intersection is not on one of these line elements");
                 return null;
             }
         }
@@ -230,7 +313,7 @@ public final class ZGeoMath {
         double crossDelta1 = delta.cross2D(ray[1]);
 
         if (Math.abs(crossBase) < epsilon) {
-            System.out.println("parallel or same or overlap");
+//            System.out.println("parallel or same or overlap");
             return null;
         } else {
             double s = crossDelta1 / crossBase; // line
@@ -238,7 +321,7 @@ public final class ZGeoMath {
             if (t >= 0) {
                 return ray[0].add(ray[1].scaleTo(t));
             } else {
-                System.out.println("intersection is not on one of these line elements");
+//                System.out.println("intersection is not on one of these line elements");
                 return null;
             }
         }
@@ -255,7 +338,7 @@ public final class ZGeoMath {
         double crossDelta1 = delta.cross2D(seg[1]);
 
         if (Math.abs(crossBase) < epsilon) {
-            System.out.println("parallel or same or overlap");
+//            System.out.println("parallel or same or overlap");
             return null;
         } else {
             double s = crossDelta1 / crossBase; // line
@@ -263,7 +346,7 @@ public final class ZGeoMath {
             if (t >= 0 && t <= 1) {
                 return seg[0].add(seg[1].scaleTo(t));
             } else {
-                System.out.println("intersection is not on one of these line elements");
+//                System.out.println("intersection is not on one of these line elements");
                 return null;
             }
         }
@@ -280,7 +363,7 @@ public final class ZGeoMath {
         double crossDelta1 = delta.cross2D(seg[1]);
 
         if (Math.abs(crossBase) < epsilon) {
-            System.out.println("parallel or same or overlap");
+//            System.out.println("parallel or same or overlap");
             return null;
         } else {
             double s = crossDelta1 / crossBase; // ray
@@ -288,9 +371,95 @@ public final class ZGeoMath {
             if (s >= 0 && t >= 0 && t <= 1) {
                 return seg[0].add(seg[1].scaleTo(t));
             } else {
-                System.out.println("intersection is not on one of these line elements");
+//                System.out.println("intersection is not on one of these line elements");
                 return null;
             }
+        }
+    }
+
+    /**
+     * @return java.util.List<geometry.ZPoint>
+     * @description 求射线与多边形交点（每段线段是 [——) 关系）
+     */
+    public static List<ZPoint> rayPolygonIntersect2D(ZPoint[] ray, WB_Polygon poly) {
+        List<ZPoint> result = new ArrayList<>();
+        for (int i = 0; i < poly.getNumberSegments(); i++) {
+            ZPoint[] polySeg = new ZLine(poly.getSegment(i)).toLinePD();
+            ZPoint delta = polySeg[0].sub(ray[0]);
+            double crossBase = ray[1].cross2D(polySeg[1]);
+            double crossDelta0 = delta.cross2D(ray[1]);
+            double crossDelta1 = delta.cross2D(polySeg[1]);
+
+            if (Math.abs(crossBase) >= epsilon) {
+                double s = crossDelta1 / crossBase; // ray
+                double t = crossDelta0 / crossBase; // seg
+                if (s >= 0 && t > 0 && t <= 1) {
+                    result.add(polySeg[0].add(polySeg[1].scaleTo(t)));
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return java.util.List<java.lang.Integer>
+     * @description 求射线与多边形交点，返回按交点距离排序的边序号list
+     */
+    public static List<Integer> rayPolygonIntersectIndices2D(ZPoint[] ray, WB_Polygon poly) {
+        List<Integer> indicesResult = new ArrayList<>();
+        List<Double> resultDist = new ArrayList<>();
+        for (int i = 0; i < poly.getNumberSegments(); i++) {
+            ZPoint[] polySeg = new ZLine(poly.getSegment(i)).toLinePD();
+            ZPoint delta = polySeg[0].sub(ray[0]);
+            double crossBase = ray[1].cross2D(polySeg[1]);
+            double crossDelta0 = delta.cross2D(ray[1]);
+            double crossDelta1 = delta.cross2D(polySeg[1]);
+
+            if (Math.abs(crossBase) >= epsilon) {
+                double s = crossDelta1 / crossBase; // ray
+                double t = crossDelta0 / crossBase; // seg
+                if (s >= 0 && t > 0 && t <= 1) {
+                    indicesResult.add(i);
+                    resultDist.add(polySeg[0].add(polySeg[1].scaleTo(t)).distanceSq(ray[0]));
+                }
+            }
+        }
+
+        // 得到交点距离排序后的序号
+        if (resultDist.size() > 1) {
+            double[] distArray = new double[resultDist.size()];
+            for (int i = 0; i < resultDist.size(); i++) {
+                distArray[i] = resultDist.get(i);
+            }
+            int[] ascending = ZMath.getArraySortedIndices(distArray);
+
+            List<Integer> newOrder = new ArrayList<>();
+            for (int j = 0; j < indicesResult.size(); j++) {
+                newOrder.add(indicesResult.get(ascending[j]));
+            }
+            return newOrder;
+        } else {
+            return indicesResult;
+        }
+    }
+
+    /**
+     * @return geometry.ZLine
+     * @description 将线段延长或剪切至多边形最近的交点
+     */
+    public static ZLine extendSegmentToPolygon(ZPoint[] segment, WB_Polygon poly) {
+        List<ZPoint> interResult = rayPolygonIntersect2D(segment, poly);
+        if (interResult.size() > 1) {
+            double[] resultDist = new double[interResult.size()];
+            for (int i = 0; i < interResult.size(); i++) {
+                resultDist[i] = segment[0].distanceSq(interResult.get(i));
+            }
+            int[] ascending = ZMath.getArraySortedIndices(resultDist);
+            return new ZLine(segment[0], interResult.get(ascending[0]));
+        } else if (interResult.size() == 1) {
+            return new ZLine(segment[0], interResult.get(0));
+        } else {
+            return null;
         }
     }
 
@@ -669,7 +838,6 @@ public final class ZGeoMath {
                 return null;
             }
         }
-        System.out.println("step:" + finalStep);
         return splitPolygonEdgeByStep(poly, finalStep);
     }
 

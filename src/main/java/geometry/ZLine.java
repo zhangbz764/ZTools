@@ -70,6 +70,14 @@ public class ZLine {
         return new ZPoint[]{pt0, pt1};
     }
 
+    public ZPoint getPt0() {
+        return pt0;
+    }
+
+    public ZPoint getPt1() {
+        return pt1;
+    }
+
     public ZPoint pt0() {
         return this.pt0;
     }
