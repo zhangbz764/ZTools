@@ -838,6 +838,7 @@ public final class ZGeoMath {
                 return null;
             }
         }
+        //        System.out.println("step:" + finalStep);
         return splitPolygonEdgeByStep(poly, finalStep);
     }
 
@@ -861,7 +862,7 @@ public final class ZGeoMath {
                 return new ArrayList<ZPoint>();
             }
         }
-        System.out.println("step:" + finalStep);
+//        System.out.println("step:" + finalStep);
         return splitWB_PolyLineEdgeByStep(poly, finalStep);
     }
 

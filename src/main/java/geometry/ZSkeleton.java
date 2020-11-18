@@ -40,6 +40,7 @@ public class ZSkeleton {
     private List<ZLine> bottomEdges;
 
     private List<ZLine> ridges;
+    private List<ZLine> extendedRidges;
     private List<ZPoint> ridgePoints;
 
     /* ------------- constructors ------------- */
@@ -122,6 +123,10 @@ public class ZSkeleton {
         return this.ridges;
     }
 
+    public List<ZLine> getExtendedRidges() {
+        return this.extendedRidges;
+    }
+
     public List<ZPoint> getRidgePoints() {
         return this.ridgePoints;
     }
@@ -140,6 +145,7 @@ public class ZSkeleton {
 
         this.ridgePoints = new ArrayList<>();
         this.ridges = new ArrayList<>();
+        this.extendedRidges = new ArrayList<>();
         // add corners
         List<Corner> corners = new ArrayList<>();
         for (int i = 0; i < polygon.getNumberOfPoints(); i++) {
@@ -260,10 +266,19 @@ public class ZSkeleton {
             if (!mesh.getVertexWithIndex(i).isBoundary()) {
                 curr_vertices.add(mesh.getVertexWithIndex(i));
                 ridgePoints.add(new ZPoint(mesh.getVertexWithIndex(i)));
+
+                List<ZPoint> verticesFromRidgeEnd = new ArrayList<>();
                 for (HE_Vertex vertex : mesh.getVertexWithIndex(i).getNeighborVertices()) {
                     if (!vertex.isBoundary() && !curr_vertices.contains(vertex)) {
                         ridges.add(new ZLine(new ZPoint(mesh.getVertexWithIndex(i)), new ZPoint(vertex)));
                     }
+                    if (vertex.isBoundary()) {
+                        verticesFromRidgeEnd.add(new ZPoint(vertex));
+                    }
+                }
+                if (verticesFromRidgeEnd.size() == 2) {
+                    ZPoint center = verticesFromRidgeEnd.get(0).centerWith(verticesFromRidgeEnd.get(1));
+                    extendedRidges.add(new ZLine(new ZPoint(mesh.getVertexWithIndex(i)), center));
                 }
             }
         }
@@ -302,27 +317,29 @@ public class ZSkeleton {
 
     public void display(PApplet app) {
         app.pushStyle();
-        app.stroke(0,0,200);
+        displayAllEdges(app);
+        displayRidges(app);
+        displayExtendedRidges(app);
+        app.popStyle();
+    }
+
+    public void displayAllEdges(PApplet app) {
+        app.stroke(0, 0, 200);
         for (ZLine line : allEdges) {
             line.display(app, 1);
         }
+    }
+
+    public void displayRidges(PApplet app) {
         app.stroke(137, 57, 50);
         for (ZLine ridge : ridges) {
             ridge.display(app, 5);
         }
-        app.popStyle();
     }
 
-    public void displayAllEdges(PApplet app){
-        app.stroke(0,0,200);
-        for (ZLine line : allEdges) {
-            line.display(app, 1);
-        }
-    }
-
-    public void displayRidges(PApplet app){
-        app.stroke(137, 57, 50);
-        for (ZLine ridge : ridges) {
+    public void displayExtendedRidges(PApplet app) {
+        app.stroke(104, 210, 120);
+        for (ZLine ridge : extendedRidges) {
             ridge.display(app, 5);
         }
     }
