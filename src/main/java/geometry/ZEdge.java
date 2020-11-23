@@ -47,14 +47,14 @@ public class ZEdge extends ZLine {
     }
 
     public void setNeighborEdges() {
-        if (start.getLinkedEdge().size() > 1) {
+        if (start.getLinkedEdges().size() > 1) {
             this.neighborEdgesStart = new ArrayList<>();
-            neighborEdgesStart.addAll(start.getLinkedEdge());
+            neighborEdgesStart.addAll(start.getLinkedEdges());
             neighborEdgesStart.remove(this);
         }
-        if (end.getLinkedEdge().size() > 1) {
+        if (end.getLinkedEdges().size() > 1) {
             this.neighborEdgesEnd = new ArrayList<>();
-            neighborEdgesEnd.addAll(end.getLinkedEdge());
+            neighborEdgesEnd.addAll(end.getLinkedEdges());
             neighborEdgesEnd.remove(this);
         }
         this.neighborEdgesAll = neighborEdgesStart;

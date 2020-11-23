@@ -94,6 +94,10 @@ public class ZLine {
         return direction.unit();
     }
 
+    public double getLength() {
+        return pt0.distance(pt1);
+    }
+
     /* ------------- transformation -------------*/
 
     public String toString() {

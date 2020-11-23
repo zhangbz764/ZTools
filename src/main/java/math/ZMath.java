@@ -2,7 +2,6 @@ package math;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author ZHANG Bai-zhou zhangbz
@@ -15,7 +14,7 @@ import java.util.List;
  * 3.把一组double数组按升序排序（返回一组序号）
  * 4.将目标数字从一个范围映射到另一个范围内的对应数字
  */
-public class ZMath {
+public final class ZMath {
 
     /*-------- array methods --------*/
 

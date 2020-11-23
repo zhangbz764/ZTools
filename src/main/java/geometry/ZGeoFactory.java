@@ -1,15 +1,13 @@
 package geometry;
 
 import math.ZMath;
-import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import transform.ZTransform;
-import wblut.geom.WB_GeometryFactory;
-import wblut.geom.WB_PolyLine;
+import wblut.geom.*;
 
-import java.rmi.activation.UnknownObjectException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,13 +16,14 @@ import java.util.List;
  * @project shopping_mall
  * @date 2020/11/8
  * @time 22:04
- * @description
+ * @description 包含了jts的GeometryFactory和HE_Mesh的WB_GeometryFactory，以及其他create命令
  */
 public class ZGeoFactory {
     public static final WB_GeometryFactory wbgf = new WB_GeometryFactory();
     public static final GeometryFactory jtsgf = new GeometryFactory();
+    private static final double epsilon = 0.00000001;
 
-    public static LineString createLineString(List<ZLine> lines) {
+    public static LineString createLineString(List<? extends ZLine> lines) {
         LineMerger lineMerger = new LineMerger();
         List<LineString> lineStrings = new ArrayList<>();
         for (ZLine line : lines) {
@@ -45,7 +44,7 @@ public class ZGeoFactory {
         }
     }
 
-    public static WB_PolyLine createWB_PolyLine(List<ZLine> lines) {
+    public static WB_PolyLine createWB_PolyLine(List<? extends ZLine> lines) {
         LineMerger lineMerger = new LineMerger();
         List<LineString> lineStrings = new ArrayList<>();
         for (ZLine line : lines) {

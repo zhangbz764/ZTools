@@ -1,10 +1,11 @@
 package transform;
 
 import igeo.ICurve;
-import igeo.IG;
 import igeo.IPoint;
 import org.locationtech.jts.geom.*;
 import wblut.geom.*;
+
+import java.util.List;
 
 /**
  * @author ZHANG Bai-zhou zhangbz
@@ -12,6 +13,28 @@ import wblut.geom.*;
  * @date 2020/10/9
  * @time 17:27
  * @description transform geometry data between IGeo, HE_Mesh and Jts
+ * 目前仅涉及简单多边形
+ * ** IGeo <-> WB **
+ * IPoint -> WB_Point
+ * IPoint -> WB_Point 带缩放
+ * ICurve -> WB_Geometry 根据点数和闭合与否返回WB_Polygon / WB_Polyline / WB_Segment
+ * ICurve -> WB_Geometry 根据点数和闭合与否返回WB_Polygon / WB_Polyline / WB_Segment，带缩放
+ * ** IGeo <-> jts **
+ * IPoint -> Coordinate
+ * IPoint -> Point
+ * ICurve -> Geometry 根据点数和闭合与否返回Polygon / LineString
+ * ** WB <-> jts **
+ * WB_Polygon -> Polygon 如果WB_Polygon第一点与最后一点不重合，就加上最后一点
+ * Polygon -> WB_Polygon
+ * LineString -> WB_PolyLine
+ * WB_PolyLine -> LineString
+ * WB_Segment -> LineString
+ * ** WB <-> WB **
+ * WB_Polygon -> WB_Polygon 检查WB_Polygon第一点与最后一点是否重合，不重合则加上
+ * WB_Polygon -> WB_PolyLine
+ * WB_AABB -> WB_AABB offset WB_AABB
+ *
+ * ...增加中
  */
 public class ZTransform {
     private static final GeometryFactory gf = new GeometryFactory();
@@ -110,7 +133,7 @@ public class ZTransform {
 
     /**
      * @return org.locationtech.jts.geom.Geometry
-     * @description load ICurve to WB_Polyline or WB_Polygon or WB_Segment
+     * @description load ICurve to Polygon, LineString
      */
     public static Geometry ICurveToJts(final ICurve curve) {
         if (curve.cpNum() > 2 && curve.isClosed()) {
@@ -186,9 +209,9 @@ public class ZTransform {
 
     /**
      * @return org.locationtech.jts.geom.LineString
-     * @description transform WB_Polygon to jts LineString
+     * @description transform WB_PolyLine to jts LineString
      */
-    public static LineString WB_PolygonToJtsLineString(final WB_Polygon wbp) {
+    public static LineString WB_PolyLineToJtsLineString(final WB_PolyLine wbp) {
         Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints()];
         for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
             coords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
@@ -208,6 +231,20 @@ public class ZTransform {
     }
 
     /*-------- WB <-> WB --------*/
+
+    /**
+     * @return wblut.geom.WB_Polygon
+     * @description verify that if the first Point and the last point's superposition
+     */
+    public static WB_Polygon verifyWB_Polygon(final WB_Polygon polygon) {
+        if (polygon.getPoint(0).getDistance2D(polygon.getPoint(polygon.getNumberOfPoints() - 1)) < epsilon) {
+            return polygon;
+        } else {
+            List<WB_Coord> points = polygon.getPoints().toList();
+            points.add(polygon.getPoint(0));
+            return wbgf.createSimplePolygon(points);
+        }
+    }
 
     /**
      * @return wblut.geom.WB_PolyLine

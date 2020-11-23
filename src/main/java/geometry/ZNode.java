@@ -17,8 +17,8 @@ import java.util.List;
  */
 public class ZNode extends ZPoint {
     private List<ZNode> neighbors;
-    private List<ZPoint> vecToNeighbor;
-    private List<ZEdge> linkedEdge;
+    private List<ZPoint> vecUnitToNeighbors;
+    private List<ZEdge> linkedEdges;
 
     /* ------------- constructor ------------- */
 
@@ -49,25 +49,40 @@ public class ZNode extends ZPoint {
     /* ------------- set & get relations ------------- */
 
     public void setRelationReady() {
-        this.linkedEdge = new ArrayList<>();
+        this.linkedEdges = new ArrayList<>();
         this.neighbors = new ArrayList<>();
-        this.vecToNeighbor = new ArrayList<>();
+        this.vecUnitToNeighbors = new ArrayList<>();
     }
 
     public void setNeighbor(ZNode neighbor) {  // set one node
         this.neighbors.add(neighbor);
-        this.vecToNeighbor.add(neighbor.sub(this));
+        this.vecUnitToNeighbors.add(neighbor.sub(this).unit());
     }
 
-    public void setNeighbors(List<ZNode> neighbors) {  // set all nodes
-        this.neighbors = neighbors;
-        for (ZNode neighbor : neighbors) {
-            this.vecToNeighbor.add(neighbor.sub(this));
+    public void removeNeighbor(ZNode neighbor) { // remove one node
+        ZEdge edge = null;
+        for (ZEdge e : linkedEdges) {
+            if (e.getStart() == neighbor && e.getEnd() == neighbor) {
+                edge = e;
+            }
         }
+        this.linkedEdges.remove(edge);
+        this.neighbors.remove(neighbor);
     }
+
+//    public void setNeighbors(List<ZNode> neighbors) {  // set all nodes
+//        this.neighbors = neighbors;
+//        for (ZNode neighbor : neighbors) {
+//            this.vecToNeighbor.add(neighbor.sub(this));
+//        }
+//    }
+
+//    public void removeNeighbors(List<ZNode> neighbors) { // remove all nodes
+//        this.neighbors.removeAll(neighbors);
+//    }
 
     public void setNeighborFromEdge(ZEdge link) { // set one node from a linked edge
-        if (linkedEdge.contains(link)) {
+        if (linkedEdges.contains(link)) {
             if (this == link.getStart()) {
                 this.setNeighbor(link.getEnd());
             } else {
@@ -76,32 +91,44 @@ public class ZNode extends ZPoint {
         }
     }
 
-    public void setLinkedEdge(ZEdge link) {  // set one edge
-        this.linkedEdge.add(link);
+    public void setLinkedEdges(ZEdge link) {  // set one edge
+        this.linkedEdges.add(link);
     }
 
     public void setLinkedEdges(List<ZEdge> links) {  // set all edges
-        this.linkedEdge = links;
+        this.linkedEdges = links;
     }
 
-    public List<ZNode> getNeighbor() {
+    public List<ZNode> getNeighbors() {
         return this.neighbors;
+    }
+
+    public ZNode getNeighbor(int i) {
+        return this.neighbors.get(i);
     }
 
     public int geiNeighborNum() {
         return this.neighbors.size();
     }
 
-    public List<ZPoint> getVecToNeighbor() {
-        return this.vecToNeighbor;
+    public List<ZPoint> getVecUnitToNeighbors() {
+        return this.vecUnitToNeighbors;
     }
 
-    public List<ZEdge> getLinkedEdge() {
-        return this.linkedEdge;
+    public ZPoint getVecUnitToNeighbor(int i) {
+        return this.vecUnitToNeighbors.get(i);
+    }
+
+    public List<ZEdge> getLinkedEdges() {
+        return this.linkedEdges;
+    }
+
+    public ZEdge getLinkedEdge(int i) {
+        return this.linkedEdges.get(i);
     }
 
     public int getLinkedEdgeNum() {
-        return this.linkedEdge.size();
+        return this.linkedEdges.size();
     }
 
     public boolean isEnd() {

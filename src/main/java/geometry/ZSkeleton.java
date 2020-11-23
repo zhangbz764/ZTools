@@ -51,7 +51,7 @@ public class ZSkeleton {
 
     public ZSkeleton(WB_Polygon polygon) {
         // input polygon needs to be upside
-        this.polygon = ZGeoMath.faceUp(polygon);
+        this.polygon = ZGeoMath.PolygonFaceUp(polygon);
         initSkeleton();
         // extract bottom, side, top edges and ridges, ridgePoint
         extractEdges2D();
@@ -59,7 +59,7 @@ public class ZSkeleton {
 
     public ZSkeleton(WB_Polygon polygon, double capHeight) {
         // input polygon needs to be face upside
-        this.polygon = ZGeoMath.faceUp(polygon);
+        this.polygon = ZGeoMath.PolygonFaceUp(polygon);
         setCapHeight(capHeight);
         initSkeleton();
         // extract bottom, side, top edges and ridges, ridgePoint
@@ -68,7 +68,7 @@ public class ZSkeleton {
 
     public ZSkeleton(WB_Polygon polygon, boolean if3d) {
         // input polygon needs to be upside
-        this.polygon = ZGeoMath.faceUp(polygon);
+        this.polygon = ZGeoMath.PolygonFaceUp(polygon);
         initSkeleton();
 
         // extract bottom, side, top edges and ridges, ridgePoint
@@ -81,7 +81,7 @@ public class ZSkeleton {
 
     public ZSkeleton(WB_Polygon polygon, double capHeight, boolean if3d) {
         // input polygon needs to be face upside
-        this.polygon = ZGeoMath.faceUp(polygon);
+        this.polygon = ZGeoMath.PolygonFaceUp(polygon);
         setCapHeight(capHeight);
         initSkeleton();
 
