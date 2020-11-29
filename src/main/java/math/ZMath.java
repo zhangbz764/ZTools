@@ -8,7 +8,7 @@ import java.util.HashMap;
  * @project shopping_mall
  * @date 2020/10/19
  * @time 22:40
- * @description some advanced math methods
+ * @description 一些数学工具
  * 1.从一组double数组中找到最大值的序号
  * 2.从一组double数组中找到最小值的序号
  * 3.把一组double数组按升序排序（返回一组序号）

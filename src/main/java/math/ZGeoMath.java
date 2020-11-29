@@ -1,9 +1,6 @@
 package math;
 
-import geometry.ZEdge;
-import geometry.ZLine;
-import geometry.ZNode;
-import geometry.ZPoint;
+import geometry.*;
 import org.locationtech.jts.geom.*;
 import transform.ZTransform;
 import wblut.geom.*;
@@ -16,7 +13,7 @@ import java.util.List;
  * @project shopping_mall
  * @date 2020/9/29
  * @time 15:38
- * @description some custom geometry methods
+ * @description 一些自定义的几何计算工具
  * ### 向量角度相关
  * 求到角的角平分线向量
  * 按极角排序一组向量（返回原列表序号）
@@ -24,22 +21,28 @@ import java.util.List;
  * 找到多边形内的所有凹点（返回点list或者序号list）
  * 从一组向量中找与输入目标夹角最小者，不区分正负角（返回向量）
  * ### 二维相交相关
+ * 检查两个WB_Segment是否相交（用WB_GeometryOP）
  * 求任意两个线型对象交点（需输入类型：line, ray, segment）
  * 求射线与多边形交点
  * 求射线与多边形交点，返回按照与指定点升序排序的交点所在边序号
  * 将线段延长或剪切至多边形最近的交点
+ * ### 二维距离相关
+ * 从一组线段中找到与目标点距离最近的点
  * ### 二维位置判断相关
  * 判断点是否在直线/射线/线段上（有epsilon）
  * 从一系列ZLine中找到点在哪条线上，返回线两边的端点
  * 找到点在多边形哪条边上（可返回WB_Segment, ZLine, 或两顶点序号）
  * 从一组多边形中找到包含输入点的那一个（返回序号）
- * 输入Geometry，设置Jts的Precision Model
- * 使WB_Polygon点序反向
- * 使WB_Polygon法向量Z坐标为正或为负（不是拍平到xy平面，只是翻个面）
+ * ### 二维轮廓找点相关
  * 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点
  * 输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）
  * 输入步长阈值，将多边形或多段线按阈值内最大值等分，得到所有点
  * 输入等分数量，将多边形或多段线等分，得到所有点
+ * ### 其他
+ * 输入Geometry，设置Jts的Precision Model
+ * 使WB_Polygon点序反向
+ * 使WB_Polygon法向量Z坐标为正或为负（不是拍平到xy平面，只是翻个面）
+ * 偏移多边形的某一条边线（默认输入为正向首尾相接多边形）
  * <p>
  * ...增加中
  */
@@ -48,7 +51,6 @@ public final class ZGeoMath {
     private static final WB_GeometryFactory wbgf = new WB_GeometryFactory();
     // 精度阈值
     private static final double epsilon = 0.00000001;
-
 
     /*-------- 向量角度相关 --------*/
 
@@ -203,6 +205,14 @@ public final class ZGeoMath {
     }
 
     /*-------- 二维相交相关 --------*/
+
+    /**
+     * @return boolean
+     * @description 检测两条WB_Segment是否相交
+     */
+    public static boolean checkWB_SegmentIntersect(final WB_Segment seg0, final WB_Segment seg1) {
+        return WB_GeometryOp2D.checkIntersection2DProper(seg0.getOrigin(), seg0.getEndpoint(), seg1.getOrigin(), seg1.getEndpoint());
+    }
 
     /**
      * @return geometry.ZPoint
@@ -468,6 +478,23 @@ public final class ZGeoMath {
         }
     }
 
+    /*-------- 二维距离相关 --------*/
+
+    /**
+     * @return geometry.ZPoint
+     * @description 从一组线段中找到与目标点距离最近的点
+     */
+    public static ZPoint closetPointToLineList(final ZPoint p, final List<ZLine> lines) {
+        ZPoint closet = new ZPoint(WB_GeometryOp2D.getClosestPoint2D(p.toWB_Point(), lines.get(0).toWB_Segment()));
+        for (int i = 1; i < lines.size(); i++) {
+            ZPoint curr = new ZPoint(WB_GeometryOp2D.getClosestPoint2D(p.toWB_Point(), lines.get(i).toWB_Segment()));
+            if (p.distanceSq(closet) > p.distanceSq(curr)) {
+                closet = curr;
+            }
+        }
+        return closet;
+    }
+
     /*-------- 二维位置判断相关 --------*/
 
     /**
@@ -600,101 +627,6 @@ public final class ZGeoMath {
             }
         }
         return index;
-    }
-
-    /*-------- 二维距离相关 --------*/
-
-    /**
-    * @return geometry.ZPoint
-    * @description 从一组线段中找到与目标点距离最近的点
-    */
-    public static ZPoint closetPointToLineList(final ZPoint p, final List<ZLine> lines) {
-        ZPoint closet = new ZPoint(WB_GeometryOp2D.getClosestPoint2D(p.toWB_Point(), lines.get(0).toWB_Segment()));
-        for (int i = 1; i < lines.size(); i++) {
-            ZPoint curr = new ZPoint(WB_GeometryOp2D.getClosestPoint2D(p.toWB_Point(), lines.get(i).toWB_Segment()));
-            if (p.distanceSq(closet) > p.distanceSq(curr)) {
-                closet = curr;
-            }
-        }
-        return closet;
-    }
-
-    /*-------- 其他几何运算 --------*/
-
-    /**
-     * @return void
-     * @description apply jts precision model (FLOAT, FLOAT_SINGLE, FIXED)
-     */
-    public static void applyJtsPrecisionModel(final Geometry geometry, final PrecisionModel pm) {
-        Coordinate[] coordinates = geometry.getCoordinates();
-        for (int i = 0; i < coordinates.length; i++) {
-            Coordinate coordinate = coordinates[i];
-            pm.makePrecise(coordinate);
-        }
-    }
-
-    /**
-     * @return wblut.geom.WB_Polygon
-     * @description WB_Polygon 点序反向
-     */
-    public static WB_Polygon reversePolygon(final WB_Polygon original) {
-        WB_Point[] newPoints = new WB_Point[original.getNumberOfPoints()];
-        for (int i = 0; i < newPoints.length; i++) {
-            newPoints[i] = original.getPoint(newPoints.length - 1 - i);
-        }
-        return new WB_Polygon(newPoints);
-    }
-
-    /**
-     * @return wblut.geom.WB_Polygon
-     * @description 让WB_Polygon法向量朝向Z轴正向
-     */
-    public static WB_Polygon PolygonFaceUp(final WB_Polygon polygon) {
-        if (polygon.getNormal().zd() < 0) {
-            return reversePolygon(polygon);
-        } else {
-            return polygon;
-        }
-    }
-
-    /**
-     * @return wblut.geom.WB_Polygon
-     * @description 让WB_Polygon法向量朝向Z轴负向
-     */
-    public static WB_Polygon PolygonFaceDown(final WB_Polygon polygon) {
-        if (polygon.getNormal().zd() > 0) {
-            return reversePolygon(polygon);
-        } else {
-            return polygon;
-        }
-    }
-
-    // FIXME: 2020/11/8 正逆时针有问题
-
-    /**
-     * @return wblut.geom.WB_Polygon
-     * @description 使 WB_Polygon 点序顺时针
-     */
-    @Deprecated
-    public static WB_Polygon toClockWise(final WB_Polygon polygon) {
-        if (polygon.isCW2D()) {
-            return polygon;
-        } else {
-            return reversePolygon(polygon);
-        }
-    }
-
-    /**
-     * @return wblut.geom.WB_Polygon
-     * @description 使 WB_Polygon 点序逆时针
-     */
-    @Deprecated
-    public static WB_Polygon toCounterClockWise(final WB_Polygon polygon) {
-        if (polygon.isCW2D()) {
-            return reversePolygon(polygon);
-        } else {
-            return polygon;
-        }
     }
 
     /*-------- 二维轮廓找点相关 --------*/
@@ -901,4 +833,80 @@ public final class ZGeoMath {
 
         return splitWB_PolyLineEdgeByStep(poly, step);
     }
-}
+
+    /*-------- 其他几何运算 --------*/
+
+    /**
+     * @return void
+     * @description apply jts precision model (FLOAT, FLOAT_SINGLE, FIXED)
+     */
+    public static void applyJtsPrecisionModel(final Geometry geometry, final PrecisionModel pm) {
+        Coordinate[] coordinates = geometry.getCoordinates();
+        for (int i = 0; i < coordinates.length; i++) {
+            Coordinate coordinate = coordinates[i];
+            pm.makePrecise(coordinate);
+        }
+    }
+
+    /**
+     * @return wblut.geom.WB_Polygon
+     * @description WB_Polygon 点序反向
+     */
+    public static WB_Polygon reversePolygon(final WB_Polygon original) {
+        WB_Point[] newPoints = new WB_Point[original.getNumberOfPoints()];
+        for (int i = 0; i < newPoints.length; i++) {
+            newPoints[i] = original.getPoint(newPoints.length - 1 - i);
+        }
+        return new WB_Polygon(newPoints);
+    }
+
+    /**
+     * @return wblut.geom.WB_Polygon
+     * @description 让WB_Polygon法向量朝向Z轴正向
+     */
+    public static WB_Polygon PolygonFaceUp(final WB_Polygon polygon) {
+        if (polygon.getNormal().zd() < 0) {
+            return reversePolygon(polygon);
+        } else {
+            return polygon;
+        }
+    }
+
+    /**
+     * @return wblut.geom.WB_Polygon
+     * @description 让WB_Polygon法向量朝向Z轴负向
+     */
+    public static WB_Polygon PolygonFaceDown(final WB_Polygon polygon) {
+        if (polygon.getNormal().zd() > 0) {
+            return reversePolygon(polygon);
+        } else {
+            return polygon;
+        }
+    }
+
+    /**
+     * @return geometry.ZLine
+     * @description 偏移多边形的某一条边线（默认输入为正向首尾相接多边形）
+     */
+    public static ZLine offsetWB_PolygonSegment(final WB_Polygon poly, final int index, final double dist) {
+        // make sure polygon's start and end point are coincident
+        WB_Polygon polygon = ZTransform.verifyWB_Polygon(poly);
+        assert index <= polygon.getNumberSegments() && index >= 0 : "index out of polygon point number";
+
+        int next = (index + 1) % polygon.getNumberSegments();
+        int prev = (index + polygon.getNumberSegments() - 1) % polygon.getNumberSegments();
+
+        ZPoint v1 = new ZPoint(polygon.getSegment(prev).getOrigin()).sub(new ZPoint(polygon.getSegment(prev).getEndpoint()));
+        ZPoint v2 = new ZPoint(polygon.getSegment(index).getEndpoint()).sub(new ZPoint(polygon.getSegment(index).getOrigin()));
+        ZPoint bisector1 = getAngleBisectorOrdered(v1, v2);
+        ZPoint point1 = new ZPoint(polygon.getSegment(index).getOrigin()).add(bisector1.scaleTo(dist / Math.abs(v1.unit().cross2D(bisector1))));
+
+        ZPoint v3 = new ZPoint(polygon.getSegment(index).getOrigin()).sub(new ZPoint(polygon.getSegment(index).getEndpoint()));
+        ZPoint v4 = new ZPoint(polygon.getSegment(next).getEndpoint()).sub(new ZPoint(polygon.getSegment(next).getOrigin()));
+        ZPoint bisector2 = getAngleBisectorOrdered(v3, v4);
+        ZPoint point2 = new ZPoint(polygon.getSegment(index).getEndpoint()).add(bisector2.scaleTo(dist / Math.abs(v3.unit().cross2D(bisector2))));
+
+        return new ZLine(point1, point2);
+    }
+
+   }

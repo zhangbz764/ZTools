@@ -14,7 +14,7 @@ import wblut.geom.WB_Segment;
  * @project shopping_mall
  * @date 2020/10/23
  * @time 16:01
- * @description
+ * @description 自定义的线数据类型，可代表直线、射线、线段，也可转化为 p+td 的形式
  */
 public class ZLine {
     private ZPoint pt0;
@@ -135,7 +135,7 @@ public class ZLine {
     }
 
     public WB_Segment toWB_Segment() {
-        return new WB_Segment();
+        return new WB_Segment(new WB_Point(pt0.toWB_Point()), pt1().toWB_Point());
     }
 
     public WB_Ray toWB_Ray() {

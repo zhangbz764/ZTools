@@ -13,7 +13,7 @@ import java.util.List;
  * @project shopping_mall
  * @date 2020/10/23
  * @time 8:53
- * @description extends ZPoint
+ * @description extends ZPoint 代表graph中的node
  */
 public class ZNode extends ZPoint {
     private List<ZNode> neighbors;

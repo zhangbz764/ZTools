@@ -1,4 +1,4 @@
-# 自己的java工具包 慎用
+# 个人java工具包 慎用
 ## **ZPoint**
 自定义的点数据类型，可代表点或向量
 ## **ZNode**
@@ -17,6 +17,7 @@
 * 全部脊线点 `getRidgePoints`
 * 全部脊线延长线（到边线中点） `getExtendedRidges`
 ## **ZGeomath**
+一些自定义的几何计算工具
 ### 向量角度相关
  * 求到角的角平分线向量  
  `getAngleBisectorOrdered`
@@ -29,6 +30,8 @@
  * 从一组向量中找与输入目标夹角最小者，不区分正负角（返回向量）   
  `findClosetVec`
  ### 二维相交相关
+ * 检查两个WB_Segment是否相交（用WB_GeometryOP）   
+ `checkWB_SegmentIntersect`
  * 求任意两个线型对象交点（需输入类型：line, ray, segment）  
  `simpleLineElementsIntersect2D`
  * 求射线与多边形交点  
@@ -37,6 +40,9 @@
  `rayPolygonIntersectIndices2D`
  * 将线段延长或剪切至多边形最近的交点  
  `extendSegmentToPolygon`
+ ### 二维距离相关 
+ * 从一组线段中找到与目标点距离最近的点  
+ `closetPointToLineList`
  ### 二维位置判断相关
  * 判断点是否在直线/射线/线段上（有epsilon）  
  `pointOnLine` `pointOnRay` `pointOnSegment`
@@ -62,12 +68,16 @@
  `reversePolygon`
  * 使WB_Polygon法向量Z坐标为正或为负（不是拍平到xy平面，只是翻个面）  
  `PolygonFaceUp` `PolygonFaceDown`
+ * 偏移多边形的某一条边线（默认输入为正向首尾相接多边形）  
+ `offsetWB_PolygonSegment`
 
 增加中...
 ## **ZMath**
+一些数学工具
 
 增加中...
 ## **ZTransform**
+常用库几何数据的相互转换  
 *目前仅涉及简单多边形*
 ### IGeo <-> WB
  * IPoint -> WB_Point

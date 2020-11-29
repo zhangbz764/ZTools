@@ -15,7 +15,7 @@ import java.util.List;
  * @project shopping_mall
  * @date 2020/10/11
  * @time 17:55
- * @description to describe a coordinate, point, vector
+ * @description 自定义的点数据类型，可代表点或向量
  */
 public class ZPoint {
     private double x, y, z;

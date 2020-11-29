@@ -12,7 +12,7 @@ import java.util.List;
  * @project shopping_mall
  * @date 2020/10/9
  * @time 17:27
- * @description transform geometry data between IGeo, HE_Mesh and Jts
+ * @description 常用库几何数据的相互转换
  * 目前仅涉及简单多边形
  * ** IGeo <-> WB **
  * IPoint -> WB_Point
@@ -167,6 +167,9 @@ public class ZTransform {
      * @description transform WB_Polygon to jts Polygon
      */
     public static Polygon WB_PolygonToJtsPolygon(final WB_Polygon wbp) {
+
+
+
         if (wbp.getPoint(0).getDistance2D(wbp.getPoint(wbp.getNumberOfPoints() - 1)) < epsilon) {
             Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints()];
             for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
@@ -179,6 +182,7 @@ public class ZTransform {
                 coords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
             }
             coords[wbp.getNumberOfPoints()] = coords[0];
+
             return gf.createPolygon(coords);
         }
     }
@@ -192,6 +196,8 @@ public class ZTransform {
         for (int i = 0; i < p.getNumPoints(); i++) {
             points[i] = new WB_Point(p.getCoordinates()[i].x, p.getCoordinates()[i].y, p.getCoordinates()[i].z);
         }
+
+
         return new WB_Polygon(points).getSimplePolygon();
     }
 
