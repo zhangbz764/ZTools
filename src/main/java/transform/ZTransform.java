@@ -4,6 +4,7 @@ import igeo.ICurve;
 import igeo.IPoint;
 import org.locationtech.jts.geom.*;
 import wblut.geom.*;
+import wblut.geom.WB_GeometryFactory;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ import java.util.List;
  * WB_Polygon -> WB_Polygon 检查WB_Polygon第一点与最后一点是否重合，不重合则加上
  * WB_Polygon -> WB_PolyLine
  * WB_AABB -> WB_AABB offset WB_AABB
- *
+ * <p>
  * ...增加中
  */
 public class ZTransform {
@@ -169,7 +170,6 @@ public class ZTransform {
     public static Polygon WB_PolygonToJtsPolygon(final WB_Polygon wbp) {
 
 
-
         if (wbp.getPoint(0).getDistance2D(wbp.getPoint(wbp.getNumberOfPoints() - 1)) < epsilon) {
             Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints()];
             for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
@@ -189,16 +189,35 @@ public class ZTransform {
 
     /**
      * @return wblut.geom.WB_Polygon
-     * @description transform jts Polygon to WB_Polygon
+     * @description transform jts Polygon to WB_Polygon (could contain holes)
      */
-    public static WB_Polygon JtsPolygonToWB_Polygon(final Polygon p) {
-        WB_Coord[] points = new WB_Point[p.getNumPoints()];
-        for (int i = 0; i < p.getNumPoints(); i++) {
-            points[i] = new WB_Point(p.getCoordinates()[i].x, p.getCoordinates()[i].y, p.getCoordinates()[i].z);
+    public static WB_Polygon jtsPolygonToWB_Polygon(final Polygon p) {
+        if (p.getNumInteriorRing() == 0) {
+            WB_Coord[] points = new WB_Point[p.getNumPoints()];
+            for (int i = 0; i < p.getNumPoints(); i++) {
+                points[i] = new WB_Point(p.getCoordinates()[i].x, p.getCoordinates()[i].y, p.getCoordinates()[i].z);
+            }
+            return new WB_Polygon(points).getSimplePolygon();
+        } else {
+            // exterior
+            WB_Coord[] exteriorPoints = new WB_Point[p.getExteriorRing().getNumPoints()];
+            for (int i = 0; i < p.getExteriorRing().getNumPoints(); i++) {
+                exteriorPoints[i] = new WB_Point(p.getCoordinates()[i].x, p.getCoordinates()[i].y, p.getCoordinates()[i].z);
+            }
+            // interior
+            int index = p.getExteriorRing().getNumPoints();
+            WB_Coord[][] interiorHoles = new WB_Point[p.getNumInteriorRing()][];
+            for (int i = 0; i < p.getNumInteriorRing(); i++) {
+                LineString curr = p.getInteriorRingN(i);
+                WB_Coord[] holePoints = new WB_Point[curr.getNumPoints()];
+                for (int j = 0; j < curr.getNumPoints(); j++) {
+                    WB_Point point = new WB_Point(curr.getCoordinates()[j].x, curr.getCoordinates()[j].y, curr.getCoordinates()[j].z);
+                    holePoints[j] = point;
+                }
+                interiorHoles[i] = holePoints;
+            }
+            return new WB_Polygon(exteriorPoints, interiorHoles);
         }
-
-
-        return new WB_Polygon(points).getSimplePolygon();
     }
 
     /**

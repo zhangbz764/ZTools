@@ -82,7 +82,7 @@ public final class ZGeoMath {
      */
     public static List<ZPoint> getConcavePoints(WB_Polygon polygon) {
         List<ZPoint> concavePoints = new ArrayList<>();
-        WB_Polygon faceUp = PolygonFaceUp(polygon); // 保证正向
+        WB_Polygon faceUp = polygonFaceUp(polygon); // 保证正向
         for (int i = 1; i < faceUp.getNumberOfPoints(); i++) {
             ZPoint prev = new ZPoint(faceUp.getPoint(i - 1).sub(faceUp.getPoint(i)));
             ZPoint next = new ZPoint(faceUp.getPoint((i + 1) % (faceUp.getNumberOfPoints() - 1)).sub(faceUp.getPoint(i)));
@@ -99,7 +99,7 @@ public final class ZGeoMath {
      * @description 找到一个多边形里所有凹顶点(jts)
      */
     public static List<ZPoint> getConcavePoints(Polygon polygon) {
-        WB_Polygon wbPolygon = ZTransform.JtsPolygonToWB_Polygon(polygon);
+        WB_Polygon wbPolygon = ZTransform.jtsPolygonToWB_Polygon(polygon);
         return getConcavePoints(wbPolygon);
     }
 
@@ -144,7 +144,7 @@ public final class ZGeoMath {
      * @description 找到一个多边形里所有凹顶点的序号(jts)
      */
     public static List<Integer> getConcavePointIndices(Polygon polygon) {
-        WB_Polygon wbPolygon = ZTransform.JtsPolygonToWB_Polygon(polygon);
+        WB_Polygon wbPolygon = ZTransform.jtsPolygonToWB_Polygon(polygon);
         return getConcavePointIndices(wbPolygon);
     }
 
@@ -850,21 +850,43 @@ public final class ZGeoMath {
 
     /**
      * @return wblut.geom.WB_Polygon
-     * @description WB_Polygon 点序反向
+     * @description WB_Polygon 点序反向 支持带洞
      */
     public static WB_Polygon reversePolygon(final WB_Polygon original) {
-        WB_Point[] newPoints = new WB_Point[original.getNumberOfPoints()];
-        for (int i = 0; i < newPoints.length; i++) {
-            newPoints[i] = original.getPoint(newPoints.length - 1 - i);
+        if (original.getNumberOfHoles() == 0) {
+            WB_Point[] newPoints = new WB_Point[original.getNumberOfPoints()];
+            for (int i = 0; i < newPoints.length; i++) {
+                newPoints[i] = original.getPoint(newPoints.length - 1 - i);
+            }
+            return new WB_Polygon(newPoints);
+        } else {
+            WB_Point[] newExteriorPoints = new WB_Point[original.getNumberOfShellPoints()];
+            for (int i = 0; i < original.getNumberOfShellPoints(); i++) {
+                newExteriorPoints[i] = original.getPoint(original.getNumberOfShellPoints() - 1 - i);
+            }
+
+            int[] cpt = original.getNumberOfPointsPerContour();
+            int index = cpt[0];
+            WB_Point[][] newInteriorPoints = new WB_Point[original.getNumberOfHoles()][];
+
+            for (int i = 0; i < original.getNumberOfHoles(); i++) {
+                WB_Point[] newHole = new WB_Point[cpt[i + 1]];
+                for (int j = 0; j < newHole.length; j++) {
+                    newHole[j] = new WB_Point(original.getPoint(newHole.length - 1 - j + index));
+                }
+                newInteriorPoints[i] = newHole;
+                index = index + cpt[i + 1];
+            }
+
+            return new WB_Polygon(newExteriorPoints, newInteriorPoints);
         }
-        return new WB_Polygon(newPoints);
     }
 
     /**
      * @return wblut.geom.WB_Polygon
-     * @description 让WB_Polygon法向量朝向Z轴正向
+     * @description 让WB_Polygon法向量朝向Z轴正向  支持带洞
      */
-    public static WB_Polygon PolygonFaceUp(final WB_Polygon polygon) {
+    public static WB_Polygon polygonFaceUp(final WB_Polygon polygon) {
         if (polygon.getNormal().zd() < 0) {
             return reversePolygon(polygon);
         } else {
@@ -874,9 +896,9 @@ public final class ZGeoMath {
 
     /**
      * @return wblut.geom.WB_Polygon
-     * @description 让WB_Polygon法向量朝向Z轴负向
+     * @description 让WB_Polygon法向量朝向Z轴负向  支持带洞
      */
-    public static WB_Polygon PolygonFaceDown(final WB_Polygon polygon) {
+    public static WB_Polygon polygonFaceDown(final WB_Polygon polygon) {
         if (polygon.getNormal().zd() > 0) {
             return reversePolygon(polygon);
         } else {
@@ -909,4 +931,4 @@ public final class ZGeoMath {
         return new ZLine(point1, point2);
     }
 
-   }
+}

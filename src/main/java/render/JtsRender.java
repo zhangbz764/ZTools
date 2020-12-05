@@ -36,7 +36,6 @@ public class JtsRender {
                 PApplet.println("not a basic geo type");
                 break;
         }
-
     }
 
     /**

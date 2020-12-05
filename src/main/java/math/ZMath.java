@@ -13,6 +13,7 @@ import java.util.HashMap;
  * 2.从一组double数组中找到最小值的序号
  * 3.把一组double数组按升序排序（返回一组序号）
  * 4.将目标数字从一个范围映射到另一个范围内的对应数字
+ * 5.数组倒序（用泛型）
  */
 public final class ZMath {
 
@@ -74,6 +75,18 @@ public final class ZMath {
             sortedIndices[j] = relation.get(sorted_arr[j]);
         }
         return sortedIndices;
+    }
+
+    /**
+    * @return java.lang.Object[]
+    * @description 数组倒序
+    */
+    public static Object[] reverseArray(Object[] array) {
+        Object[] result = new Object[array.length];
+        for (int i = 0; i < array.length; i++) {
+            result[i] = array[array.length - 1 - i];
+        }
+        return result;
     }
 
     /*-------- mapping methods --------*/

@@ -9,7 +9,7 @@
 `extends ZLine` 代表graph中的edge
 ## **ZSkeleton**
 使用[campskeleton](https://github.com/twak/campskeleton "campskeleton")计算直骨架（straight skeleton），可以生成2D或3Dskeleton结果，支持带洞多边形。  
-可提取：
+支持一些几何元素提取，包括：
 * 全部骨架边 `getAllEdges`
 * 全部top边 `getTopEdges`
 * 全部side边 `getSideEdges`
@@ -65,9 +65,9 @@
  ### 其他
  * 输入Geometry，设置Jts的Precision Model  
  `applyJtsPrecisionModel`
- * 使WB_Polygon点序反向  
+ * 使WB_Polygon点序反向，支持带洞  
  `reversePolygon`
- * 使WB_Polygon法向量Z坐标为正或为负（不是拍平到xy平面，只是翻个面）  
+ * 使WB_Polygon法向量Z坐标为正或为负，支持带洞（不是拍平到xy平面，只是翻个面）  
  `PolygonFaceUp` `PolygonFaceDown`
  * 偏移多边形的某一条边线（默认输入为正向首尾相接多边形）  
  `offsetWB_PolygonSegment`
@@ -79,7 +79,7 @@
 增加中...
 ## **ZTransform**
 常用库几何数据的相互转换  
-*目前仅涉及简单多边形*
+*目前仅涉及简单多边形 部分可包含带洞情况*
 ### IGeo <-> WB
  * IPoint -> WB_Point
  * IPoint -> WB_Point 带缩放

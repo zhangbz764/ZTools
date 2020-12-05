@@ -5,7 +5,7 @@ import org.twak.camp.*;
 import org.twak.utils.collections.Loop;
 import org.twak.utils.collections.LoopL;
 import processing.core.PApplet;
-import processing.core.PConstants;
+import wblut.geom.WB_GeometryOp;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Polygon;
 import wblut.hemesh.HEC_FromPolygons;
@@ -26,6 +26,7 @@ import java.util.Set;
  * @description compute straight skeleton using "campskeleton"
  * and extract some useful geometries
  * support 2D polygon with holes
+ * polygon shell must be counter clockwise
  */
 public class ZSkeleton {
     // input
@@ -52,7 +53,7 @@ public class ZSkeleton {
     }
 
     public ZSkeleton(WB_Polygon polygon) {
-        this.polygon = polygon;
+        this.polygon = ZGeoMath.polygonFaceUp(polygon);
 
         initSkeleton();
         // extract bottom, side, top edges and ridges, ridgePoint
@@ -61,7 +62,7 @@ public class ZSkeleton {
 
     public ZSkeleton(WB_Polygon polygon, double capHeight) {
         // input polygon needs to be face upside
-        this.polygon = ZGeoMath.PolygonFaceUp(polygon);
+        this.polygon = ZGeoMath.polygonFaceUp(polygon);
         setCapHeight(capHeight);
         initSkeleton();
         // extract bottom, side, top edges and ridges, ridgePoint
@@ -70,7 +71,7 @@ public class ZSkeleton {
 
     public ZSkeleton(WB_Polygon polygon, boolean if3d) {
         // input polygon needs to be upside
-        this.polygon = ZGeoMath.PolygonFaceUp(polygon);
+        this.polygon = ZGeoMath.polygonFaceUp(polygon);
         initSkeleton();
 
         // extract bottom, side, top edges and ridges, ridgePoint
@@ -83,7 +84,7 @@ public class ZSkeleton {
 
     public ZSkeleton(WB_Polygon polygon, double capHeight, boolean if3d) {
         // input polygon needs to be face upside
-        this.polygon = ZGeoMath.PolygonFaceUp(polygon);
+        this.polygon = ZGeoMath.polygonFaceUp(polygon);
         setCapHeight(capHeight);
         initSkeleton();
 
@@ -171,7 +172,6 @@ public class ZSkeleton {
             } else {
                 this.skeleton = new Skeleton(loop.singleton(), capHeight);
             }
-            skeleton.skeleton();
         } else {
             // holes should be clockwise
             LoopL<Edge> loopL = new LoopL<>();
@@ -197,8 +197,8 @@ public class ZSkeleton {
             } else {
                 this.skeleton = new Skeleton(loopL, capHeight);
             }
-            skeleton.skeleton();
         }
+        skeleton.skeleton();
     }
 
     /**
@@ -206,6 +206,7 @@ public class ZSkeleton {
      * @description (3D mode)extract bottom, side, top edges and ridges, ridgePoint
      */
     private void extractEdges3D() {
+
         // extract all edges
         for (Output.SharedEdge se : skeleton.output.edges.map.values()) {
             allEdges.add(new ZLine(new ZPoint(se.start.getX(), se.start.getY(), se.start.getZ()), new ZPoint(se.end.getX(), se.end.getY(), se.end.getZ())));
