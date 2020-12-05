@@ -8,7 +8,8 @@
 ## **ZEdge**
 `extends ZLine` 代表graph中的edge
 ## **ZSkeleton**
-计算直骨架（straight skeleton），可以2D或3D，用到[campskeleton](https://github.com/twak/campskeleton "campskeleton")这个包。可提取：
+使用[campskeleton](https://github.com/twak/campskeleton "campskeleton")计算直骨架（straight skeleton），可以生成2D或3Dskeleton结果，支持带洞多边形。  
+可提取：
 * 全部骨架边 `getAllEdges`
 * 全部top边 `getTopEdges`
 * 全部side边 `getSideEdges`
