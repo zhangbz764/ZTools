@@ -57,6 +57,8 @@ public class ZGeoFactory {
                 LineString l = (LineString) lineMerger.getMergedLineStrings().toArray()[i];
                 lineStringLengths[i] = l.getLength();
             }
+//            System.out.println("lines:"+lineMerger.getMergedLineStrings().toArray().length);
+
             LineString merged = (LineString) lineMerger.getMergedLineStrings().toArray()[ZMath.getMaxIndex(lineStringLengths)];
             return ZTransform.JtsLineStringToWB_PolyLine(merged);
         } else if (lineMerger.getMergedLineStrings().size() == 1) {

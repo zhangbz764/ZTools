@@ -100,6 +100,7 @@ public class ZLine {
 
     /* ------------- transformation -------------*/
 
+    @Override
     public String toString() {
         return "ZLine : [pt0:" + pt0.toString() + " pt1:" + pt1.toString() + "]";
     }

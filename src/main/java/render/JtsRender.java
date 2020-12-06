@@ -21,21 +21,33 @@ public class JtsRender {
     }
 
     public void drawGeometry(Geometry geo) {
-        String type = geo.getGeometryType();
-        switch (type) {
-            case "Point":
-                drawPoint(geo);
-                break;
-            case "LineString":
-                drawLineString(geo);
-                break;
-            case "Polygon":
-                drawPolygon(geo);
-                break;
-            default:
-                PApplet.println("not a basic geo type");
-                break;
+        if (geo instanceof Point) {
+            drawPoint(geo);
+        } else if (geo instanceof LineString) {
+            drawLineString(geo);
+        } else if (geo instanceof Polygon) {
+            drawPolygon(geo);
+        } else {
+            PApplet.println("not a basic geo type");
         }
+
+//        String type = geo.getGeometryType();
+//        switch (type) {
+//            case "Point":
+//
+//            case "LineString":
+//                drawLineString(geo);
+//                break;
+//            case "LinearRing":
+//                drawLinearRing(geo);
+//                break;
+//            case "Polygon":
+//                drawPolygon(geo);
+//                break;
+//            default:
+//                PApplet.println("not a basic geo type");
+//                break;
+//        }
     }
 
     /**
@@ -49,10 +61,21 @@ public class JtsRender {
 
     /**
      * @return void
-     * @description draw LinearRing as continuous shape
+     * @description draw LineString as continuous shape
      */
     private void drawLineString(Geometry geo) {
-        LineString lr = (LineString) geo;
+        LineString ls = (LineString) geo;
+        for (int i = 0; i < ls.getCoordinates().length - 1; i++) {
+            app.line((float) ls.getCoordinateN(i).x, (float) ls.getCoordinateN(i).y, (float) ls.getCoordinateN(i + 1).x, (float) ls.getCoordinateN(i + 1).y);
+        }
+    }
+
+    /**
+     * @return void
+     * @description draw LinearRing as closed shape
+     */
+    private void drawLinearRing(Geometry geo) {
+        LinearRing lr = (LinearRing) geo;
         Coordinate[] vs = lr.getCoordinates();
         app.beginShape();
         for (Coordinate v : vs) {
@@ -67,14 +90,14 @@ public class JtsRender {
      */
     private void drawPolygon(Geometry geo) {
         Polygon poly = (Polygon) geo;
-        /*-------- outer boundary --------*/
+        // outer boundary
         app.beginShape();
         LineString shell = poly.getExteriorRing();
         Coordinate[] coord_shell = shell.getCoordinates();
         for (Coordinate c_s : coord_shell) {
             app.vertex((float) c_s.x, (float) c_s.y);
         }
-        /*-------- inner holes --------*/
+        // inner holes
         if (poly.getNumInteriorRing() > 0) {
             int interNum = poly.getNumInteriorRing();
             for (int i = 0; i < interNum; i++) {

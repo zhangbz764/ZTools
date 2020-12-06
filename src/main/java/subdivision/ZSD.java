@@ -1,7 +1,10 @@
 package subdivision;
 
+import processing.core.PApplet;
+import render.JtsRender;
 import wblut.geom.WB_Polygon;
 import wblut.hemesh.HE_Mesh;
+import wblut.processing.WB_Render;
 
 import java.util.List;
 
@@ -24,4 +27,7 @@ public interface ZSD {
 
     public abstract HE_Mesh getMesh();
 
+    /* ------------- draw ------------- */
+
+    public abstract void display(PApplet app, WB_Render render, JtsRender jtsRender);
 }

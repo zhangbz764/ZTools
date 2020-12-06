@@ -5,7 +5,7 @@ import org.twak.camp.*;
 import org.twak.utils.collections.Loop;
 import org.twak.utils.collections.LoopL;
 import processing.core.PApplet;
-import wblut.geom.WB_GeometryOp;
+import transform.ZTransform;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Polygon;
 import wblut.hemesh.HEC_FromPolygons;
@@ -13,20 +13,18 @@ import wblut.hemesh.HE_Mesh;
 import wblut.hemesh.HE_Vertex;
 
 import javax.vecmath.Point3d;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/10/30
  * @time 11:12
- * @description compute straight skeleton using "campskeleton"
+ * @description compute straight skeleton using campskeleton by twak
  * and extract some useful geometries
  * support 2D polygon with holes
  * polygon shell must be counter clockwise
+ * polygon should be valid (first point coincides with last point)
  */
 public class ZSkeleton {
     // input
@@ -53,7 +51,7 @@ public class ZSkeleton {
     }
 
     public ZSkeleton(WB_Polygon polygon) {
-        this.polygon = ZGeoMath.polygonFaceUp(polygon);
+        this.polygon = ZGeoMath.polygonFaceUp(ZTransform.validateWB_Polygon(polygon));
 
         initSkeleton();
         // extract bottom, side, top edges and ridges, ridgePoint
@@ -62,7 +60,8 @@ public class ZSkeleton {
 
     public ZSkeleton(WB_Polygon polygon, double capHeight) {
         // input polygon needs to be face upside
-        this.polygon = ZGeoMath.polygonFaceUp(polygon);
+        this.polygon = ZGeoMath.polygonFaceUp(ZTransform.validateWB_Polygon(polygon));
+
         setCapHeight(capHeight);
         initSkeleton();
         // extract bottom, side, top edges and ridges, ridgePoint
@@ -71,9 +70,9 @@ public class ZSkeleton {
 
     public ZSkeleton(WB_Polygon polygon, boolean if3d) {
         // input polygon needs to be upside
-        this.polygon = ZGeoMath.polygonFaceUp(polygon);
-        initSkeleton();
+        this.polygon = ZGeoMath.polygonFaceUp(ZTransform.validateWB_Polygon(polygon));
 
+        initSkeleton();
         // extract bottom, side, top edges and ridges, ridgePoint
         if (if3d) {
             extractEdges3D();
@@ -84,7 +83,8 @@ public class ZSkeleton {
 
     public ZSkeleton(WB_Polygon polygon, double capHeight, boolean if3d) {
         // input polygon needs to be face upside
-        this.polygon = ZGeoMath.polygonFaceUp(polygon);
+        this.polygon = ZGeoMath.polygonFaceUp(ZTransform.validateWB_Polygon(polygon));
+
         setCapHeight(capHeight);
         initSkeleton();
 
@@ -153,7 +153,7 @@ public class ZSkeleton {
         // set angles
         Machine speed = new Machine(generalMachine);
 
-        if (this.polygon.isSimple()) {
+        if (this.polygon.getNumberOfHoles() == 0) {
             // add corners
             List<Corner> corners = new ArrayList<>();
             for (int i = 0; i < polygon.getNumberOfPoints(); i++) {
@@ -176,7 +176,7 @@ public class ZSkeleton {
             // holes should be clockwise
             LoopL<Edge> loopL = new LoopL<>();
             final int[] npc = polygon.getNumberOfPointsPerContour();
-            int index = 0; // counter
+            int index = 0; // count
             for (int i = 0; i < polygon.getNumberOfContours(); i++) {
                 List<Corner> corners = new ArrayList<>();
                 for (int j = 0; j < npc[i]; j++) {
@@ -206,7 +206,6 @@ public class ZSkeleton {
      * @description (3D mode)extract bottom, side, top edges and ridges, ridgePoint
      */
     private void extractEdges3D() {
-
         // extract all edges
         for (Output.SharedEdge se : skeleton.output.edges.map.values()) {
             allEdges.add(new ZLine(new ZPoint(se.start.getX(), se.start.getY(), se.start.getZ()), new ZPoint(se.end.getX(), se.end.getY(), se.end.getZ())));

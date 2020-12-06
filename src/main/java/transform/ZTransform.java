@@ -6,6 +6,7 @@ import org.locationtech.jts.geom.*;
 import wblut.geom.*;
 import wblut.geom.WB_GeometryFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -165,31 +166,58 @@ public class ZTransform {
 
     /**
      * @return com.vividsolutions.jts.geom.Polygon
-     * @description transform WB_Polygon to jts Polygon
+     * @description transform WB_Polygon to jts Polygon (might contain holes)
      */
     public static Polygon WB_PolygonToJtsPolygon(final WB_Polygon wbp) {
-
-
-        if (wbp.getPoint(0).getDistance2D(wbp.getPoint(wbp.getNumberOfPoints() - 1)) < epsilon) {
-            Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints()];
-            for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
-                coords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
+        if (wbp.getNumberOfHoles() == 0) {
+            if (wbp.getPoint(0).getDistance2D(wbp.getPoint(wbp.getNumberOfPoints() - 1)) < epsilon) {
+                Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints()];
+                for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
+                    coords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
+                }
+                return gf.createPolygon(coords);
+            } else {
+                Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints() + 1];
+                for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
+                    coords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
+                }
+                coords[wbp.getNumberOfPoints()] = coords[0];
+                return gf.createPolygon(coords);
             }
-            return gf.createPolygon(coords);
         } else {
-            Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints() + 1];
-            for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
-                coords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
+            // exterior
+            List<Coordinate> exteriorCoords = new ArrayList<>();
+            for (int i = 0; i < wbp.getNumberOfShellPoints(); i++) {
+                exteriorCoords.add(new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd()));
             }
-            coords[wbp.getNumberOfPoints()] = coords[0];
+            if (exteriorCoords.get(0).distance(exteriorCoords.get(exteriorCoords.size() - 1)) >= epsilon) {
+                exteriorCoords.add(exteriorCoords.get(0));
+            }
+            LinearRing exteriorLinearRing = gf.createLinearRing(exteriorCoords.toArray(new Coordinate[0]));
 
-            return gf.createPolygon(coords);
+            // interior
+            final int[] npc = wbp.getNumberOfPointsPerContour();
+            int index = npc[0];
+            LinearRing[] interiorLinearRings = new LinearRing[wbp.getNumberOfHoles()];
+            for (int i = 0; i < wbp.getNumberOfHoles(); i++) {
+                List<Coordinate> contour = new ArrayList<>();
+                for (int j = 0; j < npc[i + 1]; j++) {
+                    contour.add(new Coordinate(wbp.getPoint(index).xd(), wbp.getPoint(index).yd(), wbp.getPoint(index).zd()));
+                    index++;
+                }
+                if (contour.get(0).distance(contour.get(contour.size() - 1)) >= epsilon) {
+                    contour.add(contour.get(0));
+                }
+                interiorLinearRings[i] = gf.createLinearRing(contour.toArray(new Coordinate[0]));
+            }
+
+            return gf.createPolygon(exteriorLinearRing, interiorLinearRings);
         }
     }
 
     /**
      * @return wblut.geom.WB_Polygon
-     * @description transform jts Polygon to WB_Polygon (could contain holes)
+     * @description transform jts Polygon to WB_Polygon (might contain holes)
      */
     public static WB_Polygon jtsPolygonToWB_Polygon(final Polygon p) {
         if (p.getNumInteriorRing() == 0) {
@@ -259,15 +287,48 @@ public class ZTransform {
 
     /**
      * @return wblut.geom.WB_Polygon
-     * @description verify that if the first Point and the last point's superposition
+     * @description make first point coincide with last point
      */
-    public static WB_Polygon verifyWB_Polygon(final WB_Polygon polygon) {
-        if (polygon.getPoint(0).getDistance2D(polygon.getPoint(polygon.getNumberOfPoints() - 1)) < epsilon) {
-            return polygon;
+    public static WB_Polygon validateWB_Polygon(final WB_Polygon polygon) {
+        if (polygon.getNumberOfHoles() == 0) {
+            if (polygon.getPoint(0).getDistance2D(polygon.getPoint(polygon.getNumberOfPoints() - 1)) < epsilon) {
+                return polygon;
+            } else {
+                List<WB_Coord> points = polygon.getPoints().toList();
+                points.add(polygon.getPoint(0));
+                return wbgf.createSimplePolygon(points);
+            }
         } else {
-            List<WB_Coord> points = polygon.getPoints().toList();
-            points.add(polygon.getPoint(0));
-            return wbgf.createSimplePolygon(points);
+            boolean flag = true;
+            List<WB_Point> exterior = new ArrayList<>();
+            for (int i = 0; i < polygon.getNumberOfShellPoints(); i++) {
+                exterior.add(polygon.getPoint(i));
+            }
+            if (exterior.get(0).getDistance2D(exterior.get(exterior.size() - 1)) >= epsilon) {
+                flag = false;
+                exterior.add(exterior.get(0));
+            }
+
+            WB_Point[][] interior = new WB_Point[polygon.getNumberOfHoles()][];
+            int[] npc = polygon.getNumberOfPointsPerContour();
+            int index = npc[0];
+            for (int i = 0; i < polygon.getNumberOfHoles(); i++) {
+                List<WB_Point> contour = new ArrayList<>();
+                for (int j = 0; j < npc[i + 1]; j++) {
+                    contour.add(polygon.getPoint(index));
+                    index = index + 1;
+                }
+                if (contour.get(0).getDistance2D(contour.get(contour.size() - 1)) >= epsilon) {
+                    flag = false;
+                    contour.add(contour.get(0));
+                }
+                interior[i] = contour.toArray(new WB_Point[0]);
+            }
+            if (flag) {
+                return polygon;
+            } else {
+                return wbgf.createPolygonWithHoles(exterior.toArray(new WB_Point[0]), interior);
+            }
         }
     }
 

@@ -113,6 +113,7 @@ public class ZPoint {
         return new IPoint(x, y, z);
     }
 
+    @Override
     public String toString() {
         return "ZPoint: [x=" + x + " y=" + y + " z=" + z + "]";
     }

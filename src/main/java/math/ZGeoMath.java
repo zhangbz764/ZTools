@@ -865,17 +865,17 @@ public final class ZGeoMath {
                 newExteriorPoints[i] = original.getPoint(original.getNumberOfShellPoints() - 1 - i);
             }
 
-            int[] cpt = original.getNumberOfPointsPerContour();
-            int index = cpt[0];
+            final int[] npc = original.getNumberOfPointsPerContour();
+            int index = npc[0];
             WB_Point[][] newInteriorPoints = new WB_Point[original.getNumberOfHoles()][];
 
             for (int i = 0; i < original.getNumberOfHoles(); i++) {
-                WB_Point[] newHole = new WB_Point[cpt[i + 1]];
+                WB_Point[] newHole = new WB_Point[npc[i + 1]];
                 for (int j = 0; j < newHole.length; j++) {
                     newHole[j] = new WB_Point(original.getPoint(newHole.length - 1 - j + index));
                 }
                 newInteriorPoints[i] = newHole;
-                index = index + cpt[i + 1];
+                index = index + npc[i + 1];
             }
 
             return new WB_Polygon(newExteriorPoints, newInteriorPoints);
@@ -912,7 +912,7 @@ public final class ZGeoMath {
      */
     public static ZLine offsetWB_PolygonSegment(final WB_Polygon poly, final int index, final double dist) {
         // make sure polygon's start and end point are coincident
-        WB_Polygon polygon = ZTransform.verifyWB_Polygon(poly);
+        WB_Polygon polygon = ZTransform.validateWB_Polygon(poly);
         assert index <= polygon.getNumberSegments() && index >= 0 : "index out of polygon point number";
 
         int next = (index + 1) % polygon.getNumberSegments();
