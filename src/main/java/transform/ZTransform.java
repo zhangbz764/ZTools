@@ -10,11 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 常用库几何数据的相互转换
+ *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/10/9
  * @time 17:27
- * @description 常用库几何数据的相互转换
  * 目前仅涉及简单多边形
  * ** IGeo <-> WB **
  * IPoint -> WB_Point
@@ -35,6 +36,8 @@ import java.util.List;
  * WB_Polygon -> WB_Polygon 检查WB_Polygon第一点与最后一点是否重合，不重合则加上
  * WB_Polygon -> WB_PolyLine
  * WB_AABB -> WB_AABB offset WB_AABB
+ * ** jts <-> jts **
+ * Polygon -> LineString
  * <p>
  * ...增加中
  */
@@ -46,24 +49,31 @@ public class ZTransform {
     /*-------- IGeo <-> WB --------*/
 
     /**
+     * 将IPoint转换为WB_Point
+     *
+     * @param point input IPoint
      * @return wblut.geom.WB_Point
-     * @description load a single point to WB_Point
      */
     public static WB_Point IPointToWB(final IPoint point) {
         return new WB_Point(point.x(), point.y(), point.z());
     }
 
     /**
+     * 将IPoint转换为WB_Point（改变比例）
+     *
+     * @param point input IPoint
+     * @param scale scale
      * @return wblut.geom.WB_Point
-     * @description load a single point to WB_Point
      */
     public static WB_Point IPointToWB(final IPoint point, final double scale) {
         return new WB_Point(point.x(), point.y(), point.z()).scale(scale);
     }
 
     /**
-     * @return wblut.geom.WB_Geometry
-     * @description load ICurve to WB_Polyline or WB_Polygon or WB_Segment
+     * 将ICurve转换为WB_Geometry（根据点数和封闭情况转换为WB_PolyLine, WB_Polygon, WB_Segment）
+     *
+     * @param curve input ICurve
+     * @return wblut.geom.WB_Geometry2D
      */
     public static WB_Geometry2D ICurveToWB(final ICurve curve) {
         if (curve.cpNum() > 2 && !curve.isClosed()) {
@@ -89,8 +99,11 @@ public class ZTransform {
     }
 
     /**
-     * @return wblut.geom.WB_Geometry
-     * @description load ICurve to WB_Polyline or WB_Polygon or WB_Segment (with a scale rate)
+     * 将ICurve转换为WB_Geometry（根据点数和封闭情况转换为WB_PolyLine, WB_Polygon, WB_Segment）（改变比例）
+     *
+     * @param curve input ICurve
+     * @param scale scale
+     * @return wblut.geom.WB_Geometry2D
      */
     public static WB_Geometry2D ICurveToWB(final ICurve curve, final double scale) {
         if (curve.cpNum() > 2 && !curve.isClosed()) {
@@ -118,24 +131,30 @@ public class ZTransform {
     /*-------- IGeo <-> Jts --------*/
 
     /**
+     * 将IPoint转换为Coordinate
+     *
+     * @param point input IPoint
      * @return org.locationtech.jts.geom.Coordinate
-     * @description load a single point to Jts Coordinate
      */
     public static Coordinate IPointToJtsCoordinate(final IPoint point) {
         return new Coordinate(point.x(), point.y(), point.z());
     }
 
     /**
-     * @return org.locationtech.jts.geom.Coordinate
-     * @description load a single point to Jts Point
+     * 将IPoint转换为Point
+     *
+     * @param point input IPoint
+     * @return org.locationtech.jts.geom.Point
      */
     public static Point IPointToJtsPoint(final IPoint point) {
         return gf.createPoint(IPointToJtsCoordinate(point));
     }
 
     /**
+     * 将ICurve转换为Geometry（根据点数和封闭情况转换为Polygon, LineString）
+     *
+     * @param curve input ICurve
      * @return org.locationtech.jts.geom.Geometry
-     * @description load ICurve to Polygon, LineString
      */
     public static Geometry ICurveToJts(final ICurve curve) {
         if (curve.cpNum() > 2 && curve.isClosed()) {
@@ -165,12 +184,14 @@ public class ZTransform {
     /*-------- WB <-> Jts --------*/
 
     /**
-     * @return com.vividsolutions.jts.geom.Polygon
-     * @description transform WB_Polygon to jts Polygon (might contain holes)
+     * 将WB_Polygon转换为Polygon（支持带洞）
+     *
+     * @param wbp input WB_Polygon
+     * @return org.locationtech.jts.geom.Polygon
      */
     public static Polygon WB_PolygonToJtsPolygon(final WB_Polygon wbp) {
         if (wbp.getNumberOfHoles() == 0) {
-            if (wbp.getPoint(0).getDistance2D(wbp.getPoint(wbp.getNumberOfPoints() - 1)) < epsilon) {
+            if (wbp.getPoint(0).equals(wbp.getPoint(wbp.getNumberOfPoints() - 1))) {
                 Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints()];
                 for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
                     coords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
@@ -190,7 +211,7 @@ public class ZTransform {
             for (int i = 0; i < wbp.getNumberOfShellPoints(); i++) {
                 exteriorCoords.add(new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd()));
             }
-            if (exteriorCoords.get(0).distance(exteriorCoords.get(exteriorCoords.size() - 1)) >= epsilon) {
+            if (exteriorCoords.get(0).equals3D(exteriorCoords.get(exteriorCoords.size() - 1))) {
                 exteriorCoords.add(exteriorCoords.get(0));
             }
             LinearRing exteriorLinearRing = gf.createLinearRing(exteriorCoords.toArray(new Coordinate[0]));
@@ -205,7 +226,7 @@ public class ZTransform {
                     contour.add(new Coordinate(wbp.getPoint(index).xd(), wbp.getPoint(index).yd(), wbp.getPoint(index).zd()));
                     index++;
                 }
-                if (contour.get(0).distance(contour.get(contour.size() - 1)) >= epsilon) {
+                if (!contour.get(0).equals3D(contour.get(contour.size() - 1))) {
                     contour.add(contour.get(0));
                 }
                 interiorLinearRings[i] = gf.createLinearRing(contour.toArray(new Coordinate[0]));
@@ -216,8 +237,10 @@ public class ZTransform {
     }
 
     /**
+     * 将Polygon转换为WB_Polygon（支持带洞）
+     *
+     * @param p input Polygon
      * @return wblut.geom.WB_Polygon
-     * @description transform jts Polygon to WB_Polygon (might contain holes)
      */
     public static WB_Polygon jtsPolygonToWB_Polygon(final Polygon p) {
         if (p.getNumInteriorRing() == 0) {
@@ -249,8 +272,10 @@ public class ZTransform {
     }
 
     /**
-     * @return wblut.geom.WB_Polygon
-     * @description transform jts Polygon to WB_Polygon
+     * 将LineString转换为WB_PolyLine
+     *
+     * @param p input LineString
+     * @return wblut.geom.WB_PolyLine
      */
     public static WB_PolyLine JtsLineStringToWB_PolyLine(final LineString p) {
         WB_Coord[] points = new WB_Point[p.getNumPoints()];
@@ -261,8 +286,10 @@ public class ZTransform {
     }
 
     /**
+     * 将WB_PolyLine转换为LineString
+     *
+     * @param wbp input WB_PolyLine
      * @return org.locationtech.jts.geom.LineString
-     * @description transform WB_PolyLine to jts LineString
      */
     public static LineString WB_PolyLineToJtsLineString(final WB_PolyLine wbp) {
         Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints()];
@@ -273,8 +300,10 @@ public class ZTransform {
     }
 
     /**
-     * @return org.locationtech.jts.geom.LineSegment
-     * @description transform WB_Segment to Jts LineString
+     * 将WB_Segment转换为LineString
+     *
+     * @param seg input WB_Segment
+     * @return org.locationtech.jts.geom.LineString
      */
     public static LineString WB_SegmentToJtsLineString(final WB_Segment seg) {
         Coordinate[] coords = new Coordinate[2];
@@ -286,12 +315,14 @@ public class ZTransform {
     /*-------- WB <-> WB --------*/
 
     /**
+     * 检查WB_Polygon首末点是否重合，返回标准的多边形（支持带洞）
+     *
+     * @param polygon input WB_Polygon
      * @return wblut.geom.WB_Polygon
-     * @description make first point coincide with last point
      */
     public static WB_Polygon validateWB_Polygon(final WB_Polygon polygon) {
         if (polygon.getNumberOfHoles() == 0) {
-            if (polygon.getPoint(0).getDistance2D(polygon.getPoint(polygon.getNumberOfPoints() - 1)) < epsilon) {
+            if (polygon.getPoint(0).equals(polygon.getPoint(polygon.getNumberOfPoints() - 1))) {
                 return polygon;
             } else {
                 List<WB_Coord> points = polygon.getPoints().toList();
@@ -304,7 +335,7 @@ public class ZTransform {
             for (int i = 0; i < polygon.getNumberOfShellPoints(); i++) {
                 exterior.add(polygon.getPoint(i));
             }
-            if (exterior.get(0).getDistance2D(exterior.get(exterior.size() - 1)) >= epsilon) {
+            if (!exterior.get(0).equals(exterior.get(exterior.size() - 1))) {
                 flag = false;
                 exterior.add(exterior.get(0));
             }
@@ -318,7 +349,7 @@ public class ZTransform {
                     contour.add(polygon.getPoint(index));
                     index = index + 1;
                 }
-                if (contour.get(0).getDistance2D(contour.get(contour.size() - 1)) >= epsilon) {
+                if (!contour.get(0).equals(contour.get(contour.size() - 1))) {
                     flag = false;
                     contour.add(contour.get(0));
                 }
@@ -333,8 +364,10 @@ public class ZTransform {
     }
 
     /**
+     * 将WB_Polygon转换为WB_PolyLine
+     *
+     * @param polygon input WB_Polygon
      * @return wblut.geom.WB_PolyLine
-     * @description transform WB_Polygon to WB_PolyLine
      */
     public static WB_PolyLine WB_PolygonToPolyLine(final WB_Polygon polygon) {
         WB_Point[] points = new WB_Point[polygon.getNumberOfPoints()];
@@ -345,8 +378,11 @@ public class ZTransform {
     }
 
     /**
+     * 按比例缩放WB_AABB
+     *
+     * @param aabb input WB_AABB
+     * @param t    offset scale
      * @return wblut.geom.WB_AABB
-     * @description 给 WB_AABB offset
      */
     public static WB_AABB offsetAABB(final WB_AABB aabb, final double t) {
         WB_Point min = aabb.getMin();
@@ -354,5 +390,27 @@ public class ZTransform {
         WB_Point newMin = min.add(min.sub(aabb.getCenter()).scale(t));
         WB_Point newMax = max.add(max.sub(aabb.getCenter()).scale(t));
         return new WB_AABB(newMin, newMax);
+    }
+
+    /*-------- jts <-> jts --------*/
+
+    /**
+     * Polygon转换为LineString
+     *
+     * @param polygon input Polygon
+     * @return java.util.List<org.locationtech.jts.geom.LineString>
+     */
+    public static List<LineString> PolygonToLineString(final Polygon polygon) {
+        List<LineString> result = new ArrayList<>();
+        if (polygon.getNumInteriorRing() == 0) {
+            result.add(gf.createLineString(polygon.getCoordinates()));
+        } else {
+            result.add(polygon.getExteriorRing());
+            for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+                result.add(polygon.getInteriorRingN(i));
+            }
+        }
+        return result;
+
     }
 }

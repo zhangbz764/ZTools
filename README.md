@@ -60,6 +60,8 @@
  `splitPolygonEdgeByStep` `splitWB_PolyLineEdgeByStep`
  * 输入步长阈值，将多边形或多段线按阈值内最大值等分，得到所有点  
  `splitPolygonEdgeByThreshold` `splitWB_PolyLineEdgeByThreshold`
+ * 给定阈值上下限，剖分多段线的每条边(WB_PolyLine)，即剖分结果一定包含每个顶点，但步长不同  
+ `splitWB_PolyLineEachEdgeByThreshold`
  * 输入等分数量，将多边形或多段线等分，得到所有点   
  `splitPolygonEdge` `splitWB_PolyLineEdge`
  ### 其他
@@ -99,6 +101,8 @@
  * WB_Polygon -> WB_Polygon 检查WB_Polygon第一点与最后一点是否重合，不重合则加上
  * WB_Polygon -> WB_PolyLine
  * WB_AABB -> WB_AABB offset WB_AABB
+ ###  jts <-> jts 
+ * Polygon -> LineString
 
 ...增加中
 ## **ZGeoFactory**

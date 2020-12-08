@@ -6,11 +6,12 @@ import org.locationtech.jts.triangulate.VoronoiDiagramBuilder;
 import processing.core.PApplet;
 
 /**
+ * draw Jts Geometry
+ *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/10/10
  * @time 15:13
- * @description draw Jts Geometry
  */
 public class JtsRender {
     private static final GeometryFactory gf = new GeometryFactory();
@@ -20,6 +21,12 @@ public class JtsRender {
         this.app = app;
     }
 
+    /**
+     * 绘制jts Geometry
+     *
+     * @param geo input geometry
+     * @return void
+     */
     public void drawGeometry(Geometry geo) {
         if (geo instanceof Point) {
             drawPoint(geo);
@@ -51,8 +58,10 @@ public class JtsRender {
     }
 
     /**
+     * 将Point画成圆
+     *
+     * @param geo input geometry
      * @return void
-     * @description draw Point as ellipse
      */
     private void drawPoint(Geometry geo) {
         Point point = (Point) geo;
@@ -60,8 +69,10 @@ public class JtsRender {
     }
 
     /**
+     * 将LineString画成多条线段
+     *
+     * @param geo input geometry
      * @return void
-     * @description draw LineString as continuous shape
      */
     private void drawLineString(Geometry geo) {
         LineString ls = (LineString) geo;
@@ -71,8 +82,10 @@ public class JtsRender {
     }
 
     /**
+     * 将LinearRing画成封闭多边形
+     *
+     * @param geo input geometry
      * @return void
-     * @description draw LinearRing as closed shape
      */
     private void drawLinearRing(Geometry geo) {
         LinearRing lr = (LinearRing) geo;
@@ -85,8 +98,10 @@ public class JtsRender {
     }
 
     /**
+     * 将Polygon画成封闭多边形
+     *
+     * @param geo input geometry
      * @return void
-     * @description draw Polygon as closed shape
      */
     private void drawPolygon(Geometry geo) {
         Polygon poly = (Polygon) geo;
@@ -114,9 +129,12 @@ public class JtsRender {
     }
 
     /**
+     * 绘制delaunay三角网
+     *
+     * @param delaunayBuilder
      * @return void
-     * @description draw delaunay triangles
      */
+    @Deprecated
     public void drawDelaunayTriangle(ConformingDelaunayTriangulationBuilder delaunayBuilder) {
         Geometry triangles = delaunayBuilder.getTriangles(JtsRender.gf);
         int num = triangles.getNumGeometries();
@@ -126,9 +144,12 @@ public class JtsRender {
     }
 
     /**
+     * 绘制voronoi多边形
+     *
+     * @param voronoiBuilder
      * @return void
-     * @description draw voronoi polygons
      */
+    @Deprecated
     public void drawVoronoi(VoronoiDiagramBuilder voronoiBuilder) {
         Geometry voronois = voronoiBuilder.getDiagram(JtsRender.gf);
         int num = voronois.getNumGeometries();

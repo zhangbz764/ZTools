@@ -16,20 +16,22 @@ import javax.vecmath.Point3d;
 import java.util.*;
 
 /**
+ * compute straight skeleton using campskeleton by twak
+ * and extract some useful geometries, support 2D polygon with holes
+ * <p>
+ * polygon shell must be counter clockwise
+ * polygon should be valid (first point coincides with last point)
+ *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/10/30
  * @time 11:12
- * @description compute straight skeleton using campskeleton by twak
- * and extract some useful geometries
- * support 2D polygon with holes
- * polygon shell must be counter clockwise
- * polygon should be valid (first point coincides with last point)
  */
 public class ZSkeleton {
     // input
     private WB_Polygon polygon;
     private double capHeight = 0;
+    private double offsetDist = 0;
     private double generalMachine = Math.PI / 4;
 
     private Skeleton skeleton;
@@ -43,6 +45,9 @@ public class ZSkeleton {
     private List<ZLine> ridges;
     private List<ZLine> extendedRidges;
     private List<ZPoint> ridgePoints;
+
+    private List<WB_Polygon> allFacePolys;
+    private HE_Mesh skeletonMesh;
 
     /* ------------- constructors ------------- */
 
@@ -58,11 +63,11 @@ public class ZSkeleton {
         extractEdges2D();
     }
 
-    public ZSkeleton(WB_Polygon polygon, double capHeight) {
+    public ZSkeleton(WB_Polygon polygon, double offsetDist) {
         // input polygon needs to be face upside
         this.polygon = ZGeoMath.polygonFaceUp(ZTransform.validateWB_Polygon(polygon));
 
-        setCapHeight(capHeight);
+        setOffsetDist(offsetDist);
         initSkeleton();
         // extract bottom, side, top edges and ridges, ridgePoint
         extractEdges2D();
@@ -81,11 +86,11 @@ public class ZSkeleton {
         }
     }
 
-    public ZSkeleton(WB_Polygon polygon, double capHeight, boolean if3d) {
+    public ZSkeleton(WB_Polygon polygon, double offsetDist, boolean if3d) {
         // input polygon needs to be face upside
         this.polygon = ZGeoMath.polygonFaceUp(ZTransform.validateWB_Polygon(polygon));
 
-        setCapHeight(capHeight);
+        setOffsetDist(capHeight);
         initSkeleton();
 
         // extract bottom, side, top edges and ridges, ridgePoint
@@ -97,6 +102,10 @@ public class ZSkeleton {
     }
 
     /* ------------- set & get ------------- */
+
+    public void setOffsetDist(double offsetDist) {
+        this.offsetDist = offsetDist;
+    }
 
     public void setCapHeight(double capHeight) {
         this.capHeight = capHeight;
@@ -134,13 +143,23 @@ public class ZSkeleton {
         return this.ridgePoints;
     }
 
+    public List<WB_Polygon> getAllFacePolys() {
+        return allFacePolys;
+    }
+
+    public HE_Mesh getSkeletonMesh() {
+        return skeletonMesh;
+    }
+
     /* ------------- initialize ------------- */
 
     /**
+     * initialize straight skeleton
+     *
+     * @param
      * @return void
-     * @description initialize straight skeleton by settings
      */
-    public void initSkeleton() {
+    private void initSkeleton() {
         this.allEdges = new ArrayList<>();
         this.topEdges = new ArrayList<>();
         this.sideEdges = new ArrayList<>();
@@ -167,10 +186,14 @@ public class ZSkeleton {
                 loop.append(edge);
             }
             // add cap or not
-            if (this.capHeight == 0) {
+            if (this.offsetDist == 0) {
                 this.skeleton = new Skeleton(loop.singleton(), true);
             } else {
-                this.skeleton = new Skeleton(loop.singleton(), capHeight);
+                if (this.generalMachine == Math.PI / 4) {
+                    this.skeleton = new Skeleton(loop.singleton(), offsetDist);
+                } else {
+                    this.skeleton = new Skeleton(loop.singleton(), offsetDist * Math.tan(generalMachine));
+                }
             }
         } else {
             // holes should be clockwise
@@ -192,18 +215,24 @@ public class ZSkeleton {
                 loopL.add(loop);
             }
             // add cap or not
-            if (this.capHeight == 0) {
+            if (this.offsetDist == 0) {
                 this.skeleton = new Skeleton(loopL, true);
             } else {
-                this.skeleton = new Skeleton(loopL, capHeight);
+                if (this.generalMachine == Math.PI / 4) {
+                    this.skeleton = new Skeleton(loopL, offsetDist);
+                } else {
+                    this.skeleton = new Skeleton(loopL, offsetDist * Math.tan(generalMachine));
+                }
             }
         }
         skeleton.skeleton();
     }
 
     /**
+     * extract edges in 3D mode
+     *
+     * @param
      * @return void
-     * @description (3D mode)extract bottom, side, top edges and ridges, ridgePoint
      */
     private void extractEdges3D() {
         // extract all edges
@@ -212,7 +241,7 @@ public class ZSkeleton {
         }
 
         // convert skeleton faces to HE_Mesh, find ridges from mesh
-        List<WB_Polygon> faces = new ArrayList<>();
+        this.allFacePolys = new ArrayList<>();
         Set<Output.Face> nonRepeatFace = new HashSet<>();
         for (Output.Face face : skeleton.output.faces.values()) {
             if (!nonRepeatFace.contains(face) && face.points.size() == 1) {
@@ -222,11 +251,11 @@ public class ZSkeleton {
                         polyPoints.add(new WB_Point(p.getX(), p.getY(), p.getZ()));
                     }
                 }
-                faces.add(new WB_Polygon(polyPoints));
+                allFacePolys.add(new WB_Polygon(polyPoints));
             }
             nonRepeatFace.add(face);
         }
-        findRidgesFromMesh(faces);
+        findRidgesFromMesh(allFacePolys);
 
         // find top, side, bottom edges
         Set<Output.SharedEdge> nonRepeatShared = new HashSet<>();
@@ -246,11 +275,14 @@ public class ZSkeleton {
                 }
             }
         }
+        topEdges.addAll(ridges);
     }
 
     /**
+     * extract edges in 2D mode
+     *
+     * @param
      * @return void
-     * @description (2D mode)extract bottom, side, top edges and ridges, ridgePoint
      */
     private void extractEdges2D() {
         // extract all edges
@@ -259,7 +291,7 @@ public class ZSkeleton {
         }
 
         // convert skeleton faces to HE_Mesh, find ridges from mesh
-        List<WB_Polygon> faces = new ArrayList<>();
+        this.allFacePolys = new ArrayList<>();
         Set<Output.Face> nonRepeatFace = new HashSet<>();
         for (Output.Face face : skeleton.output.faces.values()) {
             if (!nonRepeatFace.contains(face) && face.points.size() == 1) {
@@ -269,11 +301,11 @@ public class ZSkeleton {
                         polyPoints.add(new WB_Point(p.getX(), p.getY()));
                     }
                 }
-                faces.add(new WB_Polygon(polyPoints));
+                allFacePolys.add(new WB_Polygon(polyPoints));
             }
             nonRepeatFace.add(face);
         }
-        findRidgesFromMesh(faces);
+        findRidgesFromMesh(allFacePolys);
 
         // find top, side, bottom edges
         Set<Output.SharedEdge> nonRepeatShared = new HashSet<>();
@@ -293,26 +325,29 @@ public class ZSkeleton {
                 }
             }
         }
+        topEdges.addAll(ridges);
     }
 
     /**
+     * extract ridges by converting faces to mesh
+     *
+     * @param faces all polygons to create mesh
      * @return void
-     * @description extract ridges by converting faces to mesh
      */
     private void findRidgesFromMesh(List<WB_Polygon> faces) {
-        HE_Mesh mesh = new HEC_FromPolygons(faces).create();
+        this.skeletonMesh = new HEC_FromPolygons(faces).create();
 
         // find ridge in skeleton
         List<HE_Vertex> curr_vertices = new ArrayList<>();
-        for (int i = 0; i < mesh.getNumberOfVertices(); i++) {
-            if (!mesh.getVertexWithIndex(i).isBoundary()) {
-                curr_vertices.add(mesh.getVertexWithIndex(i));
-                ridgePoints.add(new ZPoint(mesh.getVertexWithIndex(i)));
+        for (int i = 0; i < skeletonMesh.getNumberOfVertices(); i++) {
+            if (!skeletonMesh.getVertexWithIndex(i).isBoundary()) {
+                curr_vertices.add(skeletonMesh.getVertexWithIndex(i));
+                ridgePoints.add(new ZPoint(skeletonMesh.getVertexWithIndex(i)));
 
                 List<ZPoint> verticesFromRidgeEnd = new ArrayList<>();
-                for (HE_Vertex vertex : mesh.getVertexWithIndex(i).getNeighborVertices()) {
+                for (HE_Vertex vertex : skeletonMesh.getVertexWithIndex(i).getNeighborVertices()) {
                     if (!vertex.isBoundary() && !curr_vertices.contains(vertex)) {
-                        ridges.add(new ZLine(new ZPoint(mesh.getVertexWithIndex(i)), new ZPoint(vertex)));
+                        ridges.add(new ZLine(new ZPoint(skeletonMesh.getVertexWithIndex(i)), new ZPoint(vertex)));
                     }
                     if (vertex.isBoundary()) {
                         verticesFromRidgeEnd.add(new ZPoint(vertex));
@@ -320,7 +355,7 @@ public class ZSkeleton {
                 }
                 if (verticesFromRidgeEnd.size() == 2) {
                     ZPoint center = verticesFromRidgeEnd.get(0).centerWith(verticesFromRidgeEnd.get(1));
-                    extendedRidges.add(new ZLine(new ZPoint(mesh.getVertexWithIndex(i)), center));
+                    extendedRidges.add(new ZLine(new ZPoint(skeletonMesh.getVertexWithIndex(i)), center));
                 }
             }
         }
@@ -334,6 +369,7 @@ public class ZSkeleton {
         return "ZSkeleton{" +
                 "polygon=" + polygon +
                 ", capHeight=" + capHeight +
+                ", offsetDist=" + offsetDist +
                 ", generalMachine=" + generalMachine +
                 ", allEdges=" + allEdges.size() +
                 ", topEdges=" + topEdges.size() +
@@ -347,7 +383,7 @@ public class ZSkeleton {
     public void display(PApplet app) {
         app.pushStyle();
         displayAllEdges(app);
-        displayRidges(app);
+        displayTopEdges(app);
         displayExtendedRidges(app);
         app.popStyle();
     }
@@ -359,17 +395,17 @@ public class ZSkeleton {
         }
     }
 
-    public void displayRidges(PApplet app) {
+    public void displayTopEdges(PApplet app) {
         app.stroke(137, 57, 50);
-        for (ZLine ridge : ridges) {
-            ridge.display(app, 5);
+        for (ZLine top : topEdges) {
+            top.display(app, 5);
         }
     }
 
     public void displayExtendedRidges(PApplet app) {
         app.stroke(104, 210, 120);
-        for (ZLine ridge : extendedRidges) {
-            ridge.display(app, 5);
+        for (ZLine extendRidge : extendedRidges) {
+            extendRidge.display(app, 5);
         }
     }
 }

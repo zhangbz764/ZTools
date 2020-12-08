@@ -11,11 +11,12 @@ import wblut.geom.WB_Point;
 import java.util.List;
 
 /**
+ * 自定义的点数据类型，可代表点或向量
+ *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/10/11
  * @time 17:55
- * @description 自定义的点数据类型，可代表点或向量
  */
 public class ZPoint {
     private double x, y, z;
@@ -121,56 +122,70 @@ public class ZPoint {
     /*--------basic vector math--------*/
 
     /**
-     * @return generalTools.ZVec
-     * @description vector add
+     * 向量相加
+     *
+     * @param v
+     * @return geometry.ZPoint
      */
     public ZPoint add(ZPoint v) {
         return new ZPoint(x + v.x(), y + v.y(), z + v.z());
     }
 
     /**
+     * 向量相加（改变自身）
+     *
+     * @param v
      * @return void
-     * @description vector add (change self)
      */
     public void addSelf(ZPoint v) {
         this.set(x + v.x(), y + v.y(), z + v.z());
     }
 
     /**
-     * @return generalTools.ZVec
-     * @description vector subtract (self - input)
+     * 向量相减
+     *
+     * @param v
+     * @return geometry.ZPoint
      */
     public ZPoint sub(ZPoint v) {
         return new ZPoint(x - v.x(), y - v.y(), z - v.z());
     }
 
     /**
+     * 向量模长
+     *
+     * @param
      * @return double
-     * @description get vector's length
      */
     public double getLength() {
         return Math.sqrt(x * x + y * y + z * z);
     }
 
     /**
+     * 向量缩放（改变自身）
+     *
+     * @param t
      * @return void
-     * @description scale vector by ratio (change self)
      */
     public void scaleSelf(double t) {
         this.set(x * t, y * t, z * t);
     }
 
     /**
-     * @return generalTools.ZVec
-     * @description get a new vector scaled by ratio
+     * 向量缩放
+     *
+     * @param t
+     * @return geometry.ZPoint
      */
     public ZPoint scaleTo(double t) {
         return new ZPoint(x * t, y * t, z * t);
     }
 
     /**
-     * @return generalTools.ZVec
-     * @description get normalized vector (length = 1)
+     * 得到单位向量
+     *
+     * @param
+     * @return geometry.ZPoint
      */
     public ZPoint unit() {
         double length = this.getLength();
@@ -178,56 +193,71 @@ public class ZPoint {
     }
 
     /**
-     * @return generalTools.ZPoint
-     * @description rotate vector to an angle
+     * 向量旋转（2D）
+     *
+     * @param angle
+     * @return geometry.ZPoint
      */
     public ZPoint rotate2D(double angle) {
         return new ZPoint(x * Math.cos(angle) - y * Math.sin(angle), x * Math.sin(angle) + y * Math.cos(angle));
     }
 
     /**
-     * @return generalTools.ZPoint
-     * @description get center point with the other ZPoint
+     * 计算与另一点的中点
+     *
+     * @param other other point
+     * @return geometry.ZPoint
      */
     public ZPoint centerWith(ZPoint other) {
         return new ZPoint((x + other.x()) / 2, (y + other.y()) / 2, (z + other.z()) / 2);
     }
 
     /**
+     * 向量点积（2D）
+     *
+     * @param v
      * @return double
-     * @description vector dot
      */
     public double dot2D(ZPoint v) {
         return x * v.x() + y * v.y();
     }
 
     /**
+     * 向量叉积（2D）
+     *
+     * @param v
      * @return double
-     * @description vector cross (this X other)
      */
     public double cross2D(ZPoint v) {
         return x * v.y() - y * v.x();
     }
 
     /**
+     * 判断向量是否是单位向量
+     *
+     * @param
      * @return boolean
-     * @description check if vector is united
      */
     public boolean isUnit() {
         return Math.abs(this.getLength() - 1) < 0.00000001;
     }
 
     /**
+     * 判断向量是否共线
+     *
+     * @param v
      * @return boolean
-     * @description check if two vectors are on same line
      */
-    public boolean isCollineation(ZPoint v) {
+    public boolean isColinear(ZPoint v) {
         return cross2D(v) == 0;
     }
 
     /**
+     * 判断是否与另一个点太近
+     *
+     * @param other
+     * @param dist
      * @return boolean
-     * @description check if point is too close to other points
      */
     @Deprecated
     public boolean isTooClose(List<ZPoint> other, double dist) {
@@ -242,16 +272,20 @@ public class ZPoint {
     /* ------------- geometry method -------------*/
 
     /**
-     * @return float
-     * @description distance square to other node
+     * 计算两点距离平方
+     *
+     * @param other
+     * @return double
      */
     public double distanceSq(ZPoint other) {
         return ((x - other.x()) * (x - other.x()) + (y - other.y()) * (y - other.y()) + (z - other.z()) * (z - other.z()));
     }
 
     /**
-     * @return float
-     * @description distance to other node
+     * 计算两点距离
+     *
+     * @param other
+     * @return double
      */
     public double distance(ZPoint other) {
         return Math.sqrt(distanceSq(other));
@@ -260,24 +294,32 @@ public class ZPoint {
     /* ------------- draw -------------*/
 
     /**
+     * 将点绘制为圆（默认半径）
+     *
+     * @param app
      * @return void
-     * @description draw ZPoint as a point
      */
     public void displayAsPoint(PApplet app) {
         app.ellipse((float) x, (float) y, r, r);
     }
 
     /**
+     * 将点绘制为圆（输入半径）
+     *
+     * @param app
+     * @param r
      * @return void
-     * @description draw ZPoint as a point
      */
     public void displayAsPoint(PApplet app, float r) {
         app.ellipse((float) x, (float) y, r, r);
     }
 
     /**
+     * 绘制为向量（设置基点）
+     *
+     * @param app
+     * @param base base point of a vector
      * @return void
-     * @description draw vector from base point
      */
     public void displayAsVector(PApplet app, ZPoint base) {
         ZPoint dest = base.add(this);
@@ -290,8 +332,12 @@ public class ZPoint {
     }
 
     /**
+     * 绘制为向量（设置基点和缩放比例）
+     *
+     * @param app
+     * @param base  base point of a vector
+     * @param scale scale
      * @return void
-     * @description draw vector from base point by scale
      */
     public void displayAsVector(PApplet app, ZPoint base, double scale) {
         ZPoint dest = base.add(this.scaleTo(scale));

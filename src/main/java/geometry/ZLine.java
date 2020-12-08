@@ -10,11 +10,12 @@ import wblut.geom.WB_Ray;
 import wblut.geom.WB_Segment;
 
 /**
+ * 自定义的线数据类型，可代表直线、射线、线段，也可转化为 p+td 的形式
+ *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/10/23
  * @time 16:01
- * @description 自定义的线数据类型，可代表直线、射线、线段，也可转化为 p+td 的形式
  */
 public class ZLine {
     private ZPoint pt0;
@@ -106,8 +107,10 @@ public class ZLine {
     }
 
     /**
-     * @return generalTools.ZPoint[]
-     * @description transform to a virtual line described by "p" & "d"
+     * 转换为p+td形式
+     *
+     * @param
+     * @return geometry.ZPoint[]
      */
     public ZPoint[] toLinePD() {
         ZPoint[] line = new ZPoint[2];
@@ -117,8 +120,10 @@ public class ZLine {
     }
 
     /**
-     * @return generalTools.ZPoint[]
-     * @description transform to a virtual line described by "p" & "d", "d" is united
+     * 转换为p+td形式（单位向量）
+     *
+     * @param
+     * @return geometry.ZPoint[]
      */
     public ZPoint[] toUnitLinePD() {
         ZPoint[] line = new ZPoint[2];
@@ -127,18 +132,42 @@ public class ZLine {
         return line;
     }
 
+    /**
+     * 转换为LineString
+     *
+     * @param
+     * @return org.locationtech.jts.geom.LineString
+     */
     public LineString toJtsLineString() {
         return gf.createLineString(new Coordinate[]{pt0.toJtsCoordinate(), pt1.toJtsCoordinate()});
     }
 
+    /**
+     * 转换为Segment
+     *
+     * @param
+     * @return org.locationtech.jts.triangulate.Segment
+     */
     public Segment toJtsSegment() {
         return new Segment(pt0.toJtsCoordinate(), pt1.toJtsCoordinate());
     }
 
+    /**
+     * 转换为WB_Segment
+     *
+     * @param
+     * @return wblut.geom.WB_Segment
+     */
     public WB_Segment toWB_Segment() {
         return new WB_Segment(new WB_Point(pt0.toWB_Point()), pt1().toWB_Point());
     }
 
+    /**
+     * 转换为WB_Ray
+     *
+     * @param
+     * @return wblut.geom.WB_Ray
+     */
     public WB_Ray toWB_Ray() {
         return new WB_Ray(pt0.toWB_Point(), direction.toWB_Point());
     }
@@ -150,16 +179,21 @@ public class ZLine {
     }
 
     /**
+     * 绘制直线
+     *
+     * @param app
      * @return void
-     * @description draw
      */
     public void display(PApplet app) {
         app.line((float) pt0.x(), (float) pt0.y(), (float) pt0.z(), (float) pt1.x(), (float) pt1.y(), (float) pt1.z());
     }
 
     /**
+     * 绘制直线（给定线宽）
+     *
+     * @param app
+     * @param strokeWeight
      * @return void
-     * @description draw
      */
     public void display(PApplet app, float strokeWeight) {
         app.strokeWeight(strokeWeight);

@@ -9,11 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * extends ZPoint 代表graph中的node
+ *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/10/23
  * @time 8:53
- * @description extends ZPoint 代表graph中的node
  */
 public class ZNode extends ZPoint {
     private List<ZNode> neighbors;

@@ -9,11 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 一些自定义的几何计算工具
+ *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/9/29
  * @time 15:38
- * @description 一些自定义的几何计算工具
  * ### 向量角度相关
  * 求到角的角平分线向量
  * 按极角排序一组向量（返回原列表序号）
@@ -37,6 +38,7 @@ import java.util.List;
  * 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点
  * 输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）
  * 输入步长阈值，将多边形或多段线按阈值内最大值等分，得到所有点
+ * 给定阈值上下限，剖分多段线的每条边(WB_PolyLine)，即剖分结果一定包含每个顶点，但步长不同
  * 输入等分数量，将多边形或多段线等分，得到所有点
  * ### 其他
  * 输入Geometry，设置Jts的Precision Model
@@ -55,8 +57,11 @@ public final class ZGeoMath {
     /*-------- 向量角度相关 --------*/
 
     /**
-     * @return generalTools.ZPoint
-     * @description 按照v0到v1的顺序求角平分线（包括优角）
+     * 按照v0到v1的顺序求角平分线（包括优角）
+     *
+     * @param v0 first vector
+     * @param v1 second vector
+     * @return geometry.ZPoint
      */
     public static ZPoint getAngleBisectorOrdered(final ZPoint v0, final ZPoint v1) {
         if (v0.cross2D(v1) > 0) {  // v0->v1小于180度
@@ -77,8 +82,10 @@ public final class ZGeoMath {
     }
 
     /**
+     * 找到一个多边形里所有凹顶点(WB_Polygon)
+     *
+     * @param polygon input WB_Polygon
      * @return java.util.List<geometry.ZPoint>
-     * @description 找到一个多边形里所有凹顶点(WB)
      */
     public static List<ZPoint> getConcavePoints(WB_Polygon polygon) {
         List<ZPoint> concavePoints = new ArrayList<>();
@@ -95,8 +102,10 @@ public final class ZGeoMath {
     }
 
     /**
+     * 找到一个多边形里所有凹顶点(jts Polygon)
+     *
+     * @param polygon input jts Polygon
      * @return java.util.List<geometry.ZPoint>
-     * @description 找到一个多边形里所有凹顶点(jts)
      */
     public static List<ZPoint> getConcavePoints(Polygon polygon) {
         WB_Polygon wbPolygon = ZTransform.jtsPolygonToWB_Polygon(polygon);
@@ -104,8 +113,10 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return java.util.List<java.lang.Integer>
-     * @description 找到一个多边形里所有凹顶点的序号(WB)
+     * 找到一个多边形里所有凹顶点的序号(WB)
+     *
+     * @param polygon input WB_Polygon
+     * @return java.util.List<java.lang.Integer> - indices of input polygon
      */
     public static List<Integer> getConcavePointIndices(WB_Polygon polygon) {
         List<Integer> concavePoints = new ArrayList<>();
@@ -140,8 +151,10 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return java.util.List<java.lang.Integer>
-     * @description 找到一个多边形里所有凹顶点的序号(jts)
+     * 找到一个多边形里所有凹顶点的序号(jts)
+     *
+     * @param polygon input jts Polygon
+     * @return java.util.List<java.lang.Integer> - indices of input polygon
      */
     public static List<Integer> getConcavePointIndices(Polygon polygon) {
         WB_Polygon wbPolygon = ZTransform.jtsPolygonToWB_Polygon(polygon);
@@ -149,8 +162,10 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return int[]
-     * @description 按极角排序一系列向量（以第0条为基准），返回在原列表中的序号
+     * 按极角排序一系列向量（以第0条为基准），返回在原列表中的序号
+     *
+     * @param vectors vector list to be sorted
+     * @return int[] - indices of input list
      */
     public static int[] sortPolarAngleIndices(final List<? extends ZPoint> vectors) {
         assert vectors.size() > 0 : "input list must at least include 1 vector";
@@ -163,8 +178,10 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return java.util.List<generalTools.ZPoint>
-     * @description 按极角排序一系列向量（以第0条为基准），返回排好的向量
+     * 按极角排序一系列向量（以第0条为基准），返回排好的向量
+     *
+     * @param vectors vector list to be sorted
+     * @return geometry.ZPoint[]
      */
     public static ZPoint[] sortPolarAngle(final List<? extends ZPoint> vectors) {
         assert vectors.size() > 0 : "input list must at least include 1 vector";
@@ -177,8 +194,10 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return java.util.List<generalTools.ZPoint>
-     * @description 按极角排序一系列向量（以第0条为基准），返回排好的单位向量
+     * 按极角排序一系列向量（以第0条为基准），返回排好的单位向量
+     *
+     * @param vectors vector list to be sorted
+     * @return geometry.ZPoint[] - unit
      */
     public static ZPoint[] sortPolarAngleUnit(final List<? extends ZPoint> vectors) {
         assert vectors.size() > 0 : "input list must at least include 1 vector";
@@ -191,8 +210,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return generalTools.ZPoint
-     * @description 从一系列向量中找到与目标向量夹角最小的（不区分正反）
+     * 从一系列向量中找到与目标向量夹角最小的（不区分正反）
+     *
+     * @param target target vector
+     * @param other  vector list
+     * @return geometry.ZPoint
      */
     public static ZPoint findClosetVec(final ZPoint target, final List<? extends ZPoint> other) {
         assert other != null && other.size() != 0 : "invalid input vectors";
@@ -207,24 +229,37 @@ public final class ZGeoMath {
     /*-------- 二维相交相关 --------*/
 
     /**
+     * 检测两条WB_Segment是否相交
+     *
+     * @param seg0 first segment
+     * @param seg1 second segment
      * @return boolean
-     * @description 检测两条WB_Segment是否相交
      */
     public static boolean checkWB_SegmentIntersect(final WB_Segment seg0, final WB_Segment seg1) {
         return WB_GeometryOp2D.checkIntersection2DProper(seg0.getOrigin(), seg0.getEndpoint(), seg1.getOrigin(), seg1.getEndpoint());
     }
 
     /**
+     * 根据输入线型对象类型算交点 line, ray or segment
+     *
+     * @param l0    first line
+     * @param type0 first type "line" "ray" "segment"
+     * @param l1    second line
+     * @param type1 second type "line" "ray" "segment"
      * @return geometry.ZPoint
-     * @description 根据输入线型对象类型算交点 line, ray or segment
      */
     public static ZPoint simpleLineElementsIntersect2D(final ZLine l0, final String type0, final ZLine l1, final String type1) {
         return simpleLineElementsIntersect2D(l0.toLinePD(), type0, l1.toLinePD(), type1);
     }
 
     /**
-     * @return generalTools.ZPoint
-     * @description 根据输入线型对象类型算交点 line, ray or segment
+     * 根据输入线型对象类型算交点 line, ray or segment
+     *
+     * @param l0    first line
+     * @param type0 first type "line" "ray" "segment"
+     * @param l1    second line
+     * @param type1 second type "line" "ray" "segment"
+     * @return geometry.ZPoint
      */
     public static ZPoint simpleLineElementsIntersect2D(final ZPoint[] l0, final String type0, final ZPoint[] l1, final String type1) {
         if (type0.equals("line") && type1.equals("line")) {
@@ -251,8 +286,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return generalTools.ZPoint
-     * @description 求两条直线的交点（用定点p和向量d描述, 一对ZPoint数组）
+     * 求两条直线的交点（用定点p和向量d描述, 一对ZPoint数组）
+     *
+     * @param line0 first line {point P, direction d}
+     * @param line1 second line {point P, direction d}
+     * @return geometry.ZPoint
      */
     public static ZPoint lineIntersect2D(final ZPoint[] line0, final ZPoint[] line1) {
         ZPoint delta = line1[0].sub(line0[0]);
@@ -268,8 +306,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return generalTools.ZPoint
-     * @description 求两条射线线的交点
+     * 求两条射线的交点
+     *
+     * @param ray0 first ray {point P, direction d}
+     * @param ray1 second ray {point P, direction d}
+     * @return geometry.ZPoint
      */
     public static ZPoint rayIntersect2D(final ZPoint[] ray0, final ZPoint[] ray1) {
         ZPoint delta = ray1[0].sub(ray0[0]);
@@ -293,8 +334,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return generalTools.ZPoint
-     * @description 求两线段的交点（用定点p和向量d描述,d为 终点-起点）
+     * 求两线段的交点（用定点p和向量d描述,d为 终点-起点）
+     *
+     * @param seg0 first segment {point P, direction d}
+     * @param seg1 first segment {point P, direction d}
+     * @return geometry.ZPoint
      */
     public static ZPoint segmentIntersect2D(final ZPoint[] seg0, final ZPoint[] seg1) {
         ZPoint delta = seg1[0].sub(seg0[0]);
@@ -318,8 +362,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return generalTools.ZPoint
-     * @description 求直线和射线的交点
+     * 求直线和射线的交点
+     *
+     * @param line line {point P, direction d}
+     * @param ray  ray {point P, direction d}
+     * @return geometry.ZPoint
      */
     public static ZPoint lineRayIntersect2D(final ZPoint[] line, final ZPoint[] ray) {
         ZPoint delta = ray[0].sub(line[0]);
@@ -343,8 +390,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return generalTools.ZPoint
-     * @description 求直线和线段的交点
+     * 求直线和线段的交点
+     *
+     * @param line line {point P, direction d}
+     * @param seg  segment {point P, direction d}
+     * @return geometry.ZPoint
      */
     public static ZPoint lineSegmentIntersect2D(final ZPoint[] line, final ZPoint[] seg) {
         ZPoint delta = seg[0].sub(line[0]);
@@ -368,8 +418,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return generalTools.ZPoint
-     * @description 求射线和线段交点
+     * 求射线和线段交点
+     *
+     * @param ray ray {point P, direction d}
+     * @param seg segment {point P, direction d}
+     * @return geometry.ZPoint
      */
     public static ZPoint raySegmentIntersect2D(final ZPoint[] ray, final ZPoint[] seg) {
         ZPoint delta = seg[0].sub(ray[0]);
@@ -392,9 +445,13 @@ public final class ZGeoMath {
         }
     }
 
+
     /**
+     * 求射线与多边形交点（每段线段是 [——) 关系）
+     *
+     * @param ray  ray {point P, direction d}
+     * @param poly input polygon
      * @return java.util.List<geometry.ZPoint>
-     * @description 求射线与多边形交点（每段线段是 [——) 关系）
      */
     public static List<ZPoint> rayPolygonIntersect2D(final ZPoint[] ray, final WB_Polygon poly) {
         List<ZPoint> result = new ArrayList<>();
@@ -417,8 +474,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return java.util.List<java.lang.Integer>
-     * @description 求射线与多边形交点，返回按交点距离排序的边序号list
+     * 求射线与多边形交点，返回按交点距离排序的边序号list
+     *
+     * @param ray  ray {point P, direction d}
+     * @param poly input polygon
+     * @return java.util.List<java.lang.Integer> - sorted indices of input polygon
      */
     public static List<Integer> rayPolygonIntersectIndices2D(final ZPoint[] ray, final WB_Polygon poly) {
         List<Integer> indicesResult = new ArrayList<>();
@@ -459,8 +519,11 @@ public final class ZGeoMath {
     }
 
     /**
+     * 将线段延长或剪切至多边形最近的交点
+     *
+     * @param segment segment {point P, direction d}
+     * @param poly    input polygon
      * @return geometry.ZLine
-     * @description 将线段延长或剪切至多边形最近的交点
      */
     public static ZLine extendSegmentToPolygon(final ZPoint[] segment, final WB_Polygon poly) {
         List<ZPoint> interResult = rayPolygonIntersect2D(segment, poly);
@@ -481,8 +544,11 @@ public final class ZGeoMath {
     /*-------- 二维距离相关 --------*/
 
     /**
+     * 从一组线段中找到与目标点距离最近的点
+     *
+     * @param p     target point
+     * @param lines list of lines
      * @return geometry.ZPoint
-     * @description 从一组线段中找到与目标点距离最近的点
      */
     public static ZPoint closetPointToLineList(final ZPoint p, final List<ZLine> lines) {
         ZPoint closet = new ZPoint(WB_GeometryOp2D.getClosestPoint2D(p.toWB_Point(), lines.get(0).toWB_Segment()));
@@ -498,8 +564,11 @@ public final class ZGeoMath {
     /*-------- 二维位置判断相关 --------*/
 
     /**
+     * 判断点是否在直线上（通过叉乘判断，包含浮点误差）
+     *
+     * @param p    input point
+     * @param line input line
      * @return boolean
-     * @description 判断点是否在直线上（通过叉乘判断，包含浮点误差）
      */
     public static boolean pointOnLine(final ZPoint p, final ZLine line) {
         double crossValue = line.getDirection().cross2D(p.sub(line.pt0()));
@@ -507,8 +576,11 @@ public final class ZGeoMath {
     }
 
     /**
+     * 判断点是否在射线上（通过叉乘判断，包含浮点误差）
+     *
+     * @param p   input point
+     * @param ray input ray
      * @return boolean
-     * @description 判断点是否在射线上（通过叉乘判断，包含浮点误差）
      */
     public static boolean pointOnRay(final ZPoint p, final ZLine ray) {
         double crossValue = ray.getDirection().cross2D(p.sub(ray.pt0()));
@@ -522,8 +594,11 @@ public final class ZGeoMath {
     }
 
     /**
+     * 判断点是否在线段上（通过叉乘判断，包含浮点误差）
+     *
+     * @param p   input point
+     * @param seg input segment
      * @return boolean
-     * @description 判断点是否在线段上（通过叉乘判断，包含浮点误差）
      */
     public static boolean pointOnSegment(final ZPoint p, final ZLine seg) {
         double crossValue = seg.getDirection().cross2D(p.sub(seg.pt0()));
@@ -539,8 +614,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return wblut.geom.WB_Segment
-     * @description 找到点在多边形哪条边上，返回WB_Segment（可能null）
+     * 找到点在多边形哪条边上，返回WB_Segment（可能null）
+     *
+     * @param p    input point
+     * @param poly input polygon
+     * @return wblut.geom.WB_Segment - segment of input polygon
      */
     public static WB_Segment pointOnWhichWB_Segment(final ZPoint p, final WB_Polygon poly) {
         WB_Segment result = null;
@@ -555,8 +633,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return geometry.ZPoint[]
-     * @description 从一系列ZLine中找到点在哪条线上，返回线两边的端点
+     * 从一系列ZLine中找到点在哪条线上，返回线两边的端点
+     *
+     * @param p     input point
+     * @param edges list of edges
+     * @return geometry.ZNode[] - nodes of result edge
      */
     public static ZNode[] pointOnWhichZEdge(final ZPoint p, final List<? extends ZEdge> edges) {
         ZNode[] result = new ZNode[2];
@@ -569,8 +650,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return generalTools.ZLine
-     * @description 找到点在多边形哪条边上，返回ZLine（可能null）
+     * 找到点在多边形哪条边上，返回ZLine（可能null）
+     *
+     * @param p    input point
+     * @param poly input polygon
+     * @return geometry.ZLine
      */
     public static ZLine pointOnWhichPolyEdge(final ZPoint p, final WB_Polygon poly) {
         ZLine result = null;
@@ -585,8 +669,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return generalTools.ZLine
-     * @description 找到点在多边形哪条边上，返回该边两顶点的序号（可能-1）
+     * 找到点在多边形哪条边上，返回该边两顶点的序号（可能-1）
+     *
+     * @param p    input point
+     * @param poly input polygon
+     * @return int[] - indices of result segment
      */
     public static int[] pointOnWhichPolyEdgeIndices(final ZPoint p, final WB_Polygon poly) {
         int[] result = new int[]{-1, -1};
@@ -602,8 +689,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return int
-     * @description 用jts判断，找到包含输入点的多边形，返回index，均不包含则返回-1
+     * 用jts判断，找到包含输入点的多边形，返回index，均不包含则返回-1
+     *
+     * @param p     input point
+     * @param polys list of polygons
+     * @return int - index of input list
      */
     public static int pointInWhichPolygon(final ZPoint p, final List<Polygon> polys) {
         int index = -1; // default
@@ -616,8 +706,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return int
-     * @description 用jts判断，找到包含输入点的多边形，返回index，均不包含则返回-1
+     * 用jts判断，找到包含输入点的多边形，返回index，均不包含则返回-1
+     *
+     * @param p     input point
+     * @param polys array of polygons
+     * @return int - index of input array
      */
     public static int pointInWhichPolygon(final ZPoint p, final Polygon[] polys) {
         int index = -1; // default
@@ -632,8 +725,12 @@ public final class ZGeoMath {
     /*-------- 二维轮廓找点相关 --------*/
 
     /**
-     * @return generalTools.ZPoint[]
-     * @description 找到多边形边上某点沿边移动一定距离后的两个点（0为多边形点序正向，1为逆向）
+     * 找到多边形边上某点沿边移动一定距离后的两个点（0为多边形点序正向，1为逆向）
+     *
+     * @param origin input point (should be on the edge of polygon)
+     * @param poly   input polygon
+     * @param dist   distance to move
+     * @return geometry.ZPoint[] - forwards and backwards
      */
     public static ZPoint[] pointsOnEdgeByDist(final ZPoint origin, final WB_Polygon poly, double dist) {
         // find point on which edge
@@ -687,8 +784,11 @@ public final class ZGeoMath {
     }
 
     /**
+     * 设置步长，剖分多边形的边 (Polygon)
+     *
+     * @param poly input polygon
+     * @param step step to divide
      * @return java.util.List<geometry.ZPoint>
-     * @description 设置步长，剖分多边形的边 (Polygon)
      */
     public static List<ZPoint> splitPolygonEdgeByStep(final Polygon poly, final double step) {
         // 得到多边形所有点
@@ -722,8 +822,11 @@ public final class ZGeoMath {
     }
 
     /**
+     * 设置步长，剖分多段线或多边形的边 (WB_PolyLine)
+     *
+     * @param poly input polyline (polygon)
+     * @param step step to divide
      * @return java.util.List<geometry.ZPoint>
-     * @description 设置步长，剖分多段线或多边形的边 (WB_PolyLine)
      */
     public static List<ZPoint> splitWB_PolyLineEdgeByStep(final WB_PolyLine poly, final double step) {
         // 得到多边形所有点
@@ -768,8 +871,12 @@ public final class ZGeoMath {
     }
 
     /**
+     * 给定阈值上下限，剖分多边形(Polygon)
+     *
+     * @param poly    input polygon
+     * @param maxStep max step to divide
+     * @param minStep min step to divide
      * @return java.util.List<geometry.ZPoint>
-     * @description 给定阈值上下限，剖分多边形(Polygon)
      */
     public static List<ZPoint> splitPolygonEdgeByThreshold(final Polygon poly, final double maxStep, final double minStep) {
         double finalStep = 0;
@@ -787,8 +894,12 @@ public final class ZGeoMath {
     }
 
     /**
+     * 给定阈值上下限，剖分多段线(WB_PolyLine)
+     *
+     * @param poly    input polyline (polygon)
+     * @param maxStep max step to divide
+     * @param minStep min step to divide
      * @return java.util.List<geometry.ZPoint>
-     * @description 给定阈值上下限，剖分多段线(WB_PolyLine)
      */
     public static List<ZPoint> splitWB_PolyLineEdgeByThreshold(final WB_PolyLine poly, final double maxStep, final double minStep) {
         assert maxStep >= minStep : "please input valid threshold";
@@ -811,8 +922,58 @@ public final class ZGeoMath {
     }
 
     /**
+     * 给定阈值上下限，剖分多段线的每条边(WB_PolyLine)，即剖分结果一定包含每个顶点，但步长不同
+     *
+     * @param poly    input polyline (polygon)
+     * @param maxStep max step to divide
+     * @param minStep min step to divide
      * @return java.util.List<geometry.ZPoint>
-     * @description 将多边形轮廓等分为若干点(Polygon)
+     */
+    public static List<ZPoint> splitWB_PolyLineEachEdgeByThreshold(final WB_PolyLine poly, final double maxStep, final double minStep) {
+        assert maxStep >= minStep : "please input valid threshold";
+        List<ZPoint> result = new ArrayList<>();
+        for (int i = 0; i < poly.getNumberSegments(); i++) {
+            WB_Segment segment = poly.getSegment(i);
+            double length = segment.getLength();
+            double stepOnEdge = 0;
+            int splitNum = -1;
+            for (int j = 1; j < Integer.MAX_VALUE; j++) {
+                double curr_step = length / j;
+                if (curr_step >= minStep && curr_step <= maxStep) {
+                    stepOnEdge = curr_step;
+                    splitNum = j;
+                    break;
+                } else if (curr_step < minStep) {
+                    break;
+                }
+            }
+
+            if (stepOnEdge != 0) {
+                ZPoint curr = new ZPoint(segment.getOrigin());
+                result.add(curr);
+                for (int j = 0; j < splitNum - 1; j++) {
+                    curr = curr.add(new ZPoint(segment.getDirection()).scaleTo(stepOnEdge));
+                    result.add(curr);
+                }
+            } else {
+                result.add(new ZPoint(segment.getOrigin()));
+            }
+        }
+
+        // 如果封闭，点数=段数，如果开放，点数=段数+1
+        if (!poly.getPoint(0).equals(poly.getPoint(poly.getNumberOfPoints() - 1))) {
+            System.out.println("polyline is open");
+            result.add(new ZPoint(poly.getPoint(poly.getNumberOfPoints() - 1)));
+        }
+        return result;
+    }
+
+    /**
+     * 将多边形轮廓等分为若干点(Polygon)
+     *
+     * @param poly     input polygon
+     * @param splitNum number to split
+     * @return java.util.List<geometry.ZPoint>
      */
     public static List<ZPoint> splitPolygonEdge(final Polygon poly, final int splitNum) {
         double step = poly.getLength() / splitNum;
@@ -820,8 +981,11 @@ public final class ZGeoMath {
     }
 
     /**
-     * @return java.util.List<generalTools.ZPoint>
-     * @description 将多边形或多段线轮廓等分为若干点(WB_PolyLine)
+     * 将多边形或多段线轮廓等分为若干点(WB_PolyLine)
+     *
+     * @param poly     input polyline (polygon)
+     * @param splitNum number to split
+     * @return java.util.List<geometry.ZPoint>
      */
     public static List<ZPoint> splitWB_PolyLineEdge(final WB_PolyLine poly, final int splitNum) {
         // 计算步长
@@ -837,8 +1001,11 @@ public final class ZGeoMath {
     /*-------- 其他几何运算 --------*/
 
     /**
+     * 设置 jts precision model (FLOAT, FLOAT_SINGLE, FIXED)
+     *
+     * @param geometry geometry to be applied
+     * @param pm       precision model
      * @return void
-     * @description apply jts precision model (FLOAT, FLOAT_SINGLE, FIXED)
      */
     public static void applyJtsPrecisionModel(final Geometry geometry, final PrecisionModel pm) {
         Coordinate[] coordinates = geometry.getCoordinates();
@@ -849,8 +1016,10 @@ public final class ZGeoMath {
     }
 
     /**
+     * WB_Polygon 点序反向（支持带洞）
+     *
+     * @param original input polygon
      * @return wblut.geom.WB_Polygon
-     * @description WB_Polygon 点序反向 支持带洞
      */
     public static WB_Polygon reversePolygon(final WB_Polygon original) {
         if (original.getNumberOfHoles() == 0) {
@@ -883,8 +1052,10 @@ public final class ZGeoMath {
     }
 
     /**
+     * 让WB_Polygon法向量朝向Z轴正向（支持带洞）
+     *
+     * @param polygon input polygon
      * @return wblut.geom.WB_Polygon
-     * @description 让WB_Polygon法向量朝向Z轴正向  支持带洞
      */
     public static WB_Polygon polygonFaceUp(final WB_Polygon polygon) {
         if (polygon.getNormal().zd() < 0) {
@@ -895,8 +1066,10 @@ public final class ZGeoMath {
     }
 
     /**
+     * 让WB_Polygon法向量朝向Z轴负向（支持带洞）
+     *
+     * @param polygon input polygon
      * @return wblut.geom.WB_Polygon
-     * @description 让WB_Polygon法向量朝向Z轴负向  支持带洞
      */
     public static WB_Polygon polygonFaceDown(final WB_Polygon polygon) {
         if (polygon.getNormal().zd() > 0) {
@@ -907,8 +1080,12 @@ public final class ZGeoMath {
     }
 
     /**
+     * 偏移多边形的某一条边线（默认输入为正向首尾相接多边形）
+     *
+     * @param poly  input polygon
+     * @param index segment index to be offset
+     * @param dist  offset distance
      * @return geometry.ZLine
-     * @description 偏移多边形的某一条边线（默认输入为正向首尾相接多边形）
      */
     public static ZLine offsetWB_PolygonSegment(final WB_Polygon poly, final int index, final double dist) {
         // make sure polygon's start and end point are coincident
@@ -930,5 +1107,4 @@ public final class ZGeoMath {
 
         return new ZLine(point1, point2);
     }
-
 }

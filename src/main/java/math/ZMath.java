@@ -4,11 +4,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 /**
+ * 一些数学工具
+ *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/10/19
  * @time 22:40
- * @description 一些数学工具
  * 1.从一组double数组中找到最大值的序号
  * 2.从一组double数组中找到最小值的序号
  * 3.把一组double数组按升序排序（返回一组序号）
@@ -20,8 +21,10 @@ public final class ZMath {
     /*-------- array methods --------*/
 
     /**
+     * 从一组double数组中找到最大值的序号
+     *
+     * @param arr input double array
      * @return int
-     * @description 从一组double数组中找到最大值的序号
      */
     public static int getMaxIndex(double[] arr) {
         if (arr == null || arr.length == 0) {
@@ -37,8 +40,10 @@ public final class ZMath {
     }
 
     /**
+     * 从一组double数组中找到最小值的序号
+     *
+     * @param arr input double array
      * @return int
-     * @description 从一组double数组中找到最小值的序号
      */
     public static int getMinIndex(double[] arr) {
         if (arr == null || arr.length == 0) {
@@ -54,8 +59,10 @@ public final class ZMath {
     }
 
     /**
-     * @return int[]
-     * @description 把一组double数组按升序排序（返回一组序号）
+     * 把一组double数组按升序排序（返回一组序号）
+     *
+     * @param arr array to be sorted
+     * @return int[] - indices of input array
      */
     public static int[] getArraySortedIndices(double[] arr) {
         int[] sortedIndices = new int[arr.length];
@@ -78,9 +85,11 @@ public final class ZMath {
     }
 
     /**
-    * @return java.lang.Object[]
-    * @description 数组倒序
-    */
+     * 数组倒序
+     *
+     * @param array array to be reversed
+     * @return java.lang.Object[]
+     */
     public static Object[] reverseArray(Object[] array) {
         Object[] result = new Object[array.length];
         for (int i = 0; i < array.length; i++) {
@@ -92,8 +101,25 @@ public final class ZMath {
     /*-------- mapping methods --------*/
 
     /**
-     * @return float
-     * @description map a number from old region to a new region
+     * 给定范围生成随机数
+     *
+     * @param min floor limit
+     * @param max cap limit
+     * @return double
+     */
+    public static double random(double min, double max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    /**
+     * 将目标数字从一个范围映射到另一个范围内的对应数字
+     *
+     * @param num    number to be mapped
+     * @param oldMin previous floor
+     * @param oldMax previous cap
+     * @param newMin new floor
+     * @param newMax new cap
+     * @return double
      */
     public static double mapToRegion(double num, double oldMin, double oldMax, double newMin, double newMax) {
         double k = (newMax - newMin) / (oldMax - oldMin);

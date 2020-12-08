@@ -9,14 +9,20 @@ import wblut.processing.WB_Render;
 import java.util.List;
 
 /**
+ * interface of subdivision
+ *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/12/1
  * @time 23:02
- * @description
  */
-public interface ZSD {
-
+public interface ZSubdivision {
+    /**
+     * main method to perform subdivision
+     *
+     * @param
+     * @return void
+     */
     public abstract void performDivide();
 
     /* ------------- setter & getter ------------- */

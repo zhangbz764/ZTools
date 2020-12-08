@@ -16,13 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 找到originPolygon直骨架脊线，在脊线上均匀布点，voronoi剖分，单条形式
+ *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/12/1
  * @time 23:01
- * @description 找到originPolygon直骨架脊线，在脊线上均匀布点，voronoi剖分
  */
-public class ZSD_Stripe implements ZSD {
+public class ZSD_SingleStrip implements ZSubdivision {
     private final WB_Polygon originPolygon;
     private List<WB_Polygon> allSubPolygons;
 
@@ -31,31 +32,32 @@ public class ZSD_Stripe implements ZSD {
 
     private double span = 50;
 
+    private WB_PolyLine polyLine;
     /* ------------- constructor ------------- */
 
-    public ZSD_Stripe(WB_Polygon originPolygon) {
+    public ZSD_SingleStrip(WB_Polygon originPolygon) {
         this.originPolygon = originPolygon;
         performDivide();
     }
 
     @Override
     public void performDivide() {
-        this.skeleton = new ZSkeleton(originPolygon);
+        this.skeleton = new ZSkeleton(originPolygon,40);
+        List<ZLine> topSegments = skeleton.getTopEdges();
 
-        List<ZLine> ridgeSegments = skeleton.getRidges();
-        ridgeSegments.addAll(skeleton.getExtendedRidges());
+        topSegments.addAll(skeleton.getExtendedRidges());
 
-        WB_PolyLine polyLine = ZGeoFactory.createWB_PolyLine(ridgeSegments);
+        polyLine = ZGeoFactory.createWB_PolyLine(topSegments);
 
         // polyLine maybe null because segments might not be nose to tail
         if (polyLine != null) {
-            voronoiGenerator = ZGeoMath.splitWB_PolyLineEdgeByStep(polyLine, span);
-            if (voronoiGenerator.size() > 1) {
-                voronoiGenerator.remove(voronoiGenerator.size() - 1);
-                voronoiGenerator.remove(0);
-            } else if (voronoiGenerator.size() == 1) {
-                voronoiGenerator.remove(0);
-            }
+            voronoiGenerator = ZGeoMath.splitWB_PolyLineEachEdgeByThreshold(polyLine, span + 10, span - 10);
+//            if (voronoiGenerator.size() > 1) {
+//                voronoiGenerator.remove(voronoiGenerator.size() - 1);
+//                voronoiGenerator.remove(0);
+//            } else if (voronoiGenerator.size() == 1) {
+//                voronoiGenerator.remove(0);
+//            }
             // generate voronoi
             List<WB_Point> points = new ArrayList<>();
             for (ZPoint p : voronoiGenerator) {
@@ -100,8 +102,9 @@ public class ZSD_Stripe implements ZSD {
             render.drawPolygonEdges2D(poly);
         }
 
-        skeleton.displayRidges(app);
-        skeleton.displayExtendedRidges(app);
+        skeleton.display(app);
+//        skeleton.displayTopEdges(app);
+//        skeleton.displayExtendedRidges(app);
 
         app.noStroke();
         app.fill(255, 0, 0);
@@ -109,6 +112,11 @@ public class ZSD_Stripe implements ZSD {
             p.displayAsPoint(app, 10);
         }
 
+        app.fill(0);
+        app.textSize(15);
+        for (int i = 0; i < polyLine.getNumberOfPoints(); i++) {
+            app.text(i, polyLine.getPoint(i).xf(), polyLine.getPoint(i).yf(), polyLine.getPoint(i).zf());
+        }
         app.popStyle();
     }
 }

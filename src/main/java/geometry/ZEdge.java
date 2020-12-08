@@ -5,11 +5,12 @@ import java.util.List;
 
 
 /**
+ * extends ZLine 代表graph中的edge
+ *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/10/11
  * @time 17:55
- * @description extends ZLine 代表graph中的edge
  */
 public class ZEdge extends ZLine {
     private ZNode start;

@@ -1,5 +1,13 @@
 package subdivision;
 
+import processing.core.PApplet;
+import render.JtsRender;
+import wblut.geom.WB_Polygon;
+import wblut.hemesh.HE_Mesh;
+import wblut.processing.WB_Render;
+
+import java.util.List;
+
 /**
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -7,5 +15,29 @@ package subdivision;
  * @time 15:15
  * @description
  */
-public class ZSD_Voronoi {
+public class ZSD_Voronoi implements ZSubdivision{
+    @Override
+    public void performDivide() {
+
+    }
+
+    @Override
+    public WB_Polygon getOriginPolygon() {
+        return null;
+    }
+
+    @Override
+    public List<WB_Polygon> getAllSubPolygons() {
+        return null;
+    }
+
+    @Override
+    public HE_Mesh getMesh() {
+        return null;
+    }
+
+    @Override
+    public void display(PApplet app, WB_Render render, JtsRender jtsRender) {
+
+    }
 }
