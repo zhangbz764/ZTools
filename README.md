@@ -69,6 +69,8 @@
  `applyJtsPrecisionModel`
  * 使WB_Polygon点序反向，支持带洞  
  `reversePolygon`
+ * 检查两个WB_Polygon是否同向  
+ `isNormalEquals`
  * 使WB_Polygon法向量Z坐标为正或为负，支持带洞（不是拍平到xy平面，只是翻个面）  
  `PolygonFaceUp` `PolygonFaceDown`
  * 偏移多边形的某一条边线（默认输入为正向首尾相接多边形）  

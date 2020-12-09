@@ -43,6 +43,7 @@ import java.util.List;
  * ### 其他
  * 输入Geometry，设置Jts的Precision Model
  * 使WB_Polygon点序反向
+ * 检查两个WB_Polygon是否同向
  * 使WB_Polygon法向量Z坐标为正或为负（不是拍平到xy平面，只是翻个面）
  * 偏移多边形的某一条边线（默认输入为正向首尾相接多边形）
  * <p>
@@ -1049,6 +1050,17 @@ public final class ZGeoMath {
 
             return new WB_Polygon(newExteriorPoints, newInteriorPoints);
         }
+    }
+
+    /**
+    * 检查两个WB_Polygon是否同向
+    *
+    * @param p1
+    * @param p2
+    * @return boolean
+    */
+    public static boolean isNormalEquals(final WB_Polygon p1, final WB_Polygon p2) {
+        return p1.getNormal().equals(p2.getNormal());
     }
 
     /**
