@@ -27,37 +27,31 @@ import java.util.List;
  * @date 2020/12/6
  * @time 15:15
  */
-public class ZSD_OBB implements ZSubdivision {
-    private final WB_Polygon originPolygon;
-    private List<WB_Polygon> allSubPolygons;
+public class ZSD_OBB extends ZSubdivision {
     private List<Polygon> allSubJtsPolygons;
 
-    private double minArea = 8000;
-
-    private int[][] randomColor;
+    private double minArea = 300;
 
     /* ------------- constructor ------------- */
 
     public ZSD_OBB(WB_Polygon originPolygon) {
-        this.originPolygon = originPolygon;
-        performDivide();
+        super(originPolygon);
     }
 
     @Override
     public void performDivide() {
         this.allSubJtsPolygons = new ArrayList<>();
-        Polygon origin = ZTransform.WB_PolygonToJtsPolygon(originPolygon);
+        Polygon origin = ZTransform.WB_PolygonToJtsPolygon(super.getOriginPolygon());
         divide(origin);
 
-        this.allSubPolygons = new ArrayList<>();
+        List<WB_Polygon> allSubPolygons = new ArrayList<>();
         for (Polygon p : allSubJtsPolygons) {
-            this.allSubPolygons.add(ZTransform.jtsPolygonToWB_Polygon(p));
+            allSubPolygons.add(ZTransform.jtsPolygonToWB_Polygon(p));
         }
+        super.setAllSubPolygons(allSubPolygons);
+        super.setRandomColor();
 
-        this.randomColor = new int[allSubPolygons.size()][];
-        for (int i = 0; i < randomColor.length; i++) {
-            randomColor[i] = new int[]{(int) ZMath.random(0, 255), (int) ZMath.random(0, 255), (int) ZMath.random(0, 255)};
-        }
+        System.out.println("poly num total : " + allSubJtsPolygons.size());
     }
 
     private void divide(Polygon input) {
@@ -106,17 +100,14 @@ public class ZSD_OBB implements ZSubdivision {
             pr.add(allGeometry);
             Collection<Polygon> dividedPolys = pr.getPolygons();
 
-//            allSubJtsPolygons.addAll(dividedPolys);
-//            System.out.println("poly num total : " + allSubJtsPolygons.size());
 
             for (Polygon p : dividedPolys) {
                 allSubJtsPolygons.add(p);
-                System.out.println("poly num total : " + allSubJtsPolygons.size());
                 if (p.getArea() > minArea) {
                     allSubJtsPolygons.remove(p);
-                    Geometry newInput = p.buffer(-3);
-                    divide((Polygon) newInput);
-//                    divide(p);
+//                    Geometry newInput = p.buffer(-3);
+//                    divide((Polygon) newInput);
+                    divide(p);
                 }
             }
         }
@@ -125,31 +116,17 @@ public class ZSD_OBB implements ZSubdivision {
     /* ------------- setter & getter ------------- */
 
     @Override
-    public WB_Polygon getOriginPolygon() {
-        return originPolygon;
-    }
-
-    @Override
-    public List<WB_Polygon> getAllSubPolygons() {
-        return allSubPolygons;
-    }
-
-    @Override
-    public HE_Mesh getMesh() {
-        return new HEC_FromPolygons(allSubPolygons).create();
+    public void setCellConstraint(double minArea) {
+        this.minArea = minArea;
     }
 
     /* ------------- draw ------------- */
 
-    @Override
-    public void display(PApplet app, WB_Render render, JtsRender jtsRender) {
+    public void display(PApplet app, WB_Render render) {
         app.pushStyle();
         app.noFill();
         app.stroke(0);
-        for (int i = 0; i < allSubPolygons.size(); i++) {
-            app.fill(randomColor[i][0], randomColor[i][1], randomColor[i][2]);
-            render.drawPolygonEdges2D(allSubPolygons.get(i));
-        }
+        super.displayWithColor(app, render);
         app.popStyle();
     }
 }

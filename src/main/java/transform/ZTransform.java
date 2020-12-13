@@ -183,6 +183,10 @@ public class ZTransform {
 
     /*-------- WB <-> Jts --------*/
 
+    public static Point WB_PointToPoint(final WB_Point p) {
+        return gf.createPoint(new Coordinate(p.xd(), p.yd(), p.zd()));
+    }
+
     /**
      * 将WB_Polygon转换为Polygon（支持带洞）
      *
@@ -411,6 +415,5 @@ public class ZTransform {
             }
         }
         return result;
-
     }
 }

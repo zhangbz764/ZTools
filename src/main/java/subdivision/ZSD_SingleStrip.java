@@ -6,10 +6,7 @@ import geometry.ZPoint;
 import geometry.ZSkeleton;
 import math.ZGeoMath;
 import processing.core.PApplet;
-import render.JtsRender;
 import wblut.geom.*;
-import wblut.hemesh.HEC_FromPolygons;
-import wblut.hemesh.HE_Mesh;
 import wblut.processing.WB_Render;
 
 import java.util.ArrayList;
@@ -23,26 +20,23 @@ import java.util.List;
  * @date 2020/12/1
  * @time 23:01
  */
-public class ZSD_SingleStrip implements ZSubdivision {
-    private final WB_Polygon originPolygon;
-    private List<WB_Polygon> allSubPolygons;
-
+public class ZSD_SingleStrip extends ZSubdivision {
     private ZSkeleton skeleton;
     private List<ZPoint> voronoiGenerator;
 
     private double span = 50;
 
     private WB_PolyLine polyLine;
+
     /* ------------- constructor ------------- */
 
     public ZSD_SingleStrip(WB_Polygon originPolygon) {
-        this.originPolygon = originPolygon;
-        performDivide();
+        super(originPolygon);
     }
 
     @Override
     public void performDivide() {
-        this.skeleton = new ZSkeleton(originPolygon,40);
+        this.skeleton = new ZSkeleton(super.getOriginPolygon(), 40);
         List<ZLine> topSegments = skeleton.getTopEdges();
 
         topSegments.addAll(skeleton.getExtendedRidges());
@@ -63,44 +57,33 @@ public class ZSD_SingleStrip implements ZSubdivision {
             for (ZPoint p : voronoiGenerator) {
                 points.add(p.toWB_Point());
             }
-            WB_Voronoi2D voronoi = WB_VoronoiCreator.getClippedVoronoi2D(points, originPolygon);
+            WB_Voronoi2D voronoi = WB_VoronoiCreator.getClippedVoronoi2D(points, super.getOriginPolygon());
 
-            this.allSubPolygons = new ArrayList<>();
+            List<WB_Polygon> allSubPolygons = new ArrayList<>();
             for (WB_VoronoiCell2D cell : voronoi.getCells()) {
                 allSubPolygons.add(cell.getPolygon());
             }
+            super.setAllSubPolygons(allSubPolygons);
         }
     }
 
     /* ------------- setter & getter ------------- */
 
     @Override
-    public WB_Polygon getOriginPolygon() {
-        return originPolygon;
-    }
-
-    @Override
-    public List<WB_Polygon> getAllSubPolygons() {
-        return allSubPolygons;
-    }
-
-    @Override
-    public HE_Mesh getMesh() {
-        return new HEC_FromPolygons(allSubPolygons).create();
+    public void setCellConstraint(double span) {
+        this.span = span;
     }
 
     /* ------------- draw ------------- */
 
     @Override
-    public void display(PApplet app, WB_Render render, JtsRender jtsRender) {
+    public void display(PApplet app, WB_Render render) {
         app.pushStyle();
 
         app.stroke(0);
         app.strokeWeight(3);
         app.fill(200);
-        for (WB_Polygon poly : allSubPolygons) {
-            render.drawPolygonEdges2D(poly);
-        }
+        super.displaySubPolygonsc(render);
 
         skeleton.display(app);
 //        skeleton.displayTopEdges(app);

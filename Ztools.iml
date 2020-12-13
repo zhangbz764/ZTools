@@ -72,5 +72,6 @@
     <orderEntry type="library" name="Maven: org.apache.xmlgraphics:batik-script:1.10" level="project" />
     <orderEntry type="library" name="Maven: org.apache.xmlgraphics:batik-transcoder:1.10" level="project" />
     <orderEntry type="library" name="Maven: org.apache.xmlgraphics:batik-anim:1.10" level="project" />
+    <orderEntry type="library" name="gurobi903" level="application" />
   </component>
 </module>

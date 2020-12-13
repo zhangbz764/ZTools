@@ -15,29 +15,23 @@ import java.util.List;
  * @time 15:15
  * @description
  */
-public class ZSD_Voronoi implements ZSubdivision{
-    @Override
+public class ZSD_Voronoi {
+
+    /* ------------- constructor ------------- */
+
+    public ZSD_Voronoi(WB_Polygon originPolygon) {
+
+    }
+
     public void performDivide() {
 
     }
 
-    @Override
-    public WB_Polygon getOriginPolygon() {
-        return null;
-    }
+    /* ------------- setter & getter ------------- */
 
-    @Override
-    public List<WB_Polygon> getAllSubPolygons() {
-        return null;
-    }
+    /* ------------- draw ------------- */
 
-    @Override
-    public HE_Mesh getMesh() {
-        return null;
-    }
-
-    @Override
-    public void display(PApplet app, WB_Render render, JtsRender jtsRender) {
+    public void display(PApplet app, WB_Render render) {
 
     }
 }

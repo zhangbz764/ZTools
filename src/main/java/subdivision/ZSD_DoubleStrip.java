@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+// TODO: 2020/12/10 double strip
 
 /**
  * double-strip subdivision
@@ -26,9 +27,7 @@ import java.util.List;
  * @date 2020/12/7
  * @time 14:25
  */
-public class ZSD_DoubleStrip implements ZSubdivision {
-    private final WB_Polygon originPolygon;
-    private List<WB_Polygon> allSubPolygons;
+public class ZSD_DoubleStrip extends ZSubdivision {
 
     private List<List<Integer>> logicalStreets;
     private ZSkeleton skeleton;
@@ -37,8 +36,10 @@ public class ZSD_DoubleStrip implements ZSubdivision {
     private List<WB_Polygon> unionByStreet;
     HE_Mesh mesh;
 
+    /* ------------- constructor ------------- */
+
     public ZSD_DoubleStrip(WB_Polygon originPolygon) {
-        this.originPolygon = originPolygon;
+        super(originPolygon);
 
         this.logicalStreets = new ArrayList<>();
         logicalStreets.add(Arrays.asList(0));
@@ -46,12 +47,11 @@ public class ZSD_DoubleStrip implements ZSubdivision {
         logicalStreets.add(Arrays.asList(3, 4, 5));
         logicalStreets.add(Arrays.asList(6, 7));
 
-        performDivide();
     }
 
     @Override
     public void performDivide() {
-        this.skeleton = new ZSkeleton(originPolygon);
+        this.skeleton = new ZSkeleton(super.getOriginPolygon());
         this.skeletonMesh = skeleton.getSkeletonMesh();
 
         List<WB_Polygon> allFacePolys = skeleton.getAllFacePolys(); // origin skeleton faces
@@ -81,23 +81,17 @@ public class ZSD_DoubleStrip implements ZSubdivision {
 
     }
 
-    @Override
-    public WB_Polygon getOriginPolygon() {
-        return originPolygon;
-    }
+    /* ------------- setter & getter ------------- */
 
     @Override
-    public List<WB_Polygon> getAllSubPolygons() {
-        return allSubPolygons;
+    public void setCellConstraint(double constraint) {
+
     }
 
-    @Override
-    public HE_Mesh getMesh() {
-        return new HEC_FromPolygons(allSubPolygons).create();
-    }
+    /* ------------- draw ------------- */
 
     @Override
-    public void display(PApplet app, WB_Render render, JtsRender jtsRender) {
+    public void display(PApplet app, WB_Render render) {
         app.fill(200);
         for (WB_Polygon p : unionByStreet) {
             render.drawPolygonEdges2D(p);

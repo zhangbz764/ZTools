@@ -58,8 +58,12 @@
  `pointsOnEdgeByDist`
  * 输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）   
  `splitPolygonEdgeByStep` `splitWB_PolyLineEdgeByStep`
- * 输入步长阈值，将多边形或多段线按阈值内最大值等分，得到所有点  
- `splitPolygonEdgeByThreshold` `splitWB_PolyLineEdgeByThreshold`
+ * 输入步长，剖分多段线或多边形的边 (WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap  
+ `splitWB_PolyLineEdgeByStepWithPos`
+ * 给定阈值上下限，将多边形或多段线按阈值内最大值等分，得到所有点    
+ `splitPolygonEdgeByThreshold` `splitWB_PolyLineEdgeByThreshold`  
+ * 给定阈值上下限，剖分多段线(WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap    
+ `splitWB_PolyLineEdgeByThresholdWithPos`
  * 给定阈值上下限，剖分多段线的每条边(WB_PolyLine)，即剖分结果一定包含每个顶点，但步长不同  
  `splitWB_PolyLineEachEdgeByThreshold`
  * 输入等分数量，将多边形或多段线等分，得到所有点   
@@ -75,6 +79,8 @@
  `PolygonFaceUp` `PolygonFaceDown`
  * 偏移多边形的某一条边线（默认输入为正向首尾相接多边形）  
  `offsetWB_PolygonSegment`
+ * 偏移多边形的若干条边线（默认输入为正向首尾相接多边形），返回多段线或多边形  
+ `offsetWB_PolygonSegments`
 
 增加中...
 ## **ZMath**

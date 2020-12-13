@@ -4,10 +4,7 @@ import Guo_Cam.CameraController;
 import org.locationtech.jts.geom.GeometryFactory;
 import processing.core.PApplet;
 import render.JtsRender;
-import subdivision.ZSD_DoubleStrip;
-import subdivision.ZSubdivision;
-import subdivision.ZSD_OBB;
-import subdivision.ZSD_SingleStrip;
+import subdivision.*;
 import wblut.geom.WB_GeometryFactory;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Polygon;
@@ -32,17 +29,15 @@ public class TestSubdivision extends PApplet {
     /* ------------- setup ------------- */
 
     WB_Polygon inputPolygon;
-    ZSubdivision division;
+    ZSubdivision subdivision;
 
     GeometryFactory gf = new GeometryFactory();
     WB_GeometryFactory wbgf = new WB_GeometryFactory();
     WB_Render render;
-    JtsRender jtsRender;
     CameraController gcam;
 
     public void setup() {
         render = new WB_Render(this);
-        jtsRender = new JtsRender(this);
 //        gcam = new CameraController(this);
 
         WB_Point[] outer = new WB_Point[9]; // counter clockwise
@@ -50,7 +45,7 @@ public class TestSubdivision extends PApplet {
         outer[1] = new WB_Point(500, 400, 0);
         outer[2] = new WB_Point(800, 500, 0);
         outer[3] = new WB_Point(850, 650, 0);
-        outer[4] = new WB_Point(700, 700, 0);
+        outer[4] = new WB_Point(700, 650, 0);
         outer[5] = new WB_Point(400, 600, 0);
         outer[6] = new WB_Point(200, 650, 0);
         outer[7] = new WB_Point(100, 600, 0);
@@ -75,14 +70,15 @@ public class TestSubdivision extends PApplet {
 //        inputPolygon = wbgf.createPolygonWithHoles(outer, inner);
         inputPolygon = wbgf.createSimplePolygon(outer);
 
-        division = new ZSD_DoubleStrip(inputPolygon);
+        subdivision = new ZSD_SideStrip(inputPolygon);
+        subdivision.performDivide();
     }
 
     /* ------------- draw ------------- */
 
     public void draw() {
         background(255);
-        division.display(this, render, jtsRender);
+        subdivision.display(this, render);
 
         translate(0, -300);
         fill(0);
@@ -94,13 +90,19 @@ public class TestSubdivision extends PApplet {
 
     public void keyPressed() {
         if (key == '1') {
-            division = new ZSD_SingleStrip(inputPolygon);
+            subdivision = new ZSD_SingleStrip(inputPolygon);
+            subdivision.setCellConstraint(40);
+            subdivision.performDivide();
         } else if (key == '2') {
-            division = new ZSD_OBB(inputPolygon);
+            subdivision = new ZSD_OBB(inputPolygon);
+            subdivision.setCellConstraint(600);
+            subdivision.performDivide();
         } else if (key == '3') {
-            division = new ZSD_DoubleStrip(inputPolygon);
+            subdivision = new ZSD_DoubleStrip(inputPolygon);
+            subdivision.performDivide();
         } else if (key == '4') {
-
+            subdivision = new ZSD_SideStrip(inputPolygon);
+            subdivision.performDivide();
         }
     }
 

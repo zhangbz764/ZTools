@@ -159,7 +159,7 @@ public class ZSkeleton {
      * @param
      * @return void
      */
-    private void initSkeleton() {
+    public void initSkeleton() {
         this.allEdges = new ArrayList<>();
         this.topEdges = new ArrayList<>();
         this.sideEdges = new ArrayList<>();

@@ -6,7 +6,9 @@ import transform.ZTransform;
 import wblut.geom.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 一些自定义的几何计算工具
@@ -37,7 +39,9 @@ import java.util.List;
  * ### 二维轮廓找点相关
  * 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点
  * 输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）
- * 输入步长阈值，将多边形或多段线按阈值内最大值等分，得到所有点
+ * 输入步长，剖分多段线或多边形的边 (WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap
+ * 给定阈值上下限，将多边形或多段线按阈值内最大值等分，得到所有点
+ * 给定阈值上下限，剖分多段线(WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap
  * 给定阈值上下限，剖分多段线的每条边(WB_PolyLine)，即剖分结果一定包含每个顶点，但步长不同
  * 输入等分数量，将多边形或多段线等分，得到所有点
  * ### 其他
@@ -46,6 +50,7 @@ import java.util.List;
  * 检查两个WB_Polygon是否同向
  * 使WB_Polygon法向量Z坐标为正或为负（不是拍平到xy平面，只是翻个面）
  * 偏移多边形的某一条边线（默认输入为正向首尾相接多边形）
+ * 偏移多边形的若干条边线（默认输入为正向首尾相接多边形），返回多段线或多边形
  * <p>
  * ...增加中
  */
@@ -872,6 +877,66 @@ public final class ZGeoMath {
     }
 
     /**
+     * 设置步长，剖分多段线或多边形的边 (WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap
+     *
+     * @param poly input polyline (polygon)
+     * @param step step to divide
+     * @return java.util.Map<geometry.ZPoint, java.lang.Integer>
+     */
+    public static Map<ZPoint, Integer> splitWB_PolyLineEdgeByStepWithPos(final WB_PolyLine poly, final double step) {
+        // 得到多边形所有点
+        WB_Coord[] polyPoints = poly.getPoints().toArray();
+
+        // 初始值
+        ZPoint start = new ZPoint(polyPoints[0]);
+        ZPoint end = new ZPoint(polyPoints[polyPoints.length - 1]);
+
+        ZPoint p1 = start;
+        double curr_span = step;
+        double curr_dist;
+
+        List<ZPoint> pointList = new ArrayList<>();
+        List<Integer> indexList = new ArrayList<>();
+
+        pointList.add(p1);
+        indexList.add(0);
+        for (int i = 1; i < poly.getNumberOfPoints(); i++) {
+            ZPoint p2 = new ZPoint(polyPoints[i]);
+            curr_dist = p1.distance(p2);
+            while (curr_dist >= curr_span) {
+                ZPoint p = p1.add(p2.sub(p1).unit().scaleTo(curr_span));
+                pointList.add(p);
+                indexList.add(i - 1);
+                p1 = p;
+                curr_span = step;
+                curr_dist = p1.distance(p2);
+            }
+            p1 = p2;
+            curr_span = curr_span - curr_dist;
+        }
+
+        // 如果封闭，点数=段数，如果开放，点数=段数+1
+        if (poly instanceof WB_Ring) {
+            if (start.distance(pointList.get(pointList.size() - 1)) < epsilon) {
+                pointList.remove(pointList.size() - 1);
+                indexList.remove(indexList.size() - 1);
+            }
+        } else {
+            if (end.distance(pointList.get(pointList.size() - 1)) > epsilon) {
+                pointList.add(end);
+                indexList.add(poly.getNumberSegments() - 1);
+            }
+        }
+
+        // 创建linkedHashMap
+        Map<ZPoint, Integer> result = new LinkedHashMap<>();
+        for (int i = 0; i < pointList.size(); i++) {
+            result.put(pointList.get(i), indexList.get(i));
+        }
+        return result;
+    }
+
+    /**
      * 给定阈值上下限，剖分多边形(Polygon)
      *
      * @param poly    input polygon
@@ -920,6 +985,33 @@ public final class ZGeoMath {
         }
 //        System.out.println("step:" + finalStep);
         return splitWB_PolyLineEdgeByStep(poly, finalStep);
+    }
+
+    /**
+     * 给定阈值上下限，剖分多段线(WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap
+     *
+     * @param poly    input polyline (polygon)
+     * @param maxStep max step to divide
+     * @param minStep min step to divide
+     * @return java.util.Map<geometry.ZPoint, java.lang.Integer>
+     */
+    public static Map<ZPoint, Integer> splitWB_PolyLineEdgeByThresholdWithPos(final WB_PolyLine poly, final double maxStep, final double minStep) {
+        assert maxStep >= minStep : "please input valid threshold";
+        double length = 0;
+        for (int i = 0; i < poly.getNumberSegments(); i++) {
+            length = length + poly.getSegment(i).getLength();
+        }
+        double finalStep = 0;
+        for (int i = 1; i < Integer.MAX_VALUE; i++) {
+            double curr_step = length / i;
+            if (curr_step >= minStep && curr_step <= maxStep) {
+                finalStep = curr_step;
+                break;
+            } else if (curr_step < minStep) {
+                return new LinkedHashMap<>();
+            }
+        }
+        return splitWB_PolyLineEdgeByStepWithPos(poly, finalStep);
     }
 
     /**
@@ -1053,12 +1145,12 @@ public final class ZGeoMath {
     }
 
     /**
-    * 检查两个WB_Polygon是否同向
-    *
-    * @param p1
-    * @param p2
-    * @return boolean
-    */
+     * 检查两个WB_Polygon是否同向
+     *
+     * @param p1 polygon1
+     * @param p2 polygon2
+     * @return boolean
+     */
     public static boolean isNormalEquals(final WB_Polygon p1, final WB_Polygon p2) {
         return p1.getNormal().equals(p2.getNormal());
     }
@@ -1118,5 +1210,43 @@ public final class ZGeoMath {
         ZPoint point2 = new ZPoint(polygon.getSegment(index).getEndpoint()).add(bisector2.scaleTo(dist / Math.abs(v3.unit().cross2D(bisector2))));
 
         return new ZLine(point1, point2);
+    }
+
+    /**
+     * 偏移多边形的若干条边线（默认输入为正向首尾相接多边形），返回多段线或多边形
+     *
+     * @param poly  input polygon
+     * @param index segment indices to be offset
+     * @param dist  offset distance
+     * @return wblut.geom.WB_PolyLine
+     */
+    public static WB_PolyLine offsetWB_PolygonSegments(final WB_Polygon poly, final int[] index, final double dist) {
+        // make sure polygon's start and end point are coincident
+        WB_Polygon polygon = ZTransform.validateWB_Polygon(poly);
+
+        WB_Point[] linePoints = new WB_Point[index.length + 1];
+        for (int i = 0; i < index.length; i++) {
+            int prev = (index[i] + polygon.getNumberSegments() - 1) % polygon.getNumberSegments();
+
+            ZPoint v1 = new ZPoint(polygon.getSegment(prev).getOrigin()).sub(new ZPoint(polygon.getSegment(prev).getEndpoint()));
+            ZPoint v2 = new ZPoint(polygon.getSegment(index[i]).getEndpoint()).sub(new ZPoint(polygon.getSegment(index[i]).getOrigin()));
+            ZPoint bisector1 = getAngleBisectorOrdered(v1, v2);
+            ZPoint point1 = new ZPoint(polygon.getSegment(index[i]).getOrigin()).add(bisector1.scaleTo(dist / Math.abs(v1.unit().cross2D(bisector1))));
+
+            linePoints[i] = point1.toWB_Point();
+        }
+
+        int next = (index[index.length - 1] + 1) % polygon.getNumberSegments();
+        ZPoint v3 = new ZPoint(polygon.getSegment(index[index.length - 1]).getOrigin()).sub(new ZPoint(polygon.getSegment(index[index.length - 1]).getEndpoint()));
+        ZPoint v4 = new ZPoint(polygon.getSegment(next).getEndpoint()).sub(new ZPoint(polygon.getSegment(next).getOrigin()));
+        ZPoint bisector2 = getAngleBisectorOrdered(v3, v4);
+        ZPoint point2 = new ZPoint(polygon.getSegment(index[index.length - 1]).getEndpoint()).add(bisector2.scaleTo(dist / Math.abs(v3.unit().cross2D(bisector2))));
+        linePoints[linePoints.length - 1] = point2.toWB_Point();
+
+        if (linePoints[0].equals(linePoints[linePoints.length - 1])) {
+            return new WB_Polygon(linePoints);
+        } else {
+            return new WB_PolyLine(linePoints);
+        }
     }
 }
