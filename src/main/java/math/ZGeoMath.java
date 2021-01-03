@@ -1,6 +1,9 @@
 package math;
 
-import geometry.*;
+import geometry.ZEdge;
+import geometry.ZLine;
+import geometry.ZNode;
+import geometry.ZPoint;
 import org.locationtech.jts.geom.*;
 import transform.ZTransform;
 import wblut.geom.*;
@@ -37,6 +40,7 @@ import java.util.Map;
  * 找到点在多边形哪条边上（可返回WB_Segment, ZLine, 或两顶点序号）
  * 从一组多边形中找到包含输入点的那一个（返回序号）
  * ### 二维轮廓找点相关
+ * 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回结果点，或沿途的所有线段
  * 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点
  * 输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）
  * 输入步长，剖分多段线或多边形的边 (WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap
@@ -78,11 +82,11 @@ public final class ZGeoMath {
             if (v0.dot2D(v1) > 0) { // v0->v1为0度
                 return v0.unit();
             } else { // v0->v1为180度
-                ZPoint vertical = new ZPoint(v0.y(), -v0.x());
-                if (!(v0.cross2D(vertical) > 0)) {
-                    vertical.scaleSelf(-1);
+                ZPoint perpendicular = new ZPoint(v0.yd(), -v0.xd());
+                if (!(v0.cross2D(perpendicular) > 0)) {
+                    perpendicular.scaleSelf(-1);
                 }
-                return vertical.unit();
+                return perpendicular.unit();
             }
         }
     }
@@ -177,7 +181,7 @@ public final class ZGeoMath {
         assert vectors.size() > 0 : "input list must at least include 1 vector";
         double[] atanValue = new double[vectors.size()];
         for (int i = 0; i < vectors.size(); i++) {
-            double curr_value = Math.atan2(vectors.get(i).y(), vectors.get(i).x());
+            double curr_value = Math.atan2(vectors.get(i).yd(), vectors.get(i).xd());
             atanValue[i] = curr_value;
         }
         return ZMath.getArraySortedIndices(atanValue);
@@ -556,7 +560,7 @@ public final class ZGeoMath {
      * @param lines list of lines
      * @return geometry.ZPoint
      */
-    public static ZPoint closetPointToLineList(final ZPoint p, final List<ZLine> lines) {
+    public static ZPoint closetPointToLineList(final ZPoint p, final List<? extends ZLine> lines) {
         ZPoint closet = new ZPoint(WB_GeometryOp2D.getClosestPoint2D(p.toWB_Point(), lines.get(0).toWB_Segment()));
         for (int i = 1; i < lines.size(); i++) {
             ZPoint curr = new ZPoint(WB_GeometryOp2D.getClosestPoint2D(p.toWB_Point(), lines.get(i).toWB_Segment()));
@@ -577,7 +581,7 @@ public final class ZGeoMath {
      * @return boolean
      */
     public static boolean pointOnLine(final ZPoint p, final ZLine line) {
-        double crossValue = line.getDirection().cross2D(p.sub(line.pt0()));
+        double crossValue = line.getDirection().cross2D(p.sub(line.getPt0()));
         return Math.abs(crossValue) < epsilon;
     }
 
@@ -589,11 +593,11 @@ public final class ZGeoMath {
      * @return boolean
      */
     public static boolean pointOnRay(final ZPoint p, final ZLine ray) {
-        double crossValue = ray.getDirection().cross2D(p.sub(ray.pt0()));
+        double crossValue = ray.getDirection().cross2D(p.sub(ray.getPt0()));
         if (Math.abs(crossValue) < epsilon) {
-            double minX = Math.min(ray.pt0().x(), ray.pt1().x());
-            double minY = Math.min(ray.pt0().y(), ray.pt1().y());
-            return minX <= p.x() && minY <= p.y();
+            double minX = Math.min(ray.getPt0().xd(), ray.getPt1().xd());
+            double minY = Math.min(ray.getPt0().yd(), ray.getPt1().yd());
+            return minX <= p.xd() && minY <= p.yd();
         } else {
             return false;
         }
@@ -607,13 +611,13 @@ public final class ZGeoMath {
      * @return boolean
      */
     public static boolean pointOnSegment(final ZPoint p, final ZLine seg) {
-        double crossValue = seg.getDirection().cross2D(p.sub(seg.pt0()));
+        double crossValue = seg.getDirection().cross2D(p.sub(seg.getPt0()));
         if (Math.abs(crossValue) < epsilon) {
-            double minX = Math.min(seg.pt0().x(), seg.pt1().x());
-            double maxX = Math.max(seg.pt0().x(), seg.pt1().x());
-            double minY = Math.min(seg.pt0().y(), seg.pt1().y());
-            double maxY = Math.max(seg.pt0().y(), seg.pt1().y());
-            return minX <= p.x() && p.x() <= maxX && minY <= p.y() && p.y() <= maxY;
+            double minX = Math.min(seg.getPt0().xd(), seg.getPt1().xd());
+            double maxX = Math.max(seg.getPt0().xd(), seg.getPt1().xd());
+            double minY = Math.min(seg.getPt0().yd(), seg.getPt1().yd());
+            double maxY = Math.max(seg.getPt0().yd(), seg.getPt1().yd());
+            return minX <= p.xd() && p.xd() <= maxX && minY <= p.yd() && p.yd() <= maxY;
         } else {
             return false;
         }
@@ -635,6 +639,7 @@ public final class ZGeoMath {
                 break;
             }
         }
+
         return result;
     }
 
@@ -731,6 +736,62 @@ public final class ZGeoMath {
     /*-------- 二维轮廓找点相关 --------*/
 
     /**
+     * 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回结果点
+     *
+     * @param startNode start node
+     * @param dist      distance to move
+     * @return java.util.List<geometry.ZPoint>
+     */
+    public List<ZPoint> pointsOnGraphByDist(final ZNode startNode, final ZNode lastNode, final double dist) {
+        List<ZPoint> result = new ArrayList<>();
+        for (int i = 0; i < startNode.geiNeighborNum(); i++) {
+            if (startNode.getNeighbor(i) != lastNode) { // 排除父节点
+                double curr_span = dist;
+                if (startNode.getLinkedEdge(i).getLength() >= curr_span) {
+                    // 若edge长度大于当前步长，在这条edge上记录终点
+                    result.add(startNode.add(startNode.getVecUnitToNeighbor(i).scaleTo(dist)));
+                } else {
+                    if (startNode.getNeighbor(i).geiNeighborNum() != 1) {
+                        result.add(startNode.getNeighbor(i));
+                        // 若已检索到端头节点，把端头加入结果，并停止
+                        curr_span = curr_span - startNode.getLinkedEdge(i).getLength();
+                        result.addAll(pointsOnGraphByDist(startNode.getNeighbor(i), startNode, curr_span));
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回沿途的所有线段
+     *
+     * @param startNode start node
+     * @param dist      distance to move
+     * @return java.util.List<geometry.ZLine>
+     */
+    public static List<ZLine> segmentsOnGraphByDist(final ZNode startNode, final ZNode lastNode, final double dist) {
+        List<ZLine> result = new ArrayList<>();
+        for (int i = 0; i < startNode.geiNeighborNum(); i++) {
+            if (startNode.getNeighbor(i) != lastNode) { // 排除父节点
+                double curr_span = dist;
+                if (startNode.getLinkedEdge(i).getLength() >= curr_span) {
+                    // 若edge长度大于当前步长，记录该步长的线段并停止
+                    result.add(new ZLine(startNode, startNode.add(startNode.getVecUnitToNeighbor(i).scaleTo(dist))));
+                } else {
+                    result.add(startNode.getLinkedEdge(i));
+                    if (startNode.getNeighbor(i).geiNeighborNum() != 1) {
+                        // 若已检索到端头节点，则停止
+                        curr_span = curr_span - startNode.getLinkedEdge(i).getLength();
+                        result.addAll(segmentsOnGraphByDist(startNode.getNeighbor(i), startNode, curr_span));
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * 找到多边形边上某点沿边移动一定距离后的两个点（0为多边形点序正向，1为逆向）
      *
      * @param origin input point (should be on the edge of polygon)
@@ -785,6 +846,7 @@ public final class ZGeoMath {
 
             return new ZPoint[]{forward, backward};
         } else {
+            System.out.println(origin.toString());
             throw new NullPointerException("point not on polygon edges");
         }
     }

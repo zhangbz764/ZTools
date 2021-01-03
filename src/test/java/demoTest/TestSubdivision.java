@@ -3,7 +3,6 @@ package demoTest;
 import Guo_Cam.CameraController;
 import org.locationtech.jts.geom.GeometryFactory;
 import processing.core.PApplet;
-import render.JtsRender;
 import subdivision.*;
 import wblut.geom.WB_GeometryFactory;
 import wblut.geom.WB_Point;
@@ -30,6 +29,7 @@ public class TestSubdivision extends PApplet {
 
     WB_Polygon inputPolygon;
     ZSubdivision subdivision;
+    boolean updateShape;
 
     GeometryFactory gf = new GeometryFactory();
     WB_GeometryFactory wbgf = new WB_GeometryFactory();
@@ -38,7 +38,7 @@ public class TestSubdivision extends PApplet {
 
     public void setup() {
         render = new WB_Render(this);
-//        gcam = new CameraController(this);
+        gcam = new CameraController(this);
 
         WB_Point[] outer = new WB_Point[9]; // counter clockwise
         outer[0] = new WB_Point(100, 500, 0);
@@ -79,13 +79,18 @@ public class TestSubdivision extends PApplet {
     public void draw() {
         background(255);
         subdivision.display(this, render);
+        if (updateShape) {
+            subdivision.updateSiteShape();
+        }
 
         translate(0, -300);
-        fill(0);
-        textSize(15);
-        for (int i = 0; i < inputPolygon.getNumberSegments(); i++) {
-            text(i, inputPolygon.getPoint(i).xf(), inputPolygon.getPoint(i).yf(), inputPolygon.getPoint(i).zf());
-        }
+        subdivision.displayMesh(render);
+
+//        fill(0);
+//        textSize(15);
+//        for (int i = 0; i < inputPolygon.getNumberSegments(); i++) {
+//            text(i, inputPolygon.getPoint(i).xf(), inputPolygon.getPoint(i).yf(), inputPolygon.getPoint(i).zf());
+//        }
     }
 
     public void keyPressed() {
@@ -95,7 +100,7 @@ public class TestSubdivision extends PApplet {
             subdivision.performDivide();
         } else if (key == '2') {
             subdivision = new ZSD_OBB(inputPolygon);
-            subdivision.setCellConstraint(600);
+            subdivision.setCellConstraint(1000);
             subdivision.performDivide();
         } else if (key == '3') {
             subdivision = new ZSD_DoubleStrip(inputPolygon);
@@ -103,6 +108,14 @@ public class TestSubdivision extends PApplet {
         } else if (key == '4') {
             subdivision = new ZSD_SideStrip(inputPolygon);
             subdivision.performDivide();
+        } else if (key == '5') {
+            subdivision = new ZSD_Voronoi(inputPolygon);
+            subdivision.setCellConstraint(80);
+            subdivision.performDivide();
+            subdivision.initializeShapeVector();
+        }
+        if (key == 'u') {
+            updateShape = !updateShape;
         }
     }
 

@@ -112,6 +112,17 @@ public final class ZMath {
     }
 
     /**
+    * 给定范围生成随机整数
+    *
+     * @param min floor limit
+     * @param max cap limit
+    * @return int
+    */
+    public static int randomInt(double min, double max) {
+        return (int) (Math.random() * (max - min) + min);
+    }
+
+    /**
      * 将目标数字从一个范围映射到另一个范围内的对应数字
      *
      * @param num    number to be mapped

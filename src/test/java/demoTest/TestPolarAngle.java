@@ -54,22 +54,22 @@ public class TestPolarAngle extends PApplet {
 
     public void draw() {
         background(255);
-        ellipse((float) pts[0].x(), (float) pts[0].y(), 5, 5);
+        ellipse((float) pts[0].xf(), (float) pts[0].yd(), 5, 5);
 
         for (int i = 0; i < sort.length; i++) {
             strokeWeight((i + 1) * 2);
-            line((float) o.x(), (float) o.y(), (float) pts[sort[i]].x(), (float) pts[sort[i]].y());
-            text(i, (float) pts[sort[i]].x(), (float) pts[sort[i]].y());
+            line((float) o.xd(), (float) o.yd(), (float) pts[sort[i]].xd(), (float) pts[sort[i]].yd());
+            text(i, (float) pts[sort[i]].xd(), (float) pts[sort[i]].yd());
         }
 
         bb.set(mouseX, mouseY);
-        line((float) oo.x(), (float) oo.y(), (float) aa.x(), (float) aa.y());
-        line((float) oo.x(), (float) oo.y(), (float) bb.x(), (float) bb.y());
+        line((float) oo.xd(), (float) oo.yd(), (float) aa.xd(), (float) aa.yd());
+        line((float) oo.xd(), (float) oo.yd(), (float) bb.xd(), (float) bb.yd());
 
-        ZPoint center = new ZPoint((oo.x() + bb.x()) * 0.5, (oo.y() + bb.y()) * 0.5);
+        ZPoint center = new ZPoint((oo.xd() + bb.xd()) * 0.5, (oo.yd() + bb.yd()) * 0.5);
         ZPoint rotate = bb.add(center.sub(bb).unit().rotate2D(Math.PI * 1.25).scaleTo(100));
 
-        line((float) bb.x(), (float) bb.y(), (float) rotate.x(), (float) rotate.y());
+        line((float) bb.xd(), (float) bb.yd(), (float) rotate.xd(), (float) rotate.yd());
 
         bisector = ZGeoMath.getAngleBisectorOrdered(aa.sub(oo), bb.sub(oo));
         bisector.displayAsVector(this, oo, 50);

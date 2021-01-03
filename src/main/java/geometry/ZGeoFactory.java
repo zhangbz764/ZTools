@@ -2,12 +2,14 @@ package geometry;
 
 import math.ZMath;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import transform.ZTransform;
-import wblut.geom.*;
+import wblut.geom.WB_GeometryFactory;
+import wblut.geom.WB_Point;
+import wblut.geom.WB_PolyLine;
+import wblut.geom.WB_Ring;
 
 import java.util.ArrayList;
 import java.util.List;

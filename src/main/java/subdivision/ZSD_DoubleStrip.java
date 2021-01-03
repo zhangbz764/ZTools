@@ -1,21 +1,19 @@
 package subdivision;
 
 import geometry.ZGeoFactory;
-import geometry.ZLine;
 import geometry.ZSkeleton;
 import math.ZGeoMath;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
-import render.JtsRender;
-import transform.ZTransform;
-import wblut.geom.*;
-import wblut.hemesh.*;
+import wblut.geom.WB_Point;
+import wblut.geom.WB_Polygon;
+import wblut.geom.WB_Vector;
+import wblut.hemesh.HEC_FromPolygons;
+import wblut.hemesh.HE_Halfedge;
+import wblut.hemesh.HE_Mesh;
 import wblut.processing.WB_Render;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 // TODO: 2020/12/10 double strip
 

@@ -48,7 +48,7 @@ public class ZLine {
         this.direction = pt1.sub(pt0);
     }
 
-    /* ------------- geometry method ------------- */
+    /* ------------- member function ------------- */
 
     public ZLine scaleTo(double multiple) {
         ZPoint newDir = direction.scaleTo(multiple);
@@ -59,7 +59,7 @@ public class ZLine {
         return new ZLine(this.pt1, this.pt0);
     }
 
-    /* ------------- set & get ------------- */
+    /* ------------- setter & getter ------------- */
 
     public void set(ZPoint pt0, ZPoint pt1) {
         this.pt0 = pt0;
@@ -79,12 +79,8 @@ public class ZLine {
         return pt1;
     }
 
-    public ZPoint pt0() {
-        return this.pt0;
-    }
-
-    public ZPoint pt1() {
-        return this.pt1;
+    public ZPoint getCenter() {
+        return pt0.centerWith(pt1);
     }
 
     public ZPoint getDirection() {
@@ -109,7 +105,6 @@ public class ZLine {
     /**
      * 转换为p+td形式
      *
-     * @param
      * @return geometry.ZPoint[]
      */
     public ZPoint[] toLinePD() {
@@ -122,7 +117,6 @@ public class ZLine {
     /**
      * 转换为p+td形式（单位向量）
      *
-     * @param
      * @return geometry.ZPoint[]
      */
     public ZPoint[] toUnitLinePD() {
@@ -132,42 +126,18 @@ public class ZLine {
         return line;
     }
 
-    /**
-     * 转换为LineString
-     *
-     * @param
-     * @return org.locationtech.jts.geom.LineString
-     */
     public LineString toJtsLineString() {
         return gf.createLineString(new Coordinate[]{pt0.toJtsCoordinate(), pt1.toJtsCoordinate()});
     }
 
-    /**
-     * 转换为Segment
-     *
-     * @param
-     * @return org.locationtech.jts.triangulate.Segment
-     */
     public Segment toJtsSegment() {
         return new Segment(pt0.toJtsCoordinate(), pt1.toJtsCoordinate());
     }
 
-    /**
-     * 转换为WB_Segment
-     *
-     * @param
-     * @return wblut.geom.WB_Segment
-     */
     public WB_Segment toWB_Segment() {
-        return new WB_Segment(new WB_Point(pt0.toWB_Point()), pt1().toWB_Point());
+        return new WB_Segment(new WB_Point(pt0.toWB_Point()), pt1.toWB_Point());
     }
 
-    /**
-     * 转换为WB_Ray
-     *
-     * @param
-     * @return wblut.geom.WB_Ray
-     */
     public WB_Ray toWB_Ray() {
         return new WB_Ray(pt0.toWB_Point(), direction.toWB_Point());
     }
@@ -178,25 +148,12 @@ public class ZLine {
 
     }
 
-    /**
-     * 绘制直线
-     *
-     * @param app
-     * @return void
-     */
     public void display(PApplet app) {
-        app.line((float) pt0.x(), (float) pt0.y(), (float) pt0.z(), (float) pt1.x(), (float) pt1.y(), (float) pt1.z());
+        app.line(pt0.xf(), pt0.yf(), pt0.zf(), pt1.xf(), pt1.yf(), pt1.zf());
     }
 
-    /**
-     * 绘制直线（给定线宽）
-     *
-     * @param app
-     * @param strokeWeight
-     * @return void
-     */
     public void display(PApplet app, float strokeWeight) {
         app.strokeWeight(strokeWeight);
-        app.line((float) pt0.x(), (float) pt0.y(), (float) pt0.z(), (float) pt1.x(), (float) pt1.y(), (float) pt1.z());
+        display(app);
     }
 }

@@ -3,16 +3,14 @@ package subdivision;
 import geometry.ZGeoFactory;
 import math.ZMath;
 import org.locationtech.jts.algorithm.MinimumDiameter;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import processing.core.PApplet;
-import render.JtsRender;
 import transform.ZTransform;
-import wblut.geom.WB_GeometryFactory;
 import wblut.geom.WB_Polygon;
-import wblut.geom.WB_Vector;
-import wblut.hemesh.HEC_FromPolygons;
-import wblut.hemesh.HE_Mesh;
 import wblut.processing.WB_Render;
 
 import java.util.ArrayList;
@@ -124,8 +122,6 @@ public class ZSD_OBB extends ZSubdivision {
 
     public void display(PApplet app, WB_Render render) {
         app.pushStyle();
-        app.noFill();
-        app.stroke(0);
         super.displayWithColor(app, render);
         app.popStyle();
     }

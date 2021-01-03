@@ -13,7 +13,10 @@ import wblut.hemesh.HE_Mesh;
 import wblut.hemesh.HE_Vertex;
 
 import javax.vecmath.Point3d;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * compute straight skeleton using campskeleton by twak

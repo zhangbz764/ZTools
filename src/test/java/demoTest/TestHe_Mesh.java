@@ -11,6 +11,7 @@ import wblut.geom.WB_Polygon;
 import wblut.hemesh.HEC_FromPolygons;
 import wblut.hemesh.HE_Face;
 import wblut.hemesh.HE_Mesh;
+import wblut.hemesh.HE_Vertex;
 import wblut.processing.WB_Render;
 
 import java.util.List;
@@ -45,6 +46,12 @@ public class TestHe_Mesh extends PApplet {
 
     /* ------------- setup ------------- */
 
+    /**
+     * set up 5 polygons
+     *
+     * @param
+     * @return void
+     */
     private void setPolys() {
         WB_Point[] pts0 = new WB_Point[5];
         pts0[0] = new WB_Point(200, 400);
@@ -90,12 +97,11 @@ public class TestHe_Mesh extends PApplet {
         System.out.println(poly0.getSimplePolygon().getNumberOfPoints());
     }
 
-    WB_Polygon testPoly;
-
     public void setup() {
-        gcam = new CameraController(this);
+//        gcam = new CameraController(this);
         render = new WB_Render(this);
         setPolys();
+
         WB_Polygon[] polys = new WB_Polygon[]{
                 poly1, poly2, poly3, poly4
         };
@@ -112,11 +118,17 @@ public class TestHe_Mesh extends PApplet {
 
         System.out.println(mesh.getVertices().size());
         System.out.println(mesh.getAllBoundaryVertices().size());
-
-        testPoly = mesh.getFaceWithIndex(0).getPolygon().getSimplePolygon();
-        System.out.println("dede " + testPoly.getNumberOfPoints());
+        for (HE_Face f : mesh.getFaces()) {
+            System.out.println("area  " + f.getFaceArea());
+        }
     }
 
+    /**
+     * union 2 neighbor faces, update mesh
+     *
+     * @param
+     * @return void
+     */
     private void optimize() {
         WB_Polygon p1 = mesh.getFaces().get(0).getPolygon();
         WB_Polygon p2 = mesh.getFaces().get(0).getNeighborFaces().get(0).getPolygon();
@@ -145,50 +157,46 @@ public class TestHe_Mesh extends PApplet {
         }
 
         mesh = new HEC_FromPolygons(newPolygons).create();
-
+        for (HE_Face f : mesh.getFaces()) {
+            System.out.println("area  " + f.getFaceArea());
+        }
     }
 
     /* ------------- draw ------------- */
 
     public void draw() {
         background(255);
-        box(20, 20, 20);
+        box(20, 20, 20); // origin
         strokeWeight(1);
+
+        // draw mesh
         for (int i = 0; i < mesh.getEdges().size(); i++) {
             render.drawEdge(mesh.getEdges().get(i));
         }
+
+        // text index
         fill(128);
         for (int j = 0; j < mesh.getFaces().size(); j++) {
             text(j, mesh.getFaceWithIndex(j).getFaceCenter().xf(), mesh.getFaceWithIndex(j).getFaceCenter().yf());
         }
-        noStroke();
-//        for (HE_Face nei : mesh.getFaceWithIndex(3).getNeighborFaces()) {
-//            render.drawFace(nei);
-//        }
-        stroke(0);
-        strokeWeight(5);
-        //render.drawPolygonEdges2D(testPoly);
 
+        noFill();
         for (int i = 0; i < mesh.getAllBoundaryVertices().size(); i++) {
             ellipse(mesh.getAllBoundaryVertices().get(i).xf(),
                     mesh.getAllBoundaryVertices().get(i).yf(),
                     10, 10);
-
         }
-//        for (int k = 0; k < mesh.getNumberOfVertices(); k++) {
-//            if (!mesh.getVertexWithIndex(k).isBoundary()) {
-//                ellipse(mesh.getVertexWithIndex(k).xf(), mesh.getVertexWithIndex(k).yf(), 100, 100);
-//                for (HE_Vertex vertex : mesh.getVertexWithIndex(k).getNeighborVertices()) {
-//                    if (!vertex.isBoundary()) {
-//                        line(mesh.getVertexWithIndex(k).xf(), mesh.getVertexWithIndex(k).yf(), vertex.xf(), vertex.yf());
-//                    }
-//                }
-//            }
-//        }
+        for (HE_Vertex v : mesh.getFaces().get(0).getFaceVertices()) {
+            ellipse(v.xf(), v.yf(), 20, 20);
+        }
     }
 
     public void keyPressed() {
-        optimize();
+        if (key == '1') {
+            mesh.getFaces().get(0).getFaceVertices().get(0).set(mouseX, mouseY);
+        } else {
+            optimize();
+        }
     }
 
 }

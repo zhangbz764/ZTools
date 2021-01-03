@@ -36,7 +36,7 @@ public class ZSD_SingleStrip extends ZSubdivision {
 
     @Override
     public void performDivide() {
-        this.skeleton = new ZSkeleton(super.getOriginPolygon(), 40);
+        this.skeleton = new ZSkeleton(super.getOriginPolygon(), 4);
         List<ZLine> topSegments = skeleton.getTopEdges();
 
         topSegments.addAll(skeleton.getExtendedRidges());
@@ -83,7 +83,7 @@ public class ZSD_SingleStrip extends ZSubdivision {
         app.stroke(0);
         app.strokeWeight(3);
         app.fill(200);
-        super.displaySubPolygonsc(render);
+        super.displaySubPolygons(render);
 
         skeleton.display(app);
 //        skeleton.displayTopEdges(app);

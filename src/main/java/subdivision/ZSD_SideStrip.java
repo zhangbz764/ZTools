@@ -14,7 +14,10 @@ import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
 import wblut.processing.WB_Render;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * description
@@ -29,14 +32,14 @@ public class ZSD_SideStrip extends ZSubdivision {
     private List<ZLine> divideLines;
 
     private int[] offestIndices;
-    private double span = 25;
-    private double offsetDist = -30;
+    private double span = 11;
+    private double offsetDist = -12;
 
     /* ------------- constructor ------------- */
 
     public ZSD_SideStrip(WB_Polygon originPolygon) {
         super(originPolygon);
-        this.offestIndices = new int[]{1, 2, 3, 4, 5};
+        this.offestIndices = new int[]{1, 2,3};
     }
 
     @Override
@@ -224,7 +227,7 @@ public class ZSD_SideStrip extends ZSubdivision {
                 ZLine extendSeg = ZGeoMath.extendSegmentToPolygon(seg1, super.getOriginPolygon());
                 assert extendSeg != null;
                 newPolyPoints1.remove(0);
-                newPolyPoints1.add(0, extendSeg.pt1().toWB_Point());
+                newPolyPoints1.add(0, extendSeg.getPt0().toWB_Point());
                 polyLine1 = new WB_PolyLine(newPolyPoints1);
             }
             result.add(polyLine1);
@@ -245,7 +248,7 @@ public class ZSD_SideStrip extends ZSubdivision {
                 ZLine extendSeg = ZGeoMath.extendSegmentToPolygon(seg2, super.getOriginPolygon());
                 assert extendSeg != null;
                 newPolyPoints2.remove(newPolyPoints2.size() - 1);
-                newPolyPoints2.add(extendSeg.pt1().toWB_Point());
+                newPolyPoints2.add(extendSeg.getPt1().toWB_Point());
                 polyLine2 = new WB_PolyLine(newPolyPoints2);
             }
 
@@ -278,7 +281,7 @@ public class ZSD_SideStrip extends ZSubdivision {
                 ZLine extendSeg = ZGeoMath.extendSegmentToPolygon(seg1, super.getOriginPolygon());
                 assert extendSeg != null;
                 newPolyPoints.remove(0);
-                newPolyPoints.add(0, extendSeg.pt1().toWB_Point());
+                newPolyPoints.add(0, extendSeg.getPt1().toWB_Point());
             }
             if (concaveIndices.contains(offestIndices[offestIndices.length - 1] + 1)) {
                 newPolyPoints.add(super.getOriginPolygon().getPoint(offestIndices[offestIndices.length - 1] + 1));
@@ -290,7 +293,7 @@ public class ZSD_SideStrip extends ZSubdivision {
                 ZLine extendSeg = ZGeoMath.extendSegmentToPolygon(seg2, super.getOriginPolygon());
                 assert extendSeg != null;
                 newPolyPoints.remove(newPolyPoints.size() - 1);
-                newPolyPoints.add(extendSeg.pt1().toWB_Point());
+                newPolyPoints.add(extendSeg.getPt1().toWB_Point());
             }
             polyLine = new WB_PolyLine(newPolyPoints);
             result.add(polyLine);

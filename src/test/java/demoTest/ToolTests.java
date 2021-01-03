@@ -20,7 +20,7 @@ public class ToolTests {
 //        PApplet.main("demoTest.TestGeoRelation");
 
         /* 测试多边形等分、沿多边形边找点、多边形边线offset */
-//        PApplet.main("demoTest.TestPolySplit");
+        PApplet.main("demoTest.TestPolySplit");
 
         /* 测试hemesh里的最近点计算、线段trim和extend计算、op里的检测线段二维相交 */
 //        PApplet.main("demoTest.TestDistCloset");
@@ -38,7 +38,12 @@ public class ToolTests {
 //        PApplet.main("demoTest.TestCampSkeleton");
 
         /* 测试几种剖分方法 */
-        PApplet.main("demoTest.TestSubdivision");
+//        PApplet.main("demoTest.TestSubdivision");
 
+        /* 测试gurobi */
+//        PApplet.main("demoTest.TestGurobi");
+
+        /* 测试hemesh里的洞 */
+//        PApplet.main("demoTest.TestHolesHE_Mesh");
     }
 }

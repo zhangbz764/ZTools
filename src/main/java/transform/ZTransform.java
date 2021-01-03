@@ -4,7 +4,6 @@ import igeo.ICurve;
 import igeo.IPoint;
 import org.locationtech.jts.geom.*;
 import wblut.geom.*;
-import wblut.geom.WB_GeometryFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,17 +15,19 @@ import java.util.List;
  * @project shopping_mall
  * @date 2020/10/9
  * @time 17:27
- * 目前仅涉及简单多边形
+ * 目前仅涉及简单多边形，部分涉及带洞
  * ** IGeo <-> WB **
  * IPoint -> WB_Point
  * IPoint -> WB_Point 带缩放
  * ICurve -> WB_Geometry 根据点数和闭合与否返回WB_Polygon / WB_Polyline / WB_Segment
  * ICurve -> WB_Geometry 根据点数和闭合与否返回WB_Polygon / WB_Polyline / WB_Segment，带缩放
+ * ICurve -> WB_PolyLine 带缩放
  * ** IGeo <-> jts **
  * IPoint -> Coordinate
  * IPoint -> Point
  * ICurve -> Geometry 根据点数和闭合与否返回Polygon / LineString
  * ** WB <-> jts **
+ * WB_Point -> Point
  * WB_Polygon -> Polygon 如果WB_Polygon第一点与最后一点不重合，就加上最后一点
  * Polygon -> WB_Polygon
  * LineString -> WB_PolyLine
@@ -128,6 +129,26 @@ public class ZTransform {
         }
     }
 
+    /**
+     * 将ICurve转换为WB_PolyLine
+     *
+     * @param curve input ICurve
+     * @param scale scale ratio
+     * @return wblut.geom.WB_PolyLine
+     */
+    public static WB_PolyLine ICurveToWB_PolyLine(final ICurve curve, final double scale) {
+        if (curve.cpNum() >= 2) {
+            WB_Point[] points = new WB_Point[curve.cpNum()];
+            for (int i = 0; i < curve.cpNum(); i++) {
+                points[i] = new WB_Point(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z()).scale(scale);
+            }
+            return wbgf.createPolyLine(points);
+        } else {
+            System.out.println("***MAYBE OTHER TYPE OF GEOMETRY***");
+            return null;
+        }
+    }
+
     /*-------- IGeo <-> Jts --------*/
 
     /**
@@ -183,6 +204,12 @@ public class ZTransform {
 
     /*-------- WB <-> Jts --------*/
 
+    /**
+     * 将WB_Point转换为Point
+     *
+     * @param p input WB_Point
+     * @return org.locationtech.jts.geom.Point
+     */
     public static Point WB_PointToPoint(final WB_Point p) {
         return gf.createPoint(new Coordinate(p.xd(), p.yd(), p.zd()));
     }

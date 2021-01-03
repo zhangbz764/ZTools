@@ -7,6 +7,7 @@ import org.locationtech.jts.geom.Point;
 import processing.core.PApplet;
 import wblut.geom.WB_Coord;
 import wblut.geom.WB_Point;
+import wblut.geom.WB_Vector;
 
 import java.util.List;
 
@@ -80,26 +81,46 @@ public class ZPoint {
         this.z = c.zd();
     }
 
-    public double x() {
+    public double xd() {
         return this.x;
     }
 
-    public double y() {
+    public double yd() {
         return this.y;
     }
 
-    public double z() {
+    public double zd() {
         return this.z;
     }
 
-    public double r() {
+    public float xf() {
+        return (float) this.x;
+    }
+
+    public float yf() {
+        return (float) this.y;
+    }
+
+    public float zf() {
+        return (float) this.z;
+    }
+
+    public double rd() {
         return this.r;
+    }
+
+    public float rf() {
+        return (float) this.r;
     }
 
     /* ------------- transformation -------------*/
 
     public WB_Point toWB_Point() {
         return new WB_Point(x, y, z);
+    }
+
+    public WB_Vector toWB_Vector() {
+        return new WB_Vector(x, y, z);
     }
 
     public Coordinate toJtsCoordinate() {
@@ -128,7 +149,7 @@ public class ZPoint {
      * @return geometry.ZPoint
      */
     public ZPoint add(ZPoint v) {
-        return new ZPoint(x + v.x(), y + v.y(), z + v.z());
+        return new ZPoint(x + v.xd(), y + v.yd(), z + v.zd());
     }
 
     /**
@@ -138,7 +159,7 @@ public class ZPoint {
      * @return void
      */
     public void addSelf(ZPoint v) {
-        this.set(x + v.x(), y + v.y(), z + v.z());
+        this.set(x + v.xd(), y + v.yd(), z + v.zd());
     }
 
     /**
@@ -148,7 +169,7 @@ public class ZPoint {
      * @return geometry.ZPoint
      */
     public ZPoint sub(ZPoint v) {
-        return new ZPoint(x - v.x(), y - v.y(), z - v.z());
+        return new ZPoint(x - v.xd(), y - v.yd(), z - v.zd());
     }
 
     /**
@@ -209,7 +230,7 @@ public class ZPoint {
      * @return geometry.ZPoint
      */
     public ZPoint centerWith(ZPoint other) {
-        return new ZPoint((x + other.x()) / 2, (y + other.y()) / 2, (z + other.z()) / 2);
+        return new ZPoint((x + other.xd()) * 0.5, (y + other.yd()) * 0.5, (z + other.zd()) * 0.5);
     }
 
     /**
@@ -219,7 +240,7 @@ public class ZPoint {
      * @return double
      */
     public double dot2D(ZPoint v) {
-        return x * v.x() + y * v.y();
+        return x * v.xd() + y * v.yd();
     }
 
     /**
@@ -229,7 +250,7 @@ public class ZPoint {
      * @return double
      */
     public double cross2D(ZPoint v) {
-        return x * v.y() - y * v.x();
+        return x * v.yd() - y * v.xd();
     }
 
     /**
@@ -278,7 +299,7 @@ public class ZPoint {
      * @return double
      */
     public double distanceSq(ZPoint other) {
-        return ((x - other.x()) * (x - other.x()) + (y - other.y()) * (y - other.y()) + (z - other.z()) * (z - other.z()));
+        return ((x - other.xd()) * (x - other.xd()) + (y - other.yd()) * (y - other.yd()) + (z - other.zd()) * (z - other.zd()));
     }
 
     /**
@@ -326,8 +347,8 @@ public class ZPoint {
         app.pushStyle();
         app.noFill();
         app.stroke(255, 0, 0);
-        app.line((float) base.x(), (float) base.y(), (float) base.z(), (float) dest.x(), (float) dest.y(), (float) dest.z());
-        app.ellipse((float) dest.x(), (float) dest.y(), vecCap, vecCap);
+        app.line(base.xf(), base.yf(), base.zf(), dest.xf(), dest.yf(), dest.zf());
+        app.ellipse(dest.xf(), dest.yf(), vecCap, vecCap);
         app.popStyle();
     }
 
@@ -344,8 +365,8 @@ public class ZPoint {
         app.pushStyle();
         app.noFill();
         app.stroke(255, 0, 0);
-        app.line((float) base.x(), (float) base.y(), (float) base.z(), (float) dest.x(), (float) dest.y(), (float) dest.z());
-        app.ellipse((float) dest.x(), (float) dest.y(), vecCap, vecCap);
+        app.line(base.xf(), base.yf(), base.zf(), dest.xf(), dest.yf(), dest.zf());
+        app.ellipse(dest.xf(), dest.yf(), vecCap, vecCap);
         app.popStyle();
     }
 }
