@@ -48,13 +48,15 @@ import java.util.Map;
  * 给定阈值上下限，剖分多段线(WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap
  * 给定阈值上下限，剖分多段线的每条边(WB_PolyLine)，即剖分结果一定包含每个顶点，但步长不同
  * 输入等分数量，将多边形或多段线等分，得到所有点
- * ### 其他
- * 输入Geometry，设置Jts的Precision Model
+ * ### 多边形工具
  * 使WB_Polygon点序反向
  * 检查两个WB_Polygon是否同向
  * 使WB_Polygon法向量Z坐标为正或为负（不是拍平到xy平面，只是翻个面）
+ * 找到多边形中最长边和最短边，返回序号
  * 偏移多边形的某一条边线（默认输入为正向首尾相接多边形）
  * 偏移多边形的若干条边线（默认输入为正向首尾相接多边形），返回多段线或多边形
+ * ### 其他
+ * 输入Geometry，设置Jts的Precision Model
  * <p>
  * ...增加中
  */
@@ -226,7 +228,7 @@ public final class ZGeoMath {
      * @param other  vector list
      * @return geometry.ZPoint
      */
-    public static ZPoint findClosetVec(final ZPoint target, final List<? extends ZPoint> other) {
+    public static ZPoint getClosetVec(final ZPoint target, final List<? extends ZPoint> other) {
         assert other != null && other.size() != 0 : "invalid input vectors";
         double[] dotValue = new double[other.size()];
         for (int i = 0; i < other.size(); i++) {
@@ -238,6 +240,8 @@ public final class ZGeoMath {
 
     /*-------- 二维相交相关 --------*/
 
+    // TODO: 2021/1/4 补充相交判断 （长期）
+
     /**
      * 检测两条WB_Segment是否相交
      *
@@ -247,6 +251,28 @@ public final class ZGeoMath {
      */
     public static boolean checkWB_SegmentIntersect(final WB_Segment seg0, final WB_Segment seg1) {
         return WB_GeometryOp2D.checkIntersection2DProper(seg0.getOrigin(), seg0.getEndpoint(), seg1.getOrigin(), seg1.getEndpoint());
+    }
+
+    /**
+     * 检测射线和线段是否相交
+     *
+     * @param ray ray {point P, direction d}
+     * @param seg segment {point P, direction d}
+     * @return boolean
+     */
+    public static boolean checkRaySegmentIntersection(final ZPoint[] ray, final ZPoint[] seg) {
+        ZPoint delta = seg[0].sub(ray[0]);
+        double crossBase = ray[1].cross2D(seg[1]);
+        double crossDelta0 = delta.cross2D(ray[1]);
+        double crossDelta1 = delta.cross2D(seg[1]);
+
+        if (Math.abs(crossBase) < epsilon) {
+            return false;
+        } else {
+            double s = crossDelta1 / crossBase; // ray
+            double t = crossDelta0 / crossBase; // seg
+            return s >= 0 && t >= 0 && t <= 1;
+        }
     }
 
     /**
@@ -1045,7 +1071,6 @@ public final class ZGeoMath {
                 return new ArrayList<ZPoint>();
             }
         }
-//        System.out.println("step:" + finalStep);
         return splitWB_PolyLineEdgeByStep(poly, finalStep);
     }
 
@@ -1153,22 +1178,7 @@ public final class ZGeoMath {
         return splitWB_PolyLineEdgeByStep(poly, step);
     }
 
-    /*-------- 其他几何运算 --------*/
-
-    /**
-     * 设置 jts precision model (FLOAT, FLOAT_SINGLE, FIXED)
-     *
-     * @param geometry geometry to be applied
-     * @param pm       precision model
-     * @return void
-     */
-    public static void applyJtsPrecisionModel(final Geometry geometry, final PrecisionModel pm) {
-        Coordinate[] coordinates = geometry.getCoordinates();
-        for (int i = 0; i < coordinates.length; i++) {
-            Coordinate coordinate = coordinates[i];
-            pm.makePrecise(coordinate);
-        }
-    }
+    /*-------- 多边形工具 --------*/
 
     /**
      * WB_Polygon 点序反向（支持带洞）
@@ -1246,6 +1256,32 @@ public final class ZGeoMath {
     }
 
     /**
+     * 找到多边形中最长边和最短边，返回序号
+     *
+     * @param polygon input polygon
+     * @return int[]  0 -> longest 1 -> shortest
+     */
+    public static int[] getLongestAndShortestSegment(final WB_Polygon polygon) {
+        WB_Polygon valid = ZTransform.validateWB_Polygon(polygon);
+        int maxIndex = 0;
+        int minIndex = 0;
+        double maxLength = valid.getPoint(0).getSqDistance(valid.getPoint(1));
+        double minLength = maxLength;
+        for (int i = 1; i < valid.getNumberOfShellPoints() - 1; i++) {
+            double currLength = valid.getPoint(i).getSqDistance(valid.getPoint(i + 1));
+            if (currLength > maxLength) {
+                maxLength = currLength;
+                maxIndex = i;
+            }
+            if (currLength < minLength) {
+                minLength = currLength;
+                minIndex = i;
+            }
+        }
+        return new int[]{maxIndex, minIndex};
+    }
+
+    /**
      * 偏移多边形的某一条边线（默认输入为正向首尾相接多边形）
      *
      * @param poly  input polygon
@@ -1309,6 +1345,23 @@ public final class ZGeoMath {
             return new WB_Polygon(linePoints);
         } else {
             return new WB_PolyLine(linePoints);
+        }
+    }
+
+    /*-------- 其他几何运算 --------*/
+
+    /**
+     * 设置 jts precision model (FLOAT, FLOAT_SINGLE, FIXED)
+     *
+     * @param geometry geometry to be applied
+     * @param pm       precision model
+     * @return void
+     */
+    public static void applyJtsPrecisionModel(final Geometry geometry, final PrecisionModel pm) {
+        Coordinate[] coordinates = geometry.getCoordinates();
+        for (int i = 0; i < coordinates.length; i++) {
+            Coordinate coordinate = coordinates[i];
+            pm.makePrecise(coordinate);
         }
     }
 }

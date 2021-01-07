@@ -1,5 +1,7 @@
 package demoTest;
 
+import Guo_Cam.CameraController;
+import geometry.ZLargestRectangleRatio;
 import geometry.ZLine;
 import geometry.ZPoint;
 import igeo.ICurve;
@@ -10,7 +12,8 @@ import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
 import render.JtsRender;
 import transform.ZTransform;
-import wblut.geom.WB_Polygon;
+import wblut.geom.*;
+import wblut.processing.WB_Render;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +38,19 @@ public class TestConvexHull extends PApplet {
 
     List<Geometry> polys;
     List<Geometry> convexHull;
+    List<WB_Segment> maxIndices;
     List<List<Integer>> concavePoints;
     JtsRender jtsRender;
+    WB_Render render;
+
+    List<ZLargestRectangleRatio> largestRectangles;
+
+    CameraController gcam;
 
     public void setup() {
+        gcam = new CameraController(this);
         this.jtsRender = new JtsRender(this);
+        this.render = new WB_Render(this);
 
         // 载入几何模型，算凸包
         IG.init();
@@ -61,12 +72,23 @@ public class TestConvexHull extends PApplet {
         for (Geometry g : polys) {
             concavePoints.add(ZGeoMath.getConcavePointIndices((Polygon) g));
         }
+
+        //找最大矩形
+        this.largestRectangles = new ArrayList<>();
+        for (Geometry g : convexHull) {
+            if (g instanceof Polygon) {
+                ZLargestRectangleRatio rectangle = new ZLargestRectangleRatio(ZTransform.jtsPolygonToWB_Polygon((Polygon) g), 0.5);
+                rectangle.init();
+                largestRectangles.add(rectangle);
+            }
+        }
     }
 
     /* ------------- draw ------------- */
 
     public void draw() {
         background(255);
+        gcam.drawSystem(1000);
         stroke(0);
 
         // 测试线与多段线交点
@@ -82,14 +104,6 @@ public class TestConvexHull extends PApplet {
         if (interOrder.size() != 0) {
             for (int i = 0; i < interOrder.size(); i++) {
                 text(i + 1, newPoly.getSegment(interOrder.get(i)).getCenter().xf(), newPoly.getSegment(interOrder.get(i)).getCenter().yf());
-            }
-        }
-
-        // 找交点最近的那条边 作垂点
-
-        for (int i = 0; i < concavePoints.size(); i++) {
-            for (Integer index : concavePoints.get(i)) {
-
             }
         }
 
@@ -112,6 +126,11 @@ public class TestConvexHull extends PApplet {
         noFill();
         for (Geometry ch : convexHull) {
             jtsRender.drawGeometry(ch);
+        }
+
+        // 画最大矩形
+        for (ZLargestRectangleRatio largestRectangle : largestRectangles) {
+            render.drawPolygonEdges2D(largestRectangle.getLargestRectangle());
         }
     }
 

@@ -10,6 +10,7 @@ import wblut.geom.WB_Vector;
 import wblut.hemesh.*;
 import wblut.processing.WB_Render;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,6 +24,7 @@ import java.util.List;
 public abstract class ZSubdivision {
     private final WB_Polygon originPolygon;
     private List<WB_Polygon> allSubPolygons;
+    List<WB_Polygon> redundantPolygons = new ArrayList<>();
     private HE_Mesh subdivideMesh;
     private WB_Vector[][] allFaceVertexVectors;
 
@@ -140,7 +142,7 @@ public abstract class ZSubdivision {
         }
     }
 
-    public void setAllSubPolygons(List<WB_Polygon> allSubPolygons) {
+    protected void setAllSubPolygons(List<WB_Polygon> allSubPolygons) {
         this.allSubPolygons = allSubPolygons;
         this.subdivideMesh = new HEC_FromPolygons(allSubPolygons).create();
     }
@@ -153,6 +155,10 @@ public abstract class ZSubdivision {
 
     public List<WB_Polygon> getAllSubPolygons() {
         return allSubPolygons;
+    }
+
+    public List<WB_Polygon> getRedundantPolygons() {
+        return redundantPolygons;
     }
 
     public HE_Mesh getMesh() {

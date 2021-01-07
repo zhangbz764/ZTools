@@ -22,6 +22,9 @@ public class ZLine {
     private ZPoint pt1;
     private ZPoint direction;
 
+    private double k; // 斜率 y = kx + b
+    private double b;
+
     private static final GeometryFactory gf = new GeometryFactory();
 
     /* ------------- constructor ------------- */
@@ -33,28 +36,66 @@ public class ZLine {
     public ZLine(ZPoint pt0, ZPoint pt1) {
         this.pt0 = pt0;
         this.pt1 = pt1;
-        this.direction = pt1.sub(pt0);
+        init();
     }
 
     public ZLine(WB_Point pt0, WB_Point pt1) {
         this.pt0 = new ZPoint(pt0);
         this.pt1 = new ZPoint(pt1);
-        this.direction = this.pt1.sub(this.pt0);
+        init();
     }
 
     public ZLine(WB_Segment segment) {
         this.pt0 = new ZPoint(segment.getOrigin());
         this.pt1 = new ZPoint(segment.getEndpoint());
+        init();
+    }
+
+    /**
+     * description
+     *
+     * @return void
+     */
+    private void init() {
         this.direction = pt1.sub(pt0);
+        this.k = (pt1.yd() - pt0.yd()) / (pt1.xd() - pt0.xd());
+        this.b = pt0.yd() - k * pt0.xd();
     }
 
     /* ------------- member function ------------- */
 
-    public ZLine scaleTo(double multiple) {
-        ZPoint newDir = direction.scaleTo(multiple);
+    /**
+     * 以pt0为基准点缩放ZLine
+     *
+     * @param scale scale ratio
+     * @return geometry.ZLine
+     */
+    public ZLine scaleTo(double scale) {
+        ZPoint newDir = direction.scaleTo(scale);
         return new ZLine(pt0, pt0.add(newDir));
     }
 
+    /**
+     * 两头缩放ZLine，即以中点为基准
+     *
+     * @param scale scale ratio
+     * @return geometry.ZLine
+     */
+    public ZLine scaleBothSides(double scale) {
+        double scaleDist = getLength() * (scale - 1) * 0.5;
+        pt1.add(direction.scaleTo(scaleDist));
+        pt0.add(direction.scaleTo(scaleDist * -1));
+        return new ZLine(
+                pt0.add(direction.scaleTo(scaleDist * -1)),
+                pt1.add(direction.scaleTo(scaleDist))
+        );
+    }
+
+    /**
+     * 使ZLine反向，即pt0和pt1互换
+     *
+     * @return geometry.ZLine
+     */
     public ZLine reverse() {
         return new ZLine(this.pt1, this.pt0);
     }
@@ -64,7 +105,7 @@ public class ZLine {
     public void set(ZPoint pt0, ZPoint pt1) {
         this.pt0 = pt0;
         this.pt1 = pt1;
-        this.direction = pt1.sub(pt0);
+        init();
     }
 
     public ZPoint[] getPoints() {
@@ -91,8 +132,32 @@ public class ZLine {
         return direction.unit();
     }
 
+    public double getK() {
+        return k;
+    }
+
+    public double getB() {
+        return b;
+    }
+
     public double getLength() {
         return pt0.distance(pt1);
+    }
+
+    public double minX() {
+        return Math.min(pt0.xd(), pt1.xd());
+    }
+
+    public double maxX() {
+        return Math.max(pt0.xd(), pt1.xd());
+    }
+
+    public double minY() {
+        return Math.min(pt0.yd(), pt1.yd());
+    }
+
+    public double maxY() {
+        return Math.max(pt0.yd(), pt1.yd());
     }
 
     /* ------------- transformation -------------*/

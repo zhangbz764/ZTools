@@ -3,6 +3,7 @@ package subdivision;
 import geometry.ZGeoFactory;
 import geometry.ZLine;
 import geometry.ZPoint;
+import geometry.ZSkeleton;
 import math.ZGeoMath;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
@@ -12,12 +13,11 @@ import transform.ZTransform;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
+import wblut.geom.WB_Segment;
 import wblut.processing.WB_Render;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+// TODO: 2021/1/4 重新整理新的sidestrip
 
 /**
  * description
@@ -31,7 +31,9 @@ public class ZSD_SideStrip extends ZSubdivision {
     private List<WB_PolyLine> finalPolyLines;
     private List<ZLine> divideLines;
 
-    private int[] offestIndices;
+    private ZSkeleton skeleton;
+
+    private int[] offsetIndices;
     private double span = 11;
     private double offsetDist = -12;
 
@@ -39,17 +41,85 @@ public class ZSD_SideStrip extends ZSubdivision {
 
     public ZSD_SideStrip(WB_Polygon originPolygon) {
         super(originPolygon);
-        this.offestIndices = new int[]{1, 2,3};
+        this.offsetIndices = new int[]{2, 3, 4, 5};
     }
 
     @Override
     public void performDivide() {
         this.divideLines = new ArrayList<>();
-        offsetEdges();
-        createDivideLines();
 
-        // TODO: 2020/12/11 目前只支持polyline
-        // use Polygonizer to divide
+//        WB_PolyLine initPolyLine = ZGeoMath.offsetWB_PolygonSegments(super.getOriginPolygon(), offsetIndices, offsetDist);
+//        this.finalPolyLines = new ArrayList<>();
+//        finalPolyLines.add(initPolyLine);
+//        finalPolyLines = extendPolylineToBoundary(finalPolyLines);
+//
+//        // 剖出需要剖分的那条多边形
+//        Polygonizer pr = new Polygonizer();
+//        Geometry allGeometry = ZTransform.PolygonToLineString(ZTransform.WB_PolygonToJtsPolygon(super.getOriginPolygon())).get(0);
+//        for (WB_PolyLine pl : finalPolyLines) {
+//            allGeometry = allGeometry.union(ZTransform.WB_PolyLineToJtsLineString(pl));
+//        }
+//        pr.add(allGeometry);
+//        Collection<Polygon> dividedPolys = pr.getPolygons();
+//        WB_Segment test = super.getOriginPolygon().getSegment(offsetIndices[0]);
+//
+//
+//        List<WB_Polygon> allSubPolygons = new ArrayList<>();
+//        for (Polygon p : dividedPolys) {
+//            if (p.contains(ZTransform.WB_PointToPoint(super.getOriginPolygon().getPoint(offsetIndices[0])))) {
+//                // 找skeleton，做voronoi
+//                WB_Polygon polygonToBeSubdivided = ZTransform.jtsPolygonToWB_Polygon(p);
+//                skeleton = new ZSkeleton(polygonToBeSubdivided);
+//                List<ZLine> topSegments = skeleton.getTopEdges();
+//                topSegments.addAll(skeleton.getExtendedRidges());
+//                WB_PolyLine midPolyLine = ZGeoFactory.createWB_PolyLine(topSegments);
+//                Map<ZPoint, Integer> pointDirMap = ZGeoMath.splitWB_PolyLineEdgeByThresholdWithPos(midPolyLine, span + 3, span - 3);
+//                if (pointDirMap.size() > 0) {
+//                    List<ZLine> divideLinesOnPolyLine = new ArrayList<>();
+//                    for (Map.Entry<ZPoint, Integer> pair : pointDirMap.entrySet()) {
+//                        ZPoint origin = pair.getKey();
+//                        int segIndex = pair.getValue();
+//                        ZPoint segVec = new ZPoint(midPolyLine.getSegment(segIndex).getDirection());
+//                        ZPoint start = ZGeoMath.extendSegmentToPolygon(new ZPoint[]{origin, segVec.rotate2D(Math.PI * -0.5)}, polygonToBeSubdivided).getPt1();
+//                        ZPoint end = ZGeoMath.extendSegmentToPolygon(new ZPoint[]{origin, segVec.rotate2D(Math.PI * 0.5)}, polygonToBeSubdivided).getPt1();
+//                        divideLinesOnPolyLine.add(new ZLine(start, end).scaleBothSides(1.1));
+//                    }
+//
+//                    divideLinesOnPolyLine.remove(0);
+//                    divideLinesOnPolyLine.remove(divideLinesOnPolyLine.size() - 1);
+//                    divideLines.addAll(divideLinesOnPolyLine);
+//                    pr = new Polygonizer();
+//                    allGeometry = ZTransform.PolygonToLineString(ZTransform.WB_PolygonToJtsPolygon(polygonToBeSubdivided)).get(0);
+//                    for (ZLine l : divideLines) {
+//                        allGeometry = allGeometry.union(l.toJtsLineString());
+//                    }
+//                    pr.add(allGeometry);
+//                    Collection<Polygon> finalPolys = pr.getPolygons();
+//                    for (Polygon polygon : finalPolys) {
+//                        allSubPolygons.add(ZTransform.jtsPolygonToWB_Polygon(polygon));
+//                    }
+//                    super.setAllSubPolygons(allSubPolygons);
+//                    super.setRandomColor();
+//                }
+//                break;
+//            }
+//        }
+
+        offsetEdges(); // 偏移选取的边线
+        createDivideLines(); // 创建一系列竖线
+
+        divideByPolygonizer(); // 使用polgonizer进行剖分
+    }
+
+    /* ------------- member function ------------- */
+
+    /**
+     * use jts Polygonizer to divide
+     *
+     * @return void
+     */
+    private void divideByPolygonizer() {
+        // FIXME: 2020/12/11 目前只支持polyline
         Polygonizer pr = new Polygonizer();
         Geometry allGeometry = ZTransform.PolygonToLineString(ZTransform.WB_PolygonToJtsPolygon(super.getOriginPolygon())).get(0);
         for (WB_PolyLine pl : finalPolyLines) {
@@ -60,37 +130,8 @@ public class ZSD_SideStrip extends ZSubdivision {
         }
         pr.add(allGeometry);
         Collection<Polygon> dividedPolys = pr.getPolygons();
-//        for(Polygon p: dividedPolys){
-//            if(p.contains(ZTransform.WB_PointToPoint(super.getOriginPolygon().getPoint(offestIndices[])))){
-//
-//            }
-//        }
-//
-//        pr = new Polygonizer();
 
-        // use a non-offset point to remove rest part
         List<Polygon> allSubPolygonJts = (List<Polygon>) dividedPolys;
-//        for (int i = 0; i < super.getOriginPolygon().getNumberOfShellPoints(); i++) {
-//            boolean flag = false;
-//            for (int j : offestIndices) {
-//                if (i == j) {
-//                    flag = true;
-//                    break;
-//                }
-//            }
-//            System.out.println(i + " " + flag);
-//            if (!flag) {
-//                for (Polygon p : dividedPolys) {
-//                    if (p.contains(ZTransform.WB_PointToPoint(super.getOriginPolygon().getCenter()))) {
-//                        System.out.println("remove!");
-//                        allSubPolygonJts.remove(p);
-//                        break;
-//                    }
-//                }
-//                break;
-//            }
-//        }
-
         List<WB_Polygon> allSubPolygons = new ArrayList<>();
         for (Polygon p : allSubPolygonJts) {
             allSubPolygons.add(ZTransform.jtsPolygonToWB_Polygon(p));
@@ -99,8 +140,6 @@ public class ZSD_SideStrip extends ZSubdivision {
         super.setRandomColor();
     }
 
-    /* ------------- compute function ------------- */
-
     /**
      * split each offset polyLines, find perpendicular divide lines
      *
@@ -108,20 +147,24 @@ public class ZSD_SideStrip extends ZSubdivision {
      * @return void
      */
     private void createDivideLines() {
+        System.out.println("finalPolyLines.size() " + finalPolyLines.size());
         for (WB_PolyLine pl : finalPolyLines) {
             Map<ZPoint, Integer> pointDirMap = ZGeoMath.splitWB_PolyLineEdgeByThresholdWithPos(pl, span + 3, span - 3);
-            List<ZLine> divideLinesOnPolyLine = new ArrayList<>();
-            for (Map.Entry<ZPoint, Integer> pair : pointDirMap.entrySet()) {
-                ZPoint origin = pair.getKey();
-                int segIndex = pair.getValue();
-                ZPoint segVec = new ZPoint(pl.getSegment(segIndex).getDirection());
-                ZPoint start = origin.add(segVec.rotate2D(Math.PI * -0.5).scaleTo(-1.1));
-                ZPoint end = origin.add(segVec.rotate2D(Math.PI * 0.5).scaleTo(offsetDist * 1.1));
-                divideLinesOnPolyLine.add(new ZLine(start, end));
+            if (pointDirMap.size() > 0) {
+                List<ZLine> divideLinesOnPolyLine = new ArrayList<>();
+                for (Map.Entry<ZPoint, Integer> pair : pointDirMap.entrySet()) {
+                    ZPoint origin = pair.getKey();
+                    int segIndex = pair.getValue();
+                    ZPoint segVec = new ZPoint(pl.getSegment(segIndex).getDirection());
+                    ZPoint start = origin.add(segVec.rotate2D(Math.PI * -0.5).scaleTo(-1.1));
+                    ZPoint end = origin.add(segVec.rotate2D(Math.PI * 0.5).scaleTo(offsetDist * 1.1));
+                    divideLinesOnPolyLine.add(new ZLine(start, end));
+                }
+
+                divideLinesOnPolyLine.remove(0);
+                divideLinesOnPolyLine.remove(divideLinesOnPolyLine.size() - 1);
+                divideLines.addAll(divideLinesOnPolyLine);
             }
-            divideLinesOnPolyLine.remove(0);
-            divideLinesOnPolyLine.remove(divideLinesOnPolyLine.size() - 1);
-            divideLines.addAll(divideLinesOnPolyLine);
         }
         System.out.println("final divide segments: " + divideLines.size());
     }
@@ -133,7 +176,7 @@ public class ZSD_SideStrip extends ZSubdivision {
      * @return void
      */
     private void offsetEdges() {
-        WB_PolyLine initPolyLine = ZGeoMath.offsetWB_PolygonSegments(super.getOriginPolygon(), offestIndices, offsetDist);
+        WB_PolyLine initPolyLine = ZGeoMath.offsetWB_PolygonSegments(super.getOriginPolygon(), offsetIndices, offsetDist);
 
         // find concave points and break polyline
         if (!(initPolyLine instanceof WB_Polygon)) {
@@ -147,7 +190,8 @@ public class ZSD_SideStrip extends ZSubdivision {
                     // add divide line at concave points
                     divideLines.add(new ZLine(
                             new ZPoint(initPolyLine.getPoint(i)),
-                            new ZPoint(super.getOriginPolygon().getPoint((i + offestIndices[0]) % super.getOriginPolygon().getNumberOfShellPoints())))
+                            new ZPoint(super.getOriginPolygon().getPoint(
+                                    (i + offsetIndices[0]) % super.getOriginPolygon().getNumberOfShellPoints())))
                     );
                 }
             }
@@ -175,7 +219,7 @@ public class ZSD_SideStrip extends ZSubdivision {
                     // add divide line at concave points
                     divideLines.add(new ZLine(
                             new ZPoint(initPolyLine.getPoint(i)),
-                            new ZPoint(super.getOriginPolygon().getPoint((i + offestIndices[0]) % super.getOriginPolygon().getNumberOfShellPoints())))
+                            new ZPoint(super.getOriginPolygon().getPoint((i + offsetIndices[0]) % super.getOriginPolygon().getNumberOfShellPoints())))
                     );
                 }
             }
@@ -184,7 +228,6 @@ public class ZSD_SideStrip extends ZSubdivision {
                 indices[i] = concavePointsIndices.get(i);
             }
             finalPolyLines = ZGeoFactory.breakWB_PolyLine(initPolyLine, indices);
-
         }
     }
 
@@ -218,40 +261,43 @@ public class ZSD_SideStrip extends ZSubdivision {
             for (int i = 0; i < polyLine2.getNumberOfPoints(); i++) {
                 newPolyPoints2.add(polyLine2.getPoint(i));
             }
-            if (concaveIndices.contains(offestIndices[0])) {
-                divideLines.add(new ZLine(
-                        new ZPoint(polyLine1.getPoint(0)),
-                        new ZPoint(super.getOriginPolygon().getPoint(offestIndices[0]))
-                ));
+            // check if the first point is concave
+            if (concaveIndices.contains(offsetIndices[0])) {
+                newPolyPoints1.add(super.getOriginPolygon().getPoint(offsetIndices[0]));
+//                divideLines.add(new ZLine(
+//                        new ZPoint(polyLine1.getPoint(0)),
+//                        new ZPoint(super.getOriginPolygon().getPoint(offsetIndices[0]))
+//                ));
             } else {
                 ZLine extendSeg = ZGeoMath.extendSegmentToPolygon(seg1, super.getOriginPolygon());
                 assert extendSeg != null;
+                extendSeg = extendSeg.scaleTo(1.1);
                 newPolyPoints1.remove(0);
-                newPolyPoints1.add(0, extendSeg.getPt0().toWB_Point());
+                newPolyPoints1.add(0, extendSeg.getPt1().toWB_Point());
                 polyLine1 = new WB_PolyLine(newPolyPoints1);
             }
             result.add(polyLine1);
-
             // add middle polyLines
             if (finalPolyLine.size() > 2) {
                 for (int i = 1; i < finalPolyLine.size() - 1; i++) {
                     result.add(finalPolyLine.get(i));
                 }
             }
-
-            if (concaveIndices.contains(offestIndices[offestIndices.length - 1] + 1)) {
-                divideLines.add(new ZLine(
-                        new ZPoint(polyLine2.getPoint(polyLine2.getNumberOfPoints() - 1)),
-                        new ZPoint(super.getOriginPolygon().getPoint(offestIndices[offestIndices.length - 1] + 1))
-                ));
+            // check if the last point is concave
+            if (concaveIndices.contains(offsetIndices[offsetIndices.length - 1] + 1)) {
+                newPolyPoints2.add(super.getOriginPolygon().getPoint(offsetIndices[offsetIndices.length - 1] + 1));
+//                divideLines.add(new ZLine(
+//                        new ZPoint(polyLine2.getPoint(polyLine2.getNumberOfPoints() - 1)),
+//                        new ZPoint(super.getOriginPolygon().getPoint(offsetIndices[offsetIndices.length - 1] + 1))
+//                ));
             } else {
                 ZLine extendSeg = ZGeoMath.extendSegmentToPolygon(seg2, super.getOriginPolygon());
                 assert extendSeg != null;
+                extendSeg = extendSeg.scaleTo(1.1);
                 newPolyPoints2.remove(newPolyPoints2.size() - 1);
                 newPolyPoints2.add(extendSeg.getPt1().toWB_Point());
                 polyLine2 = new WB_PolyLine(newPolyPoints2);
             }
-
             result.add(polyLine2);
         } else {
             // only one polyline, then extend itself
@@ -271,27 +317,31 @@ public class ZSD_SideStrip extends ZSubdivision {
             for (int i = 0; i < polyLine.getNumberOfPoints(); i++) {
                 newPolyPoints.add(polyLine.getPoint(i));
             }
-            if (concaveIndices.contains(offestIndices[0])) {
-                newPolyPoints.add(0, super.getOriginPolygon().getPoint(offestIndices[0]));
-                divideLines.add(new ZLine(
-                        new ZPoint(polyLine.getPoint(0)),
-                        new ZPoint(super.getOriginPolygon().getPoint(offestIndices[0]))
-                ));
+            // check if the first point is concave
+            if (concaveIndices.contains(offsetIndices[0])) {
+                newPolyPoints.add(0, super.getOriginPolygon().getPoint(offsetIndices[0]));
+//                divideLines.add(new ZLine(
+//                        new ZPoint(polyLine.getPoint(0)),
+//                        new ZPoint(super.getOriginPolygon().getPoint(offsetIndices[0]))
+//                ));
             } else {
                 ZLine extendSeg = ZGeoMath.extendSegmentToPolygon(seg1, super.getOriginPolygon());
                 assert extendSeg != null;
+                extendSeg = extendSeg.scaleTo(1.1);
                 newPolyPoints.remove(0);
                 newPolyPoints.add(0, extendSeg.getPt1().toWB_Point());
             }
-            if (concaveIndices.contains(offestIndices[offestIndices.length - 1] + 1)) {
-                newPolyPoints.add(super.getOriginPolygon().getPoint(offestIndices[offestIndices.length - 1] + 1));
-                divideLines.add(new ZLine(
-                        new ZPoint(polyLine.getPoint(polyLine.getNumberOfPoints() - 1)),
-                        new ZPoint(super.getOriginPolygon().getPoint(offestIndices[offestIndices.length - 1] + 1))
-                ));
+            // check if the last point is concave
+            if (concaveIndices.contains(offsetIndices[offsetIndices.length - 1] + 1)) {
+                newPolyPoints.add(super.getOriginPolygon().getPoint(offsetIndices[offsetIndices.length - 1] + 1));
+//                divideLines.add(new ZLine(
+//                        new ZPoint(polyLine.getPoint(polyLine.getNumberOfPoints() - 1)),
+//                        new ZPoint(super.getOriginPolygon().getPoint(offsetIndices[offsetIndices.length - 1] + 1))
+//                ));
             } else {
                 ZLine extendSeg = ZGeoMath.extendSegmentToPolygon(seg2, super.getOriginPolygon());
                 assert extendSeg != null;
+                extendSeg = extendSeg.scaleTo(1.1);
                 newPolyPoints.remove(newPolyPoints.size() - 1);
                 newPolyPoints.add(extendSeg.getPt1().toWB_Point());
             }
@@ -306,6 +356,10 @@ public class ZSD_SideStrip extends ZSubdivision {
     @Override
     public void setCellConstraint(double constraint) {
 
+    }
+
+    public void setOffsetIndices(int[] offsetIndices) {
+        this.offsetIndices = offsetIndices;
     }
 
     /* ------------- draw ------------- */

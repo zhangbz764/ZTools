@@ -26,10 +26,11 @@ public class TestGeoRelation extends PApplet {
     LineString ls;
     Geometry buffer;
     ZPoint mouse;
-    JtsRender jrender;
+
+    JtsRender jtsRender;
 
     public void setup() {
-        jrender = new JtsRender(this);
+        jtsRender = new JtsRender(this);
 
         Coordinate[] vertices = new Coordinate[6];
         vertices[0] = new Coordinate(100, 100, 0);
@@ -54,13 +55,15 @@ public class TestGeoRelation extends PApplet {
         bufferOp.setEndCapStyle(BufferParameters.CAP_SQUARE);
         buffer = bufferOp.getResultGeometry(20);
         mouse = new ZPoint(500, 500);
+
     }
 
     public void draw() {
         background(255);
 
-        jrender.drawGeometry(poly);
-        jrender.drawGeometry(buffer);
+        jtsRender.drawGeometry(poly);
+        jtsRender.drawGeometry(buffer);
+
         mouse.set(mouseX, mouseY);
         mouse.displayAsPoint(this);
     }

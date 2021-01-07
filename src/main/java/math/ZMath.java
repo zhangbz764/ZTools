@@ -13,8 +13,11 @@ import java.util.HashMap;
  * 1.从一组double数组中找到最大值的序号
  * 2.从一组double数组中找到最小值的序号
  * 3.把一组double数组按升序排序（返回一组序号）
- * 4.将目标数字从一个范围映射到另一个范围内的对应数字
  * 5.数组倒序（用泛型）
+ * 给定范围生成随机数
+ * 给定范围生成一组随机数
+ * 给定范围生成随机整数
+ * 将目标数字从一个范围映射到另一个范围内的对应数字
  */
 public final class ZMath {
 
@@ -104,7 +107,7 @@ public final class ZMath {
      * 给定范围生成随机数
      *
      * @param min floor limit
-     * @param max cap limit
+     * @param max ceil limit
      * @return double
      */
     public static double random(double min, double max) {
@@ -112,12 +115,32 @@ public final class ZMath {
     }
 
     /**
-    * 给定范围生成随机整数
-    *
+     * 给定范围生成一组随机数
+     *
+     * @param length array length to generate
+     * @param min    floor limit
+     * @param max    ceil limit
+     * @return double[]
+     */
+    public static double[] randomArray(int length, double min, double max) {
+        if (length > 0) {
+            double[] array = new double[length];
+            for (int i = 0; i < length; i++) {
+                array[i] = random(min, max);
+            }
+            return array;
+        } else {
+            throw new IllegalArgumentException("invalid input : array length must > 0");
+        }
+    }
+
+    /**
+     * 给定范围生成随机整数
+     *
      * @param min floor limit
-     * @param max cap limit
-    * @return int
-    */
+     * @param max ceil limit
+     * @return int
+     */
     public static int randomInt(double min, double max) {
         return (int) (Math.random() * (max - min) + min);
     }

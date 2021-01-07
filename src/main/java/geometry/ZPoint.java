@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class ZPoint {
     private double x, y, z;
-    private final float r = 15;
+    private final float r = 5;
     private final float vecCap = 3;
 
     private static final GeometryFactory gf = new GeometryFactory();

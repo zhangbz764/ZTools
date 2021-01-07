@@ -19,6 +19,7 @@
 `extends ZLine` 代表graph中的edge
 
 ## **ZGraph**
+
 （尚未完成）图数据结构，包含若干节点ZNode，连接边ZEdge，记录相互引用关系
 
 ## **ZSkeleton**
@@ -100,20 +101,25 @@ skeleton），可以生成2D或3Dskeleton结果，支持带洞多边形。
 * 输入等分数量，将多边形或多段线等分，得到所有点   
   `splitPolygonEdge` `splitWB_PolyLineEdge`
 
-### 其他
+### 多边形工具
 
-* 输入Geometry，设置Jts的Precision Model  
-  `applyJtsPrecisionModel`
 * 使WB_Polygon点序反向，支持带洞  
   `reversePolygon`
 * 检查两个WB_Polygon是否同向  
   `isNormalEquals`
 * 使WB_Polygon法向量Z坐标为正或为负，支持带洞（不是拍平到xy平面，只是翻个面）  
-  `PolygonFaceUp` `PolygonFaceDown`
+  `PolygonFaceUp` `PolygonFaceDown`  
+* 找到多边形中最长边和最短边，返回序号  
+  `getLongestAndShortestSegment`  
 * 偏移多边形的某一条边线（默认输入为正向首尾相接多边形）  
   `offsetWB_PolygonSegment`
 * 偏移多边形的若干条边线（默认输入为正向首尾相接多边形），返回多段线或多边形  
   `offsetWB_PolygonSegments`
+
+### 其他
+
+* 输入Geometry，设置Jts的Precision Model  
+  `applyJtsPrecisionModel`
 
 增加中...
 
@@ -124,6 +130,7 @@ skeleton），可以生成2D或3Dskeleton结果，支持带洞多边形。
 增加中...
 
 ## **ZSubdivision**
+
 （尚未完成）若干种多边形剖分模式
 
 ## **ZTransform**

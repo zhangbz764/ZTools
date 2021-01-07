@@ -86,11 +86,11 @@ public class TestSubdivision extends PApplet {
         translate(0, -300);
         subdivision.displayMesh(render);
 
-//        fill(0);
-//        textSize(15);
-//        for (int i = 0; i < inputPolygon.getNumberSegments(); i++) {
-//            text(i, inputPolygon.getPoint(i).xf(), inputPolygon.getPoint(i).yf(), inputPolygon.getPoint(i).zf());
-//        }
+        fill(0);
+        textSize(15);
+        for (int i = 0; i < inputPolygon.getNumberSegments(); i++) {
+            text(i, inputPolygon.getPoint(i).xf(), inputPolygon.getPoint(i).yf(), inputPolygon.getPoint(i).zf());
+        }
     }
 
     public void keyPressed() {
@@ -100,7 +100,7 @@ public class TestSubdivision extends PApplet {
             subdivision.performDivide();
         } else if (key == '2') {
             subdivision = new ZSD_OBB(inputPolygon);
-            subdivision.setCellConstraint(1000);
+            subdivision.setCellConstraint(3);
             subdivision.performDivide();
         } else if (key == '3') {
             subdivision = new ZSD_DoubleStrip(inputPolygon);

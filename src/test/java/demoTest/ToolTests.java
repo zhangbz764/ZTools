@@ -16,11 +16,11 @@ public class ToolTests {
         /* 测试极角排序、角平分线等向量运算 */
 //        PApplet.main("demoTest.TestPolarAngle");
 
-        /* 测试jts几何图形布尔关系 */
+        /* 测试jts几何图形布尔关系，凸多边形最大内接矩形 */
 //        PApplet.main("demoTest.TestGeoRelation");
 
         /* 测试多边形等分、沿多边形边找点、多边形边线offset */
-        PApplet.main("demoTest.TestPolySplit");
+//        PApplet.main("demoTest.TestPolySplit");
 
         /* 测试hemesh里的最近点计算、线段trim和extend计算、op里的检测线段二维相交 */
 //        PApplet.main("demoTest.TestDistCloset");
@@ -28,11 +28,11 @@ public class ToolTests {
         /* 测试ZSkeleton */
 //        PApplet.main("demoTest.TestSkeleton");
 
-        /* 测试hemesh的mesh以及union */
+        /* 测试hemesh的mesh以及union，buffer */
 //        PApplet.main("demoTest.TestHe_Mesh");
 
         /* 测试jts的convexhull、找凹点、直线多边形交点及排序 */
-//        PApplet.main("demoTest.TestConvexHull");
+        PApplet.main("demoTest.TestConvexHull");
 
         /* 测试ZSkeleton带洞 */
 //        PApplet.main("demoTest.TestCampSkeleton");

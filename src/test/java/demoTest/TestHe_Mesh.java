@@ -1,6 +1,7 @@
 package demoTest;
 
 import Guo_Cam.CameraController;
+import geometry.ZGeoFactory;
 import math.ZGeoMath;
 import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
@@ -37,6 +38,8 @@ public class TestHe_Mesh extends PApplet {
     WB_Polygon poly2;
     WB_Polygon poly3;
     WB_Polygon poly4;
+
+    WB_Polygon buffer;
 
     HE_Mesh mesh;
 
@@ -95,10 +98,18 @@ public class TestHe_Mesh extends PApplet {
         pts4[5] = new WB_Point(800, 400);
         poly4 = new WB_Polygon(pts4);
         System.out.println(poly0.getSimplePolygon().getNumberOfPoints());
+
+        // hemesh中buffer之后的多边形少一个点
+        // jts的buffer功能使多边形反面
+        buffer = ZGeoMath.polygonFaceUp(
+                ZTransform.validateWB_Polygon(
+                        ZGeoFactory.wbgf.createBufferedPolygonsStraight2D(poly1, 50).get(0)
+                )
+        );
     }
 
     public void setup() {
-//        gcam = new CameraController(this);
+        gcam = new CameraController(this);
         render = new WB_Render(this);
         setPolys();
 
@@ -174,10 +185,18 @@ public class TestHe_Mesh extends PApplet {
             render.drawEdge(mesh.getEdges().get(i));
         }
 
+        render.drawPolygonEdges2D(buffer);
+
         // text index
-        fill(128);
+        fill(0);
         for (int j = 0; j < mesh.getFaces().size(); j++) {
             text(j, mesh.getFaceWithIndex(j).getFaceCenter().xf(), mesh.getFaceWithIndex(j).getFaceCenter().yf());
+        }
+        for (int i = 0; i < poly1.getNumberOfPoints(); i++) {
+            text(i, poly1.getPoint(i).xf(), poly1.getPoint(i).yf());
+        }
+        for (int i = 0; i < buffer.getNumberOfPoints(); i++) {
+            text(i, buffer.getPoint(i).xf(), buffer.getPoint(i).yf());
         }
 
         noFill();
