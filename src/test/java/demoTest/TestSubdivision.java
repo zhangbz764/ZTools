@@ -95,7 +95,7 @@ public class TestSubdivision extends PApplet {
 
     public void keyPressed() {
         if (key == '1') {
-            subdivision = new ZSD_SingleStrip(inputPolygon);
+            subdivision = new ZSD_SkeVorStrip(inputPolygon);
             subdivision.setCellConstraint(40);
             subdivision.performDivide();
         } else if (key == '2') {

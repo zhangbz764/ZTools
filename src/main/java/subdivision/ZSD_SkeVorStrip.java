@@ -20,23 +20,29 @@ import java.util.List;
  * @date 2020/12/1
  * @time 23:01
  */
-public class ZSD_SingleStrip extends ZSubdivision {
+public class ZSD_SkeVorStrip extends ZSubdivision {
     private ZSkeleton skeleton;
     private List<ZPoint> voronoiGenerator;
 
-    private double span = 50;
+    private double span = 50; // 宽度
+    private double depth = 0; // 深度
 
     private WB_PolyLine polyLine;
 
     /* ------------- constructor ------------- */
 
-    public ZSD_SingleStrip(WB_Polygon originPolygon) {
+    public ZSD_SkeVorStrip(WB_Polygon originPolygon) {
         super(originPolygon);
     }
 
     @Override
     public void performDivide() {
-        this.skeleton = new ZSkeleton(super.getOriginPolygon(), 4);
+        if (depth == 0) {
+            this.skeleton = new ZSkeleton(super.getOriginPolygon());
+        } else {
+            this.skeleton = new ZSkeleton(super.getOriginPolygon(), depth);
+        }
+
         List<ZLine> topSegments = skeleton.getTopEdges();
 
         topSegments.addAll(skeleton.getExtendedRidges());
@@ -72,6 +78,14 @@ public class ZSD_SingleStrip extends ZSubdivision {
     @Override
     public void setCellConstraint(double span) {
         this.span = span;
+    }
+
+    public void setSpan(double span) {
+        this.span = span;
+    }
+
+    public void setDepth(double depth) {
+        this.depth = depth;
     }
 
     /* ------------- draw ------------- */

@@ -6,21 +6,24 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import transform.ZTransform;
-import wblut.geom.WB_GeometryFactory;
-import wblut.geom.WB_Point;
-import wblut.geom.WB_PolyLine;
-import wblut.geom.WB_Ring;
+import wblut.geom.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 包含了jts的GeometryFactory和HE_Mesh的WB_GeometryFactory，以及其他create命令
+ * 包含了jts的GeometryFactory和HE_Mesh的WB_GeometryFactory，以及其他创建命令
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/11/8
  * @time 22:04
+ * <p>
+ * 将一系列首尾相接线段合成一条WB_PolyLine
+ * 将一系列首尾相接线段合成一条LineString
+ * 将WB_PolyLine在端点处断开，创建一组新折线
+ * 将LineString在端点处断开，创建一组新折线
+ * 给定线段序号，从WB_Polygon中创建一截WB_PloyLine
  */
 public class ZGeoFactory {
     public static final WB_GeometryFactory wbgf = new WB_GeometryFactory();
@@ -86,7 +89,7 @@ public class ZGeoFactory {
     }
 
     /**
-     * 将WB_PolyLine在端点处断开，返回若干条新折线
+     * 将WB_PolyLine在端点处断开，创建一组新折线
      *
      * @param polyLine   polyLine to be break
      * @param breakPoint indices of break point
@@ -128,7 +131,7 @@ public class ZGeoFactory {
     }
 
     /**
-     * 将LineString在端点处断开，返回若干条新折线
+     * 将LineString在端点处断开，创建一组新折线
      *
      * @param lineString lineString to be break
      * @param breakPoint indices of break point
@@ -153,5 +156,23 @@ public class ZGeoFactory {
         }
         result.add(jtsgf.createLineString(coords));
         return result;
+    }
+
+    /**
+     * 给定线段序号，从WB_Polygon中创建一截WB_PloyLine
+     *
+     * @param polygon polygon to be extracted
+     * @param index   segment indices to extract
+     * @return wblut.geom.WB_PolyLine
+     */
+    public static WB_PolyLine createPolylineFromPolygon(final WB_Polygon polygon, final int[] index) {
+        WB_Point[] points = new WB_Point[index.length + 1];
+        for (int i = 0; i < index.length; i++) {
+            points[i] = polygon.getPoint(index[i]);
+        }
+        points[index.length] = polygon.getPoint(
+                (index[index.length - 1] + 1) % polygon.getNumberOfShellPoints()
+        );
+        return new WB_PolyLine(points);
     }
 }

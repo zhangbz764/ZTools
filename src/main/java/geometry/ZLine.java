@@ -65,6 +65,29 @@ public class ZLine {
     /* ------------- member function ------------- */
 
     /**
+     * 两头略微出头
+     *
+     * @param dist extend distance
+     * @return geometry.ZLine
+     */
+    public ZLine extendTwoSidesSlightly(double dist) {
+        ZPoint newPt0 = pt0.add(getDirectionUnit().scaleTo(-dist));
+        ZPoint newPt1 = pt1.add(getDirectionUnit().scaleTo(dist));
+        return new ZLine(newPt0, newPt1);
+    }
+
+    /**
+     * 尾部略微出头
+     *
+     * @param dist extend distance
+     * @return geometry.ZLine
+     */
+    public ZLine extendSlightly(double dist) {
+        ZPoint newPt1 = pt1.add(getDirectionUnit().scaleTo(dist));
+        return new ZLine(pt0, newPt1);
+    }
+
+    /**
      * 以pt0为基准点缩放ZLine
      *
      * @param scale scale ratio
@@ -81,6 +104,7 @@ public class ZLine {
      * @param scale scale ratio
      * @return geometry.ZLine
      */
+    @Deprecated
     public ZLine scaleBothSides(double scale) {
         double scaleDist = getLength() * (scale - 1) * 0.5;
         pt1.add(direction.scaleTo(scaleDist));

@@ -22,6 +22,9 @@ import java.util.List;
  * @time 23:02
  */
 public abstract class ZSubdivision {
+    public boolean randomMode = false;
+    public double randomThreshold = 1;
+
     private final WB_Polygon originPolygon;
     private List<WB_Polygon> allSubPolygons;
     List<WB_Polygon> redundantPolygons = new ArrayList<>();

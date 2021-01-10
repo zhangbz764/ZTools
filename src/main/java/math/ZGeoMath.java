@@ -20,6 +20,7 @@ import java.util.Map;
  * @project shopping_mall
  * @date 2020/9/29
  * @time 15:38
+ * <p>
  * ### 向量角度相关
  * 求到角的角平分线向量
  * 按极角排序一组向量（返回原列表序号）
@@ -43,6 +44,7 @@ import java.util.Map;
  * 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回结果点，或沿途的所有线段
  * 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点
  * 输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）
+ * 输入步长与抖动范围，剖分多段线或多边形的边，得到所有点（最后一段步长必然不足长）
  * 输入步长，剖分多段线或多边形的边 (WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap
  * 给定阈值上下限，将多边形或多段线按阈值内最大值等分，得到所有点
  * 给定阈值上下限，剖分多段线(WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap
@@ -965,6 +967,56 @@ public final class ZGeoMath {
     }
 
     /**
+     * 设置步长与抖动范围，剖分多段线或多边形的边 (WB_PolyLine)
+     *
+     * @param poly  input polyline (polygon)
+     * @param step  step to divide
+     * @param shake threshold to shake
+     * @return java.util.List<geometry.ZPoint>
+     */
+    public static List<ZPoint> splitWB_PolyLineEdgeByRandomStep(final WB_PolyLine poly, final double step, final double shake) {
+        // 得到多边形所有点
+        WB_Coord[] polyPoints = poly.getPoints().toArray();
+
+        // 初始值
+        ZPoint start = new ZPoint(polyPoints[0]);
+        ZPoint end = new ZPoint(polyPoints[polyPoints.length - 1]);
+
+        ZPoint p1 = start;
+        double curr_span = step + ZMath.random(step - shake, step + shake);
+        double curr_dist;
+
+        List<ZPoint> result = new ArrayList<>();
+        result.add(p1);
+        for (int i = 1; i < poly.getNumberOfPoints(); i++) {
+            ZPoint p2 = new ZPoint(polyPoints[i]);
+            curr_dist = p1.distance(p2);
+            while (curr_dist >= curr_span) {
+                ZPoint p = p1.add(p2.sub(p1).unit().scaleTo(curr_span));
+                result.add(p);
+                p1 = p;
+                curr_span = step + ZMath.random(step - shake, step + shake);
+                curr_dist = p1.distance(p2);
+            }
+            p1 = p2;
+            curr_span = curr_span - curr_dist;
+        }
+
+        // 如果封闭，点数=段数，如果开放，点数=段数+1
+        if (poly instanceof WB_Ring) {
+            if (start.distance(result.get(result.size() - 1)) < epsilon) {
+                result.remove(result.size() - 1);
+            }
+        } else {
+            if (end.distance(result.get(result.size() - 1)) > epsilon) {
+                result.add(end);
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * 设置步长，剖分多段线或多边形的边 (WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap
      *
      * @param poly input polyline (polygon)
@@ -1142,7 +1194,6 @@ public final class ZGeoMath {
 
         // 如果封闭，点数=段数，如果开放，点数=段数+1
         if (!poly.getPoint(0).equals(poly.getPoint(poly.getNumberOfPoints() - 1))) {
-            System.out.println("polyline is open");
             result.add(new ZPoint(poly.getPoint(poly.getNumberOfPoints() - 1)));
         }
         return result;

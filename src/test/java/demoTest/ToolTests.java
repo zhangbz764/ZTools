@@ -31,14 +31,14 @@ public class ToolTests {
         /* 测试hemesh的mesh以及union，buffer */
 //        PApplet.main("demoTest.TestHe_Mesh");
 
-        /* 测试jts的convexhull、找凹点、直线多边形交点及排序 */
-        PApplet.main("demoTest.TestConvexHull");
+        /* 测试jts的convexhull、找凹点、直线多边形交点及排序，找最大矩形 */
+//        PApplet.main("demoTest.TestConvexHull");
 
         /* 测试ZSkeleton带洞 */
 //        PApplet.main("demoTest.TestCampSkeleton");
 
         /* 测试几种剖分方法 */
-//        PApplet.main("demoTest.TestSubdivision");
+        PApplet.main("demoTest.TestSubdivision");
 
         /* 测试gurobi */
 //        PApplet.main("demoTest.TestGurobi");

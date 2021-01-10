@@ -10,18 +10,22 @@ import java.util.HashMap;
  * @project shopping_mall
  * @date 2020/10/19
  * @time 22:40
- * 1.从一组double数组中找到最大值的序号
- * 2.从一组double数组中找到最小值的序号
- * 3.把一组double数组按升序排序（返回一组序号）
- * 5.数组倒序（用泛型）
+ * <p>
+ * #### 数组相关
+ * 从一组double数组中找到最大值的序号
+ * 从一组double数组中找到最小值的序号
+ * 把一组double数组按升序排序（返回一组序号）
+ * #### 数组相关
  * 给定范围生成随机数
  * 给定范围生成一组随机数
  * 给定范围生成随机整数
  * 将目标数字从一个范围映射到另一个范围内的对应数字
+ * <p>
+ * 增加中……
  */
 public final class ZMath {
 
-    /*-------- array methods --------*/
+    /*-------- 数组相关 --------*/
 
     /**
      * 从一组double数组中找到最大值的序号
@@ -93,6 +97,7 @@ public final class ZMath {
      * @param array array to be reversed
      * @return java.lang.Object[]
      */
+    @Deprecated
     public static Object[] reverseArray(Object[] array) {
         Object[] result = new Object[array.length];
         for (int i = 0; i < array.length; i++) {
@@ -101,7 +106,7 @@ public final class ZMath {
         return result;
     }
 
-    /*-------- mapping methods --------*/
+    /*-------- 映射与随机相关 --------*/
 
     /**
      * 给定范围生成随机数

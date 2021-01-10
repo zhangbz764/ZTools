@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 测试jts的convexhull、找凹点、直线多边形交点及排序
+ * 测试jts的convexhull、找凹点、直线多边形交点及排序，找最大矩形
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall

@@ -2,6 +2,8 @@ package transform;
 
 import igeo.ICurve;
 import igeo.IPoint;
+import igeo.IVec;
+import igeo.gui.IPolyline;
 import org.locationtech.jts.geom.*;
 import wblut.geom.*;
 
@@ -22,6 +24,8 @@ import java.util.List;
  * ICurve -> WB_Geometry 根据点数和闭合与否返回WB_Polygon / WB_Polyline / WB_Segment
  * ICurve -> WB_Geometry 根据点数和闭合与否返回WB_Polygon / WB_Polyline / WB_Segment，带缩放
  * ICurve -> WB_PolyLine 带缩放
+ * WB_Point -> IPoint
+ * WB_PolyLine -> ICurve
  * ** IGeo <-> jts **
  * IPoint -> Coordinate
  * IPoint -> Point
@@ -55,7 +59,7 @@ public class ZTransform {
      * @param point input IPoint
      * @return wblut.geom.WB_Point
      */
-    public static WB_Point IPointToWB(final IPoint point) {
+    public static WB_Point IPointToWB_Point(final IPoint point) {
         return new WB_Point(point.x(), point.y(), point.z());
     }
 
@@ -66,8 +70,28 @@ public class ZTransform {
      * @param scale scale
      * @return wblut.geom.WB_Point
      */
-    public static WB_Point IPointToWB(final IPoint point, final double scale) {
+    public static WB_Point IPointToWB_Point(final IPoint point, final double scale) {
         return new WB_Point(point.x(), point.y(), point.z()).scale(scale);
+    }
+
+    /**
+    * 将WB_Point转换为IPoint
+    *
+    * @param point input WB_Point
+    * @return igeo.IPoint
+    */
+    public static IPoint WB_PointToIPoint(final WB_Point point) {
+        return new IPoint(point.xd(), point.yd(), point.zd());
+    }
+
+    /**
+    * 将WB_Point转换为IVec
+    *
+    * @param point input WB_Point
+    * @return igeo.IVec
+    */
+    public static IVec WB_PointToIVec(final WB_Point point) {
+        return new IVec(point.xd(), point.yd(), point.zd());
     }
 
     /**
@@ -147,6 +171,20 @@ public class ZTransform {
             System.out.println("***MAYBE OTHER TYPE OF GEOMETRY***");
             return null;
         }
+    }
+
+    /**
+    * 将WB_PolyLine转换为ICurve
+    *
+    * @param polyLine input WB_PolyLine
+    * @return igeo.ICurve
+    */
+    public static ICurve WB_PolyLineToICurve(final WB_PolyLine polyLine) {
+        IVec[] vecs = new IVec[polyLine.getNumberOfPoints()];
+        for (int i = 0; i < polyLine.getNumberOfPoints(); i++) {
+            vecs[i] = WB_PointToIVec(polyLine.getPoint(i));
+        }
+        return new ICurve(vecs);
     }
 
     /*-------- IGeo <-> Jts --------*/

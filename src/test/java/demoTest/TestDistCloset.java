@@ -42,7 +42,7 @@ public class TestDistCloset extends PApplet {
         poly = new WB_Polygon(pts1);
         pl = new WB_PolyLine(pts2);
 
-        closet = WB_GeometryOp.getClosestPoint2D(origin, pl);
+        closet = WB_GeometryOp.getClosestPoint2D(origin,(WB_PolyLine) poly);
     }
 
     public void draw() {

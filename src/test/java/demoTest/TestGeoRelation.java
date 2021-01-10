@@ -1,5 +1,6 @@
 package demoTest;
 
+import geometry.ZGeoFactory;
 import geometry.ZPoint;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.operation.buffer.BufferOp;
@@ -7,6 +8,7 @@ import org.locationtech.jts.operation.buffer.BufferParameters;
 import processing.core.PApplet;
 import render.JtsRender;
 import transform.ZTransform;
+import wblut.geom.WB_PolyLine;
 
 /**
  * 测试jts几何图形布尔关系
@@ -26,6 +28,8 @@ public class TestGeoRelation extends PApplet {
     LineString ls;
     Geometry buffer;
     ZPoint mouse;
+
+    WB_PolyLine pl;
 
     JtsRender jtsRender;
 
@@ -56,16 +60,31 @@ public class TestGeoRelation extends PApplet {
         buffer = bufferOp.getResultGeometry(20);
         mouse = new ZPoint(500, 500);
 
+        pl = ZGeoFactory.createPolylineFromPolygon(
+                ZTransform.jtsPolygonToWB_Polygon(poly), new int[]{2, 3, 4, 0}
+        );
+
     }
 
     public void draw() {
         background(255);
 
+        strokeWeight(1);
         jtsRender.drawGeometry(poly);
         jtsRender.drawGeometry(buffer);
 
         mouse.set(mouseX, mouseY);
         mouse.displayAsPoint(this);
+
+        strokeWeight(4);
+        for (int i = 0; i < pl.getNumberOfPoints() - 1; i++) {
+            line(
+                    pl.getPoint(i).xf(),
+                    pl.getPoint(i).yf(),
+                    pl.getPoint(i + 1).xf(),
+                    pl.getPoint(i + 1).yf()
+            );
+        }
     }
 
     public void mouseClicked() {
