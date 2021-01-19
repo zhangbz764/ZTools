@@ -58,6 +58,10 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
 //            } else if (voronoiGenerator.size() == 1) {
 //                voronoiGenerator.remove(0);
 //            }
+            if (voronoiGenerator.size() > 2 && depth == 0) {
+                voronoiGenerator.remove(0);
+                voronoiGenerator.remove(voronoiGenerator.size() - 1);
+            }
             // generate voronoi
             List<WB_Point> points = new ArrayList<>();
             for (ZPoint p : voronoiGenerator) {

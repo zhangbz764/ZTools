@@ -3,7 +3,6 @@ package transform;
 import igeo.ICurve;
 import igeo.IPoint;
 import igeo.IVec;
-import igeo.gui.IPolyline;
 import org.locationtech.jts.geom.*;
 import wblut.geom.*;
 

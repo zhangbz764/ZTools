@@ -9,11 +9,15 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import processing.core.PApplet;
 import transform.ZTransform;
-import wblut.geom.*;
-import wblut.hemesh.HE_Face;
+import wblut.geom.WB_GeometryOp;
+import wblut.geom.WB_Point;
+import wblut.geom.WB_PolyLine;
+import wblut.geom.WB_Polygon;
 import wblut.processing.WB_Render;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 // TODO: 2021/1/4 重新整理新的sidestrip
 
 /**

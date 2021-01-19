@@ -12,7 +12,8 @@ import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
 import render.JtsRender;
 import transform.ZTransform;
-import wblut.geom.*;
+import wblut.geom.WB_Polygon;
+import wblut.geom.WB_Segment;
 import wblut.processing.WB_Render;
 
 import java.util.ArrayList;

@@ -5,7 +5,7 @@ import geometry.ZSkeleton;
 import igeo.ICurve;
 import igeo.IG;
 import processing.core.PApplet;
-import render.ZDisplay;
+import render.ZRender;
 import transform.ZTransform;
 import wblut.geom.WB_GeometryFactory3D;
 import wblut.geom.WB_Point;
@@ -60,7 +60,7 @@ public class TestSkeleton extends PApplet {
 
     public void draw() {
         background(255);
-        ZDisplay.drawAxis3D(this);
+        ZRender.drawAxis3D(this);
         noFill();
 
         gcam.begin3d();

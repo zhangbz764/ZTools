@@ -1,6 +1,8 @@
 package render;
 
 import processing.core.PApplet;
+import processing.core.PConstants;
+import wblut.geom.WB_Polygon;
 
 /**
  * 基本显示工具
@@ -10,7 +12,7 @@ import processing.core.PApplet;
  * @date 2020/9/29
  * @time 15:41
  */
-public class ZDisplay {
+public class ZRender {
 
     /*-------- 坐标轴 --------*/
 
@@ -82,5 +84,33 @@ public class ZDisplay {
         app.stroke(0, 0, 255);
         app.line(0, 0, 0, 0, 0, length);
         app.popStyle();
+    }
+
+    /**
+     * 绘制带洞多边形WB_Polygon
+     *
+     * @param polygon input polygon
+     * @param app     PApplet
+     * @return void
+     */
+    public static void drawWB_PolygonWithHoles(WB_Polygon polygon, PApplet app) {
+        if (polygon.getNumberOfHoles() > 0) {
+            int[] npc = polygon.getNumberOfPointsPerContour();
+            app.beginShape();
+            for (int i = 0; i < npc[0] - 1; i++) {
+                app.vertex(polygon.getPoint(i).xf(), polygon.getPoint(i).yf(), polygon.getPoint(i).zf());
+            }
+            int index = npc[0];
+            for (int i = 0; i < polygon.getNumberOfHoles(); i++) {
+                app.beginContour();
+                for (int j = 0; j < npc[i + 1] - 1; j++) {
+                    app.vertex(polygon.getPoint(index).xf(), polygon.getPoint(index).yf(), polygon.getPoint(index).zf());
+                    index++;
+                }
+                app.endContour();
+                index++;
+            }
+            app.endShape(PConstants.CLOSE);
+        }
     }
 }
