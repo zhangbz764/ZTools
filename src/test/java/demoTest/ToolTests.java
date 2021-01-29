@@ -16,11 +16,11 @@ public class ToolTests {
         /* 测试极角排序、角平分线等向量运算 */
 //        PApplet.main("demoTest.TestPolarAngle");
 
-        /* 测试jts几何图形布尔关系，凸多边形最大内接矩形 */
+        /* 测试jts几何图形布尔关系，截取WB_PolyLine*/
 //        PApplet.main("demoTest.TestGeoRelation");
 
         /* 测试多边形等分、沿多边形边找点、多边形边线offset */
-//        PApplet.main("demoTest.TestPolySplit");
+        PApplet.main("demoTest.TestPolySplit");
 
         /* 测试hemesh里的最近点计算、线段trim和extend计算、op里的检测线段二维相交 */
 //        PApplet.main("demoTest.TestDistCloset");
@@ -38,12 +38,15 @@ public class ToolTests {
 //        PApplet.main("demoTest.TestCampSkeleton");
 
         /* 测试几种剖分方法 */
-        PApplet.main("demoTest.TestSubdivision");
+//        PApplet.main("demoTest.TestSubdivision");
 
         /* 测试gurobi */
 //        PApplet.main("demoTest.TestGurobi");
 
         /* 测试hemesh里的洞 */
 //        PApplet.main("demoTest.TestHolesHE_Mesh");
+
+        /* 测试jts LineMerger */
+//        PApplet.main("demoTest.TestLineMerger");
     }
 }

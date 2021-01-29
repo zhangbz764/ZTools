@@ -345,7 +345,7 @@ public class ZTransform {
      * @param p input LineString
      * @return wblut.geom.WB_PolyLine
      */
-    public static WB_PolyLine JtsLineStringToWB_PolyLine(final LineString p) {
+    public static WB_PolyLine jtsLineStringToWB_PolyLine(final LineString p) {
         WB_Coord[] points = new WB_Point[p.getNumPoints()];
         for (int i = 0; i < p.getNumPoints(); i++) {
             points[i] = new WB_Point(p.getCoordinates()[i].x, p.getCoordinates()[i].y, p.getCoordinates()[i].z);

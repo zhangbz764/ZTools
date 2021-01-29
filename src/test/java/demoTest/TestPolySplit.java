@@ -31,6 +31,8 @@ public class TestPolySplit extends PApplet {
     WB_Polygon poly;
     WB_PolyLine pl;
 
+    List<ZNode> nodes = new ArrayList<>();
+    ZNode select;
     ZGraph graph;
     List<ZLine> alongSegments;
 
@@ -63,7 +65,6 @@ public class TestPolySplit extends PApplet {
         this.pl = new WB_PolyLine(pts2);
 
         // 创建graph
-        List<ZNode> nodes = new ArrayList<>();
         nodes.add(new ZNode(100, 500));
         nodes.add(new ZNode(200, 500));
         nodes.add(new ZNode(200, 400));
@@ -85,6 +86,7 @@ public class TestPolySplit extends PApplet {
         besides = ZGeoMath.pointsOnEdgeByDist(test, poly, 450);
 
         // graph找线段
+        select = nodes.get(1);
         this.alongSegments = ZGeoMath.segmentsOnGraphByDist(nodes.get(1), null, 80);
         System.out.println("find by dist on graph: " + alongSegments.size());
 
@@ -102,29 +104,29 @@ public class TestPolySplit extends PApplet {
     public void draw() {
         background(255);
         stroke(0);
-        noFill();
-        strokeWeight(1);
-//        render.drawPolygonEdges2D(poly);
-        render.drawPolyLine2D(pl);
-        pushStyle();
-        fill(255, 0, 0);
-        render.drawPoint2D(poly.getSegment(index).getOrigin(), 10);
-        fill(0, 0, 255);
-        render.drawPoint2D(poly.getSegment(index).getEndpoint(), 10);
-
-        fill(0, 255, 0);
-        test.displayAsPoint(this);
-        for (ZPoint p : besides) {
-            p.displayAsPoint(this);
-        }
-        popStyle();
-        strokeWeight(4);
-        render.drawSegment2D(poly.getSegment(index));
-        offset.display(this);
-
-        for (ZPoint p : split) {
-            p.displayAsPoint(this);
-        }
+//        noFill();
+//        strokeWeight(1);
+////        render.drawPolygonEdges2D(poly);
+//        render.drawPolyLine2D(pl);
+//        pushStyle();
+//        fill(255, 0, 0);
+//        render.drawPoint2D(poly.getSegment(index).getOrigin(), 10);
+//        fill(0, 0, 255);
+//        render.drawPoint2D(poly.getSegment(index).getEndpoint(), 10);
+//
+//        fill(0, 255, 0);
+//        test.displayAsPoint(this);
+//        for (ZPoint p : besides) {
+//            p.displayAsPoint(this);
+//        }
+//        popStyle();
+//        strokeWeight(4);
+//        render.drawSegment2D(poly.getSegment(index));
+//        offset.display(this);
+//
+//        for (ZPoint p : split) {
+//            p.displayAsPoint(this);
+//        }
 
         // 画graph部分
         strokeWeight(1);
@@ -134,6 +136,11 @@ public class TestPolySplit extends PApplet {
         for (ZLine l : alongSegments) {
             l.display(this);
         }
+        if (select != null) {
+            stroke(255, 0, 0);
+            rect(select.xf() - 10, select.yf() - 10, 40, 20 );
+//            ellipse(select.xf(), select.yf(), 20, 20);
+        }
     }
 
     public void mouseClicked() {
@@ -142,6 +149,7 @@ public class TestPolySplit extends PApplet {
         offset = ZGeoMath.offsetWB_PolygonSegment(poly, index, 30);
         for (ZNode node : graph.getNodes()) {
             if (node.distance(new ZPoint(mouseX, mouseY)) < node.rd()) {
+                select = node;
                 this.alongSegments = ZGeoMath.segmentsOnGraphByDist(node, null, 150);
             }
         }

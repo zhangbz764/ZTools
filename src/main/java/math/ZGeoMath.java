@@ -277,6 +277,19 @@ public final class ZGeoMath {
         }
     }
 
+    public static boolean checkLineSegmentIntersection(final ZPoint[] line, final ZPoint[] seg){
+        ZPoint delta = seg[0].sub(line[0]);
+        double crossBase = line[1].cross2D(seg[1]);
+        double crossDelta0 = delta.cross2D(line[1]);
+
+        if (Math.abs(crossBase) < epsilon) {
+            return false;
+        } else {
+            double t = crossDelta0 / crossBase; // seg
+            return t >= 0 && t <= 1;
+        }
+    }
+
     /**
      * 根据输入线型对象类型算交点 line, ray or segment
      *
@@ -686,6 +699,23 @@ public final class ZGeoMath {
             }
         }
         return result;
+    }
+
+    /**
+     * 判断点是否在多边形边界上
+     *
+     * @param p    input point
+     * @param poly input polygon
+     * @return boolean
+     */
+    public static boolean checkPointOnPolygonEdge(final ZPoint p, final WB_Polygon poly) {
+        for (int i = 0; i < poly.getNumberSegments(); i++) {
+            ZLine seg = new ZLine(poly.getSegment(i));
+            if (pointOnSegment(p, seg)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

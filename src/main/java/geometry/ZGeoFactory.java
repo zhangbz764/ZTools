@@ -79,13 +79,38 @@ public class ZGeoFactory {
 //            System.out.println("lines:"+lineMerger.getMergedLineStrings().toArray().length);
 
             LineString merged = (LineString) lineMerger.getMergedLineStrings().toArray()[ZMath.getMaxIndex(lineStringLengths)];
-            return ZTransform.JtsLineStringToWB_PolyLine(merged);
+            return ZTransform.jtsLineStringToWB_PolyLine(merged);
         } else if (lineMerger.getMergedLineStrings().size() == 1) {
             LineString merged = (LineString) lineMerger.getMergedLineStrings().toArray()[0];
-            return ZTransform.JtsLineStringToWB_PolyLine(merged);
+            return ZTransform.jtsLineStringToWB_PolyLine(merged);
         } else {
             return null;
         }
+    }
+
+    /**
+    * 将一系列首尾相接线段合成若干段WB_PolyLine
+    *
+     * @param lines list of lines
+    * @return java.util.List<wblut.geom.WB_PolyLine>
+    */
+    public static List<WB_PolyLine> createWB_PolyLineList(final List<? extends ZLine> lines) {
+        List<WB_PolyLine> result = new ArrayList<>();
+
+        LineMerger lineMerger = new LineMerger();
+        List<LineString> lineStrings = new ArrayList<>();
+        for (ZLine line : lines) {
+            lineStrings.add(line.toJtsLineString());
+        }
+        lineMerger.add(lineStrings);
+        if (lineMerger.getMergedLineStrings().size() > 0) {
+            for (Object ls : lineMerger.getMergedLineStrings()) {
+                if (ls instanceof LineString) {
+                    result.add(ZTransform.jtsLineStringToWB_PolyLine((LineString) ls));
+                }
+            }
+        }
+        return result;
     }
 
     /**
@@ -159,7 +184,7 @@ public class ZGeoFactory {
     }
 
     /**
-     * 给定线段序号，从WB_Polygon中创建一截WB_PloyLine
+     * 给定线段序号，从WB_Polygon中截取一段WB_PloyLine
      *
      * @param polygon polygon to be extracted
      * @param index   segment indices to extract

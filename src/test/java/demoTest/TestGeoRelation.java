@@ -2,12 +2,14 @@ package demoTest;
 
 import geometry.ZGeoFactory;
 import geometry.ZPoint;
+import math.ZGeoMath;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import processing.core.PApplet;
 import render.JtsRender;
 import transform.ZTransform;
+import wblut.geom.WB_GeometryOp;
 import wblut.geom.WB_PolyLine;
 
 /**
@@ -63,6 +65,8 @@ public class TestGeoRelation extends PApplet {
         pl = ZGeoFactory.createPolylineFromPolygon(
                 ZTransform.jtsPolygonToWB_Polygon(poly), new int[]{2, 3, 4, 0}
         );
+
+
 
     }
 
