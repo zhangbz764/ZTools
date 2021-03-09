@@ -35,6 +35,7 @@ import java.util.Map;
  * 将线段延长或剪切至多边形最近的交点
  * ### 二维距离相关
  * 从一组线段中找到与目标点距离最近的点
+ * 从一个WB_Polygon中找到与目标点距离最近边的序号
  * ### 二维位置判断相关
  * 判断点是否在直线/射线/线段上（有epsilon）
  * 从一系列ZLine中找到点在哪条线上，返回线两边的端点
@@ -230,7 +231,7 @@ public final class ZGeoMath {
      * @param other  vector list
      * @return geometry.ZPoint
      */
-    public static ZPoint getClosetVec(final ZPoint target, final List<? extends ZPoint> other) {
+    public static ZPoint getclosestVec(final ZPoint target, final List<? extends ZPoint> other) {
         assert other != null && other.size() != 0 : "invalid input vectors";
         double[] dotValue = new double[other.size()];
         for (int i = 0; i < other.size(); i++) {
@@ -277,7 +278,7 @@ public final class ZGeoMath {
         }
     }
 
-    public static boolean checkLineSegmentIntersection(final ZPoint[] line, final ZPoint[] seg){
+    public static boolean checkLineSegmentIntersection(final ZPoint[] line, final ZPoint[] seg) {
         ZPoint delta = seg[0].sub(line[0]);
         double crossBase = line[1].cross2D(seg[1]);
         double crossDelta0 = delta.cross2D(line[1]);
@@ -601,15 +602,31 @@ public final class ZGeoMath {
      * @param lines list of lines
      * @return geometry.ZPoint
      */
-    public static ZPoint closetPointToLineList(final ZPoint p, final List<? extends ZLine> lines) {
-        ZPoint closet = new ZPoint(WB_GeometryOp2D.getClosestPoint2D(p.toWB_Point(), lines.get(0).toWB_Segment()));
+    public static ZPoint closestPointToLineList(final ZPoint p, final List<? extends ZLine> lines) {
+        ZPoint closest = new ZPoint(WB_GeometryOp2D.getClosestPoint2D(p.toWB_Point(), lines.get(0).toWB_Segment()));
         for (int i = 1; i < lines.size(); i++) {
             ZPoint curr = new ZPoint(WB_GeometryOp2D.getClosestPoint2D(p.toWB_Point(), lines.get(i).toWB_Segment()));
-            if (p.distanceSq(closet) > p.distanceSq(curr)) {
-                closet = curr;
+            if (p.distanceSq(closest) > p.distanceSq(curr)) {
+                closest = curr;
             }
         }
-        return closet;
+        return closest;
+    }
+
+    /**
+     * 从一个WB_Polygon中找到与目标点距离最近边的序号
+     *
+     * @param p    target point
+     * @param poly input poltgon
+     * @return int
+     */
+    public static int closestSegment(final ZPoint p, final WB_Polygon poly) {
+        double[] dist = new double[poly.getNumberSegments()];
+        WB_Point pt = p.toWB_Point();
+        for (int i = 0; i < poly.getNumberSegments(); i++) {
+            dist[i] = WB_GeometryOp.getDistance2D(pt, poly.getSegment(i));
+        }
+        return ZMath.getMinIndex(dist);
     }
 
     /*-------- 二维位置判断相关 --------*/

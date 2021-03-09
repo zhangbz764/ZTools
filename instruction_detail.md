@@ -63,7 +63,7 @@
 * 找到多边形内的所有凹点（返回点list或者序号list）  
   `getConcavePoints` `getConcavePointIndices`
 * 从一组向量中找与输入目标夹角最小者，不区分正负角（返回向量）   
-  `findClosetVec`
+  `findClosestVec`
 
 #### 二维相交相关
 
@@ -81,7 +81,9 @@
 #### 二维距离相关
 
 * 从一组线段中找到与目标点距离最近的点  
-  `closetPointToLineList`
+  `closestPointToLineList`
+* 从一个WB_Polygon中找到与目标点距离最近边的序号  
+  `closestSegment`
 
 #### 二维位置判断相关
 

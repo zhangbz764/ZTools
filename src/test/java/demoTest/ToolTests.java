@@ -20,7 +20,7 @@ public class ToolTests {
 //        PApplet.main("demoTest.TestGeoRelation");
 
         /* 测试多边形等分、沿多边形边找点、多边形边线offset */
-        PApplet.main("demoTest.TestPolySplit");
+//        PApplet.main("demoTest.TestPolySplit");
 
         /* 测试hemesh里的最近点计算、线段trim和extend计算、op里的检测线段二维相交 */
 //        PApplet.main("demoTest.TestDistCloset");
@@ -32,7 +32,7 @@ public class ToolTests {
 //        PApplet.main("demoTest.TestHe_Mesh");
 
         /* 测试jts的convexhull、找凹点、直线多边形交点及排序，找最大矩形 */
-//        PApplet.main("demoTest.TestConvexHull");
+        PApplet.main("demoTest.TestConvexHull");
 
         /* 测试ZSkeleton带洞 */
 //        PApplet.main("demoTest.TestCampSkeleton");

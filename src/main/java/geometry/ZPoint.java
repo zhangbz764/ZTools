@@ -153,6 +153,18 @@ public class ZPoint {
     }
 
     /**
+    * 向量相加
+    *
+    * @param x
+    * @param y
+    * @param z
+    * @return geometry.ZPoint
+    */
+    public ZPoint add(double x, double y, double z) {
+        return new ZPoint(this.x + x, this.y + y, this.z + z);
+    }
+
+    /**
      * 向量相加（改变自身）
      *
      * @param v
@@ -170,6 +182,18 @@ public class ZPoint {
      */
     public ZPoint sub(ZPoint v) {
         return new ZPoint(x - v.xd(), y - v.yd(), z - v.zd());
+    }
+
+    /**
+     * 向量相减
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return geometry.ZPoint
+     */
+    public ZPoint sub(double x, double y, double z) {
+        return new ZPoint(this.x - x, this.y - y, this.z - z);
     }
 
     /**
