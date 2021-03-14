@@ -2,7 +2,7 @@ package demoTest;
 
 import gurobi.*;
 import math.ZMath;
-import peasy.PeasyCam;
+//import peasy.PeasyCam;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class TestGurobi extends PApplet {
 
     /* ------------- setup ------------- */
 
-    PeasyCam cam;
+//    PeasyCam cam;
 
     int cellWidth;
     int cellHeight;
@@ -35,7 +35,7 @@ public class TestGurobi extends PApplet {
     List<Integer[]> colors;
 
     public void setup() {
-        cam = new PeasyCam(this, 300);
+//        cam = new PeasyCam(this, 300);
 
         cellHeight = (int) (this.height * 0.01);
         cellWidth = (int) (this.width * 0.01);

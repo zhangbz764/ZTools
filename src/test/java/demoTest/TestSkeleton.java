@@ -14,6 +14,7 @@ import wblut.processing.WB_Render;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 测试ZSkeleton
@@ -41,8 +42,12 @@ public class TestSkeleton extends PApplet {
         gcam = new CameraController(this);
         render = new WB_Render(this);
 
+        String path = Objects.requireNonNull(
+                this.getClass().getClassLoader().getResource("./test_convex_hull.3dm")
+        ).getPath();
+
         IG.init();
-        IG.open("E:\\AAA_Project\\202009_Shuishi\\codefiles\\test_convex_hull.3dm");
+        IG.open(path);
 
         // load boundary polygon
         ICurve[] boundary = IG.layer("test").curves();

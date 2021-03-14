@@ -18,9 +18,13 @@ import wblut.processing.WB_Render;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * 测试jts的convexhull、找凹点、直线多边形交点及排序，找最大矩形
+ * 1.测试jts的convexhull
+ * 2.测试找凹点
+ * 3.测试直线与多边形交点及交点排序
+ * 4.测试LargestRectangle找给定长宽比的最大内接矩形
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -37,16 +41,16 @@ public class TestConvexHull extends PApplet {
 
     /* ------------- setup ------------- */
 
-    List<Geometry> polys;
-    List<Geometry> convexHull;
-    List<WB_Segment> maxIndices;
-    List<List<Integer>> concavePoints;
-    JtsRender jtsRender;
-    WB_Render render;
+    public List<Geometry> polys;
+    public List<Geometry> convexHull;
+    public List<WB_Segment> maxIndices;
+    public List<List<Integer>> concavePoints;
+    public JtsRender jtsRender;
+    public WB_Render render;
 
-    List<ZLargestRectangleRatio> largestRectangles;
+    public List<ZLargestRectangleRatio> largestRectangles;
 
-    CameraController gcam;
+    public CameraController gcam;
 
     public void setup() {
         gcam = new CameraController(this);
@@ -54,8 +58,12 @@ public class TestConvexHull extends PApplet {
         this.render = new WB_Render(this);
 
         // 载入几何模型，算凸包
+        String path = Objects.requireNonNull(
+                this.getClass().getClassLoader().getResource("./test_convex_hull.3dm")
+        ).getPath();
+
         IG.init();
-        IG.open("E:\\AAA_Project\\202009_Shuishi\\codefiles\\test_convex_hull.3dm");
+        IG.open(path);
         this.polys = new ArrayList<>();
         this.convexHull = new ArrayList<>();
 
@@ -63,7 +71,6 @@ public class TestConvexHull extends PApplet {
         for (ICurve polyLine : polyLines) {
             polys.add(ZTransform.ICurveToJts(polyLine));
         }
-
         for (Geometry g : polys) {
             convexHull.add(g.convexHull());
         }

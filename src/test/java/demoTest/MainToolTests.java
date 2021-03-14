@@ -10,7 +10,7 @@ import processing.core.PApplet;
  * @date 2020/12/9
  * @time 16:22
  */
-public class ToolTests {
+public class MainToolTests {
     public static void main(String[] args) {
 
         /* 测试极角排序、角平分线等向量运算 */
@@ -32,7 +32,7 @@ public class ToolTests {
 //        PApplet.main("demoTest.TestHe_Mesh");
 
         /* 测试jts的convexhull、找凹点、直线多边形交点及排序，找最大矩形 */
-        PApplet.main("demoTest.TestConvexHull");
+//        PApplet.main("demoTest.TestConvexHull");
 
         /* 测试ZSkeleton带洞 */
 //        PApplet.main("demoTest.TestCampSkeleton");
@@ -48,5 +48,8 @@ public class ToolTests {
 
         /* 测试jts LineMerger */
 //        PApplet.main("demoTest.TestLineMerger");
+
+        /* 测试jts多种几何形的buffer效果 */
+        PApplet.main("demoTest.TestJtsBuffer");
     }
 }
