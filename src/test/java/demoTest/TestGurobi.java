@@ -2,7 +2,6 @@ package demoTest;
 
 import gurobi.*;
 import math.ZMath;
-//import peasy.PeasyCam;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
