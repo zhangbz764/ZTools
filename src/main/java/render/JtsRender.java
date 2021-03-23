@@ -28,33 +28,31 @@ public class JtsRender {
      * @return void
      */
     public void drawGeometry(Geometry geo) {
-        if (geo instanceof Point) {
-            drawPoint(geo);
-        } else if (geo instanceof LineString) {
-            drawLineString(geo);
-        } else if (geo instanceof Polygon) {
-            drawPolygon(geo);
-        } else {
-            PApplet.println("not a basic geo type");
+        String type = geo.getGeometryType();
+        switch (type) {
+            case "Point":
+                drawPoint(geo);
+                break;
+            case "LineString":
+                drawLineString(geo);
+                break;
+            case "LinearRing":
+                drawLinearRing(geo);
+                break;
+            case "Polygon":
+                drawPolygon(geo);
+                break;
+            case "MultiPoint":
+            case "MultiLineString":
+            case "MultiPolygon":
+                for (int i = 0; i < geo.getNumGeometries(); i++) {
+                    drawGeometry(geo.getGeometryN(i));
+                }
+                break;
+            default:
+                PApplet.println("not a basic geo type");
+                break;
         }
-
-//        String type = geo.getGeometryType();
-//        switch (type) {
-//            case "Point":
-//
-//            case "LineString":
-//                drawLineString(geo);
-//                break;
-//            case "LinearRing":
-//                drawLinearRing(geo);
-//                break;
-//            case "Polygon":
-//                drawPolygon(geo);
-//                break;
-//            default:
-//                PApplet.println("not a basic geo type");
-//                break;
-//        }
     }
 
     /**
