@@ -936,16 +936,39 @@ public final class ZGeoMath {
     public static List<ZPoint> splitPolygonEdgeByStep(final Polygon poly, final double step) {
         // 得到多边形所有点
         Coordinate[] polyPoints = poly.getCoordinates();
+        return splitJTS(polyPoints, step, "Polygon");
+    }
 
+    /**
+     * 设置步长，剖分多段线的边 (LineString)
+     *
+     * @param ls   input LineString
+     * @param step step to divide
+     * @return java.util.List<geometry.ZPoint>
+     */
+    public static List<ZPoint> splitLineStringByStep(final LineString ls, final double step) {
+        // 得到LineString所有点
+        Coordinate[] lsPoints = ls.getCoordinates();
+        return splitJTS(lsPoints, step, "LineString");
+    }
+
+    /**
+     * 设置步长，剖分jts Polygon 或 LineString 的边 (核心算法)
+     *
+     * @param coords input Coordinates
+     * @param step   step to divide
+     * @return java.util.List<geometry.ZPoint>
+     */
+    private static List<ZPoint> splitJTS(final Coordinate[] coords, final double step, final String type) {
         // 初始值
-        ZPoint p1 = new ZPoint(polyPoints[0]);
+        ZPoint p1 = new ZPoint(coords[0]);
         double curr_span = step;
         double curr_dist;
 
         List<ZPoint> result = new ArrayList<>();
         result.add(p1);
-        for (int i = 1; i < poly.getNumPoints(); i++) {
-            ZPoint p2 = new ZPoint(polyPoints[i]);
+        for (int i = 1; i < coords.length; i++) {
+            ZPoint p2 = new ZPoint(coords[i]);
             curr_dist = p1.distance(p2);
 
             while (curr_dist >= curr_span) {
@@ -958,9 +981,17 @@ public final class ZGeoMath {
             p1 = p2;
             curr_span = curr_span - curr_dist;
         }
-        if (result.get(0).distance(result.get(result.size() - 1)) < epsilon) {
-            result.remove(result.size() - 1);
+        if (type.equals("Polygon")) {
+            if (result.get(0).distance(result.get(result.size() - 1)) < epsilon) {
+                result.remove(result.size() - 1);
+            }
+        } else if (type.equals("LineString")) {
+            result.add(new ZPoint(coords[coords.length - 1]));
+            if (result.get(result.size() - 1).distance(result.get(result.size() - 2)) < epsilon) {
+                result.remove(result.size() - 2);
+            }
         }
+
         return result;
     }
 
@@ -1244,6 +1275,18 @@ public final class ZGeoMath {
             result.add(new ZPoint(poly.getPoint(poly.getNumberOfPoints() - 1)));
         }
         return result;
+    }
+
+    /**
+     * 将多段线轮廓等分为若干点(LineString)
+     *
+     * @param ls       input LineString
+     * @param splitNum number to split
+     * @return java.util.List<geometry.ZPoint>
+     */
+    public static List<ZPoint> splitLineString(final LineString ls, final int splitNum) {
+        double step = ls.getLength() / splitNum;
+        return splitLineStringByStep(ls, step);
     }
 
     /**

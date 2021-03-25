@@ -20,7 +20,7 @@ import java.util.List;
  * @time 17:55
  */
 public class ZPoint {
-    private double x, y, z;
+    private double x = 0, y = 0, z = 0;
     private final float r = 5;
     private final float vecCap = 3;
 
@@ -47,7 +47,11 @@ public class ZPoint {
     public ZPoint(Coordinate c) {
         this.x = c.x;
         this.y = c.y;
-        this.z = c.z;
+        if (Double.isNaN(c.z)) {
+            this.z = 0;
+        } else {
+            this.z = c.z;
+        }
     }
 
     public ZPoint(WB_Coord c) {
@@ -153,13 +157,13 @@ public class ZPoint {
     }
 
     /**
-    * 向量相加
-    *
-    * @param x
-    * @param y
-    * @param z
-    * @return geometry.ZPoint
-    */
+     * 向量相加
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return geometry.ZPoint
+     */
     public ZPoint add(double x, double y, double z) {
         return new ZPoint(this.x + x, this.y + y, this.z + z);
     }
