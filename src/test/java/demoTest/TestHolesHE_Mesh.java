@@ -1,6 +1,6 @@
 package demoTest;
 
-import geometry.ZGeoFactory;
+import geometry.ZFactory;
 import math.ZGeoMath;
 import processing.core.PApplet;
 import wblut.geom.WB_Point;
@@ -57,7 +57,7 @@ public class TestHolesHE_Mesh extends PApplet {
                 new WB_Point(250, 200, 0)
         }));
 
-        subtractResult = ZGeoFactory.wbgf.subtractPolygons2D(outer.get(0), ZGeoMath.reversePolygon(inner.get(0)));
+        subtractResult = ZFactory.wbgf.subtractPolygons2D(outer.get(0), ZGeoMath.reversePolygon(inner.get(0)));
         System.out.println("sub result: " + subtractResult.size());
     }
 

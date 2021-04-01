@@ -1,9 +1,8 @@
-package geometry;
+package math;
 
 import core.MyFitnessFunction;
 import core.MyParticle;
 import core.MyRectangle;
-import math.ZGeoMath;
 import net.sourceforge.jswarm_pso.Swarm;
 import transform.ZTransform;
 import wblut.geom.WB_Point;

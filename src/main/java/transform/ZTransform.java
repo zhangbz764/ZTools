@@ -18,19 +18,20 @@ import java.util.List;
  * @time 17:27
  * 目前仅涉及简单多边形，部分涉及带洞
  * ** IGeo <-> WB **
- * IPoint -> WB_Point
+ * IPoint <-> WB_Point
  * IPoint -> WB_Point 带缩放
  * ICurve -> WB_Geometry 根据点数和闭合与否返回WB_Polygon / WB_Polyline / WB_Segment
  * ICurve -> WB_Geometry 根据点数和闭合与否返回WB_Polygon / WB_Polyline / WB_Segment，带缩放
  * ICurve -> WB_PolyLine 带缩放
- * WB_Point -> IPoint
+ * WB_Coord -> IVec
  * WB_PolyLine -> ICurve
  * ** IGeo <-> jts **
  * IPoint -> Coordinate
  * IPoint -> Point
  * ICurve -> Geometry 根据点数和闭合与否返回Polygon / LineString
  * ** WB <-> jts **
- * WB_Point -> Point
+ * WB_Coord <-> Point
+ * WB_Coord <-> Coordinate
  * WB_Polygon -> Polygon 如果WB_Polygon第一点与最后一点不重合，就加上最后一点
  * Polygon -> WB_Polygon
  * LineString -> WB_PolyLine
@@ -74,22 +75,22 @@ public class ZTransform {
     }
 
     /**
-    * 将WB_Point转换为IPoint
-    *
-    * @param point input WB_Point
-    * @return igeo.IPoint
-    */
-    public static IPoint WB_PointToIPoint(final WB_Point point) {
+     * 将WB_Coord转换为IPoint
+     *
+     * @param point input WB_Point
+     * @return igeo.IPoint
+     */
+    public static IPoint WB_CoordToIPoint(final WB_Coord point) {
         return new IPoint(point.xd(), point.yd(), point.zd());
     }
 
     /**
-    * 将WB_Point转换为IVec
-    *
-    * @param point input WB_Point
-    * @return igeo.IVec
-    */
-    public static IVec WB_PointToIVec(final WB_Point point) {
+     * 将WB_Coord转换为IVec
+     *
+     * @param point input WB_Point
+     * @return igeo.IVec
+     */
+    public static IVec WB_CoordToIVec(final WB_Coord point) {
         return new IVec(point.xd(), point.yd(), point.zd());
     }
 
@@ -173,15 +174,15 @@ public class ZTransform {
     }
 
     /**
-    * 将WB_PolyLine转换为ICurve
-    *
-    * @param polyLine input WB_PolyLine
-    * @return igeo.ICurve
-    */
+     * 将WB_PolyLine转换为ICurve
+     *
+     * @param polyLine input WB_PolyLine
+     * @return igeo.ICurve
+     */
     public static ICurve WB_PolyLineToICurve(final WB_PolyLine polyLine) {
         IVec[] vecs = new IVec[polyLine.getNumberOfPoints()];
         for (int i = 0; i < polyLine.getNumberOfPoints(); i++) {
-            vecs[i] = WB_PointToIVec(polyLine.getPoint(i));
+            vecs[i] = WB_CoordToIVec(polyLine.getPoint(i));
         }
         return new ICurve(vecs);
     }
@@ -242,13 +243,48 @@ public class ZTransform {
     /*-------- WB <-> Jts --------*/
 
     /**
-     * 将WB_Point转换为Point
+     * 将WB_Coord转换为Point
      *
-     * @param p input WB_Point
+     * @param p input WB_Coord
      * @return org.locationtech.jts.geom.Point
      */
-    public static Point WB_PointToPoint(final WB_Point p) {
+    public static Point WB_CoordToPoint(final WB_Coord p) {
         return gf.createPoint(new Coordinate(p.xd(), p.yd(), p.zd()));
+    }
+
+    /**
+     * 将Point转换为WB_Point
+     *
+     * @param p input Point
+     * @return wblut.geom.WB_Point
+     */
+    public static WB_Point PointToWB_Point(final Point p) {
+        return new WB_Point(p.getX(), p.getY(), 0);
+    }
+
+    /**
+     * 将WB_Coord转换为Coordinate
+     *
+     * @param p input WB_Coord
+     * @return org.locationtech.jts.geom.Coordinate
+     */
+    public static Coordinate WB_CoordToCoordinate(final WB_Coord p) {
+        return new Coordinate(p.xd(), p.yd(), p.zd());
+    }
+
+    /**
+     * 将Coordinate转换为WB_Point
+     *
+     * @param c input Coordinate
+     * @return wblut.geom.WB_Point
+     */
+    public static WB_Point PointToWB_Point(final Coordinate c) {
+        double z = c.getZ();
+        if (Double.isNaN(z)) {
+            return new WB_Point(c.getX(), c.getY(), 0);
+        } else {
+            return new WB_Point(c.getX(), c.getY(), c.getZ());
+        }
     }
 
     /**

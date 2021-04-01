@@ -1,6 +1,6 @@
 package demoTest;
 
-import geometry.ZGeoFactory;
+import geometry.ZFactory;
 import geometry.ZLine;
 import geometry.ZPoint;
 import processing.core.PApplet;
@@ -43,7 +43,7 @@ public class TestLineMerger extends PApplet {
         segments.add(new ZLine(new ZPoint(300, 200), new ZPoint(300, 300)));
         segments.add(new ZLine(new ZPoint(100, 300), new ZPoint(200, 300)));
 
-        polyLines = ZGeoFactory.createWB_PolyLineList(segments);
+        polyLines = ZFactory.createWB_PolyLineList(segments);
         System.out.println(polyLines.size());
     }
 

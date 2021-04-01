@@ -19,19 +19,26 @@ import java.util.List;
  * @date 2020/11/8
  * @time 22:04
  * <p>
- * 将一系列首尾相接线段合成一条WB_PolyLine
- * 将一系列首尾相接线段合成一条LineString
+ * 将一系列首尾相接线段合成一条WB_PolyLine,若有多条，则取最长
+ * 将一系列首尾相接线段合成一组WB_PolyLine list
+ * 将一系列首尾相接线段合成一条LineString,若有多条，则取最长
  * 将WB_PolyLine在端点处断开，创建一组新折线
  * 将LineString在端点处断开，创建一组新折线
  * 给定线段序号，从WB_Polygon中创建一截WB_PloyLine
+ * 将一条LineString向两端头微微延长一定距离（规避误差）
+ *
+ * 从一组线段创建ZGraph
  */
-public class ZGeoFactory {
+public class ZFactory {
     public static final WB_GeometryFactory wbgf = new WB_GeometryFactory();
     public static final GeometryFactory jtsgf = new GeometryFactory();
     private static final double epsilon = 0.00000001;
 
+    /*-------- create geometries --------*/
+
     /**
      * 将一系列首尾相接线段合成一条LineString
+     * 若有多条，则取最长一条
      *
      * @param lines list of lines
      * @return org.locationtech.jts.geom.LineString
@@ -59,6 +66,7 @@ public class ZGeoFactory {
 
     /**
      * 将一系列首尾相接线段合成一条WB_PolyLine
+     * 若有多条，则取最长一条
      *
      * @param lines list of lines
      * @return wblut.geom.WB_PolyLine
@@ -89,11 +97,11 @@ public class ZGeoFactory {
     }
 
     /**
-    * 将一系列首尾相接线段合成若干段WB_PolyLine
-    *
+     * 将一系列首尾相接线段合成若干段WB_PolyLine
+     *
      * @param lines list of lines
-    * @return java.util.List<wblut.geom.WB_PolyLine>
-    */
+     * @return java.util.List<wblut.geom.WB_PolyLine>
+     */
     public static List<WB_PolyLine> createWB_PolyLineList(final List<? extends ZLine> lines) {
         List<WB_PolyLine> result = new ArrayList<>();
 
@@ -199,5 +207,101 @@ public class ZGeoFactory {
                 (index[index.length - 1] + 1) % polygon.getNumberOfShellPoints()
         );
         return new WB_PolyLine(points);
+    }
+
+    /**
+     * 将一条LineString向两端头微微延长一定距离（规避误差）
+     *
+     * @param ls   input LineString to extend
+     * @param dist extend distance
+     * @return org.locationtech.jts.geom.LineString
+     */
+    public static LineString createExtendedLineString(final LineString ls, double dist) {
+        Coordinate[] coords = ls.getCoordinates();
+
+        if (coords.length > 2) {
+            Coordinate[] newCoords = new Coordinate[coords.length];
+
+            ZPoint p0 = new ZPoint(coords[0]);
+            ZPoint p1 = new ZPoint(coords[1]);
+            ZPoint p2 = new ZPoint(coords[coords.length - 2]);
+            ZPoint p3 = new ZPoint(coords[coords.length - 1]);
+
+            ZPoint v1 = p0.sub(p1).unit();
+            ZPoint v2 = p3.sub(p2).unit();
+
+            Coordinate newC0 = p0.add(v1.scaleTo(dist)).toJtsCoordinate();
+            Coordinate newC3 = p3.add(v2.scaleTo(dist)).toJtsCoordinate();
+
+            newCoords[0] = newC0;
+            System.arraycopy(coords, 1, newCoords, 1, coords.length - 1 - 1);
+            newCoords[coords.length - 1] = newC3;
+
+            return jtsgf.createLineString(newCoords);
+        } else if (coords.length == 2) {
+            ZPoint p0 = new ZPoint(coords[0]);
+            ZPoint p1 = new ZPoint(coords[1]);
+
+            ZPoint v1 = p0.sub(p1).unit();
+            ZPoint v2 = p1.sub(p0).unit();
+
+            Coordinate newC0 = p0.add(v1.scaleTo(dist)).toJtsCoordinate();
+            Coordinate newC1 = p1.add(v2.scaleTo(dist)).toJtsCoordinate();
+
+            return jtsgf.createLineString(new Coordinate[]{newC0, newC1});
+        } else {
+            return ls;
+        }
+    }
+
+    /*-------- create graphs --------*/
+
+    /**
+     * 从一组线段创建ZGraph
+     *
+     * @param lines input segments list
+     * @return geometry.ZGraph
+     */
+    public static ZGraph createZGraphFromSegments(final List<? extends ZLine> lines) {
+        List<ZNode> nodes = new ArrayList<>();
+        List<ZEdge> edges = new ArrayList<>();
+
+        List<ZPoint> checkList = new ArrayList<>();
+        for (ZLine l : lines) {
+            ZNode start = new ZNode(l.getPt0().xd(), l.getPt0().yd(), l.getPt0().zd());
+            ZNode end = new ZNode(l.getPt1().xd(), l.getPt1().yd(), l.getPt1().zd());
+            start.setRelationReady();
+            end.setRelationReady();
+
+            // 去重
+            for (ZNode n : nodes) {
+                if (n.equals(start)) {
+                    start = n;
+                    break;
+                }
+                if (n.equals(end)) {
+                    end = n;
+                    break;
+                }
+            }
+
+            ZEdge edge = new ZEdge(start, end);
+
+            // 添加连接关系
+            start.addNeighbor(end);
+            start.addLinkedEdge(edge);
+            end.addNeighbor(start);
+            end.addLinkedEdge(edge);
+
+            // 添加至列表 避免重复
+            if (!nodes.contains(start)) {
+                nodes.add(start);
+            }
+            if (!nodes.contains(end)) {
+                nodes.add(end);
+            }
+            edges.add(edge);
+        }
+        return new ZGraph(nodes, edges);
     }
 }

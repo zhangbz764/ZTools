@@ -47,15 +47,15 @@ public class ZNode extends ZPoint {
         super(p);
     }
 
-    /* ------------- set & get relations ------------- */
-
     public void setRelationReady() {
         this.linkedEdges = new ArrayList<>();
         this.neighbors = new ArrayList<>();
         this.vecUnitToNeighbors = new ArrayList<>();
     }
 
-    public void setNeighbor(ZNode neighbor) {  // set one node
+    /* ------------- set & get relations ------------- */
+
+    public void addNeighbor(ZNode neighbor) {  // set one node
         this.neighbors.add(neighbor);
         this.vecUnitToNeighbors.add(neighbor.sub(this).unit());
     }
@@ -71,7 +71,11 @@ public class ZNode extends ZPoint {
         this.neighbors.remove(neighbor);
     }
 
-//    public void setNeighbors(List<ZNode> neighbors) {  // set all nodes
+    public void setNeighbors(List<ZNode> neighbors) {
+        this.neighbors = neighbors;
+    }
+
+    //    public void setNeighbors(List<ZNode> neighbors) {  // set all nodes
 //        this.neighbors = neighbors;
 //        for (ZNode neighbor : neighbors) {
 //            this.vecToNeighbor.add(neighbor.sub(this));
@@ -82,17 +86,18 @@ public class ZNode extends ZPoint {
 //        this.neighbors.removeAll(neighbors);
 //    }
 
+    @Deprecated
     public void setNeighborFromEdge(ZEdge link) { // set one node from a linked edge
         if (linkedEdges.contains(link)) {
             if (this == link.getStart()) {
-                this.setNeighbor(link.getEnd());
+                this.addNeighbor(link.getEnd());
             } else {
-                this.setNeighbor(link.getStart());
+                this.addNeighbor(link.getStart());
             }
         }
     }
 
-    public void setLinkedEdges(ZEdge link) {  // set one edge
+    public void addLinkedEdge(ZEdge link) {  // set one edge
         this.linkedEdges.add(link);
     }
 
@@ -108,7 +113,7 @@ public class ZNode extends ZPoint {
         return this.neighbors.get(i);
     }
 
-    public int geiNeighborNum() {
+    public int getNeighborNum() {
         return this.neighbors.size();
     }
 

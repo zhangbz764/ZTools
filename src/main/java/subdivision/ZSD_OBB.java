@@ -1,6 +1,6 @@
 package subdivision;
 
-import geometry.ZGeoFactory;
+import geometry.ZFactory;
 import math.ZMath;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.Coordinate;
@@ -101,7 +101,7 @@ public class ZSD_OBB extends ZSubdivision {
                         centerPoints[1].y + centerPoints[1].y - centerPoints[0].y,
                         centerPoints[1].z + centerPoints[1].z - centerPoints[0].z
                 );
-                LineString divideLine = ZGeoFactory.jtsgf.createLineString(dividePoints);
+                LineString divideLine = ZFactory.jtsgf.createLineString(dividePoints);
 
                 // use Polygonizer to divide
                 Polygonizer pr = new Polygonizer();

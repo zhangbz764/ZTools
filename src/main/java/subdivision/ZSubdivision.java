@@ -3,6 +3,7 @@ package subdivision;
 import math.ZMath;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
 import transform.ZTransform;
 import wblut.geom.WB_Polygon;
@@ -37,6 +38,10 @@ public abstract class ZSubdivision {
 
     public ZSubdivision(WB_Polygon originPolygon) {
         this.originPolygon = originPolygon;
+    }
+
+    public ZSubdivision(Polygon originPolygon) {
+        this.originPolygon = ZTransform.jtsPolygonToWB_Polygon(originPolygon);
     }
 
     /**

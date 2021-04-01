@@ -1,10 +1,11 @@
 package subdivision;
 
-import geometry.ZGeoFactory;
+import geometry.ZFactory;
 import geometry.ZLine;
 import geometry.ZPoint;
 import geometry.ZSkeleton;
 import math.ZGeoMath;
+import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
 import wblut.geom.*;
 import wblut.processing.WB_Render;
@@ -35,6 +36,10 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
         super(originPolygon);
     }
 
+    public ZSD_SkeVorStrip(Polygon originPolygon) {
+        super(originPolygon);
+    }
+
     @Override
     public void performDivide() {
         if (depth == 0) {
@@ -47,21 +52,17 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
 
         topSegments.addAll(skeleton.getExtendedRidges());
 
-        polyLine = ZGeoFactory.createWB_PolyLine(topSegments);
+        polyLine = ZFactory.createWB_PolyLine(topSegments);
 
         // polyLine maybe null because segments might not be nose to tail
         if (polyLine != null) {
-            voronoiGenerator = ZGeoMath.splitWB_PolyLineEachEdgeByThreshold(polyLine, span + 10, span - 10);
-//            if (voronoiGenerator.size() > 1) {
-//                voronoiGenerator.remove(voronoiGenerator.size() - 1);
-//                voronoiGenerator.remove(0);
-//            } else if (voronoiGenerator.size() == 1) {
-//                voronoiGenerator.remove(0);
-//            }
+            voronoiGenerator = ZGeoMath.splitWB_PolyLineEdgeByThreshold(polyLine, span + 1, span - 1);
+//            voronoiGenerator = ZGeoMath.splitWB_PolyLineEachEdgeByThreshold(polyLine, span + 5, span - 5);
             if (voronoiGenerator.size() > 2 && depth == 0) {
                 voronoiGenerator.remove(0);
                 voronoiGenerator.remove(voronoiGenerator.size() - 1);
             }
+            System.out.println("voronoiGenerator: " + voronoiGenerator.size());
             // generate voronoi
             List<WB_Point> points = new ArrayList<>();
             for (ZPoint p : voronoiGenerator) {
@@ -74,6 +75,8 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
                 allSubPolygons.add(cell.getPolygon());
             }
             super.setAllSubPolygons(allSubPolygons);
+        } else {
+            System.out.println("polyLine == null");
         }
     }
 

@@ -15,6 +15,7 @@ import java.util.Map;
 
 /**
  * 一些自定义的几何计算工具
+ * <p>
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -42,7 +43,6 @@ import java.util.Map;
  * 找到点在多边形哪条边上（可返回WB_Segment, ZLine, 或两顶点序号）
  * 从一组多边形中找到包含输入点的那一个（返回序号）
  * ### 二维轮廓找点相关
- * 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回结果点，或沿途的所有线段
  * 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点
  * 输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）
  * 输入步长与抖动范围，剖分多段线或多边形的边，得到所有点（最后一段步长必然不足长）
@@ -67,7 +67,7 @@ public final class ZGeoMath {
     private static final GeometryFactory gf = new GeometryFactory();
     private static final WB_GeometryFactory wbgf = new WB_GeometryFactory();
     // 精度阈值
-    private static final double epsilon = 0.00000001;
+    public static final double epsilon = 0.00000001;
 
     /*-------- 向量角度相关 --------*/
 
@@ -809,62 +809,6 @@ public final class ZGeoMath {
     }
 
     /*-------- 二维轮廓找点相关 --------*/
-
-    /**
-     * 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回结果点
-     *
-     * @param startNode start node
-     * @param dist      distance to move
-     * @return java.util.List<geometry.ZPoint>
-     */
-    public List<ZPoint> pointsOnGraphByDist(final ZNode startNode, final ZNode lastNode, final double dist) {
-        List<ZPoint> result = new ArrayList<>();
-        for (int i = 0; i < startNode.geiNeighborNum(); i++) {
-            if (startNode.getNeighbor(i) != lastNode) { // 排除父节点
-                double curr_span = dist;
-                if (startNode.getLinkedEdge(i).getLength() >= curr_span) {
-                    // 若edge长度大于当前步长，在这条edge上记录终点
-                    result.add(startNode.add(startNode.getVecUnitToNeighbor(i).scaleTo(dist)));
-                } else {
-                    if (startNode.getNeighbor(i).geiNeighborNum() != 1) {
-                        result.add(startNode.getNeighbor(i));
-                        // 若已检索到端头节点，把端头加入结果，并停止
-                        curr_span = curr_span - startNode.getLinkedEdge(i).getLength();
-                        result.addAll(pointsOnGraphByDist(startNode.getNeighbor(i), startNode, curr_span));
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回沿途的所有线段
-     *
-     * @param startNode start node
-     * @param dist      distance to move
-     * @return java.util.List<geometry.ZLine>
-     */
-    public static List<ZLine> segmentsOnGraphByDist(final ZNode startNode, final ZNode lastNode, final double dist) {
-        List<ZLine> result = new ArrayList<>();
-        for (int i = 0; i < startNode.geiNeighborNum(); i++) {
-            if (startNode.getNeighbor(i) != lastNode) { // 排除父节点
-                double curr_span = dist;
-                if (startNode.getLinkedEdge(i).getLength() >= curr_span) {
-                    // 若edge长度大于当前步长，记录该步长的线段并停止
-                    result.add(new ZLine(startNode, startNode.add(startNode.getVecUnitToNeighbor(i).scaleTo(dist))));
-                } else {
-                    result.add(startNode.getLinkedEdge(i));
-                    if (startNode.getNeighbor(i).geiNeighborNum() != 1) {
-                        // 若已检索到端头节点，则停止
-                        curr_span = curr_span - startNode.getLinkedEdge(i).getLength();
-                        result.addAll(segmentsOnGraphByDist(startNode.getNeighbor(i), startNode, curr_span));
-                    }
-                }
-            }
-        }
-        return result;
-    }
 
     /**
      * 找到多边形边上某点沿边移动一定距离后的两个点（0为多边形点序正向，1为逆向）

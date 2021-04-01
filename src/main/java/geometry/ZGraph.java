@@ -16,6 +16,7 @@ import java.util.List;
 public class ZGraph {
     private List<ZNode> nodes;
     private List<ZEdge> edges;
+    private int[][] matrix;
 
     private List<ZNode> boundaryNodes;
 
@@ -26,37 +27,42 @@ public class ZGraph {
     }
 
     /**
+     * @param nodes input nodes
      * @param edges input edges
      */
-    public ZGraph(List<ZEdge> edges) {
+    public ZGraph(List<ZNode> nodes, List<ZEdge> edges) {
+        setNodes(nodes);
         setEdges(edges);
-        this.nodes = new ArrayList<>();
-        for (ZEdge edge : edges) {
-            for (ZNode edgeNode : edge.getNodes()) {
-                if (!nodes.contains(edgeNode)) {
-                    nodes.add(edgeNode);
-                }
+        this.matrix = new int[edges.size()][];
+        for (int i = 0; i < edges.size(); i++) {
+            ZNode start = edges.get(i).getStart();
+            ZNode end = edges.get(i).getEnd();
+            int startIndex = nodes.indexOf(start);
+            int endIndex = nodes.indexOf(end);
+            if (startIndex != -1 && endIndex != -1) {
+                matrix[i] = new int[]{startIndex, endIndex};
             }
         }
     }
 
     /**
-     * @param nodes       input nodes
-     * @param connections connection of the nodes. e.g. {{0,1},{1,2}}
+     * @param nodes  input nodes
+     * @param matrix connection of the nodes. e.g. {{0,1},{1,2}}
      */
-    public ZGraph(List<ZNode> nodes, int[][] connections) {
+    public ZGraph(List<ZNode> nodes, int[][] matrix) {
         setNodes(nodes);
+        setMatrix(matrix);
         for (ZNode node : nodes) {
             node.setRelationReady();
         }
         this.edges = new ArrayList<>();
-        for (int[] connection : connections) {
-            nodes.get(connection[0]).setNeighbor(nodes.get(connection[1]));
-            nodes.get(connection[1]).setNeighbor(nodes.get(connection[0]));
+        for (int[] connection : matrix) {
+            nodes.get(connection[0]).addNeighbor(nodes.get(connection[1]));
+            nodes.get(connection[1]).addNeighbor(nodes.get(connection[0]));
             ZEdge edge = new ZEdge(nodes.get(connection[0]), nodes.get(connection[1]));
             edges.add(edge);
-            nodes.get(connection[0]).setLinkedEdges(edge);
-            nodes.get(connection[1]).setLinkedEdges(edge);
+            nodes.get(connection[0]).addLinkedEdge(edge);
+            nodes.get(connection[1]).addLinkedEdge(edge);
         }
     }
 
@@ -70,10 +76,18 @@ public class ZGraph {
     private void findBoundaryNodes() {
         this.boundaryNodes = new ArrayList<>();
         for (ZNode node : nodes) {
-            if (node.geiNeighborNum() == 1) {
+            if (node.getNeighborNum() == 1) {
                 boundaryNodes.add(node);
             }
         }
+    }
+
+    public boolean checkLoop() {
+        ZNode startNode = nodes.get(0);
+        for (int i = 0; i < startNode.getNeighborNum(); i++) {
+
+        }
+        return false;
     }
 
     /* ------------- setter & getter ------------- */
@@ -86,12 +100,24 @@ public class ZGraph {
         this.nodes = nodes;
     }
 
+    public void setMatrix(int[][] matrix) {
+        this.matrix = matrix;
+    }
+
     public List<ZEdge> getEdges() {
         return edges;
     }
 
     public List<ZNode> getNodes() {
         return nodes;
+    }
+
+    public ZNode getNodeN(int index){
+        return nodes.get(index);
+    }
+
+    public int[][] getMatrix() {
+        return matrix;
     }
 
     public int getNodesNum() {

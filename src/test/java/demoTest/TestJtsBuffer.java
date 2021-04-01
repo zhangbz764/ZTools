@@ -1,6 +1,6 @@
 package demoTest;
 
-import geometry.ZGeoFactory;
+import geometry.ZFactory;
 import igeo.ICurve;
 import igeo.IG;
 import org.locationtech.jts.geom.*;
@@ -47,7 +47,7 @@ public class TestJtsBuffer extends PApplet {
         boundaryPts[2] = new Coordinate(900,900);
         boundaryPts[3] = new Coordinate(100,900);
         boundaryPts[4] = new Coordinate(100,100);
-        this.boundary = ZGeoFactory.jtsgf.createPolygon(boundaryPts);
+        this.boundary = ZFactory.jtsgf.createPolygon(boundaryPts);
 
         System.out.println(this.getClass().getClassLoader().getResource("").getPath());
         // 载入几何模型

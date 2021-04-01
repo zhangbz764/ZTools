@@ -1,6 +1,7 @@
 package geometry;
 
 import igeo.IPoint;
+import math.ZGeoMath;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -304,8 +305,8 @@ public class ZPoint {
     /**
      * 判断是否与另一个点太近
      *
-     * @param other
-     * @param dist
+     * @param other the other ZPoint
+     * @param dist  distance to check
      * @return boolean
      */
     @Deprecated
@@ -319,6 +320,31 @@ public class ZPoint {
     }
 
     /* ------------- geometry method -------------*/
+
+    /**
+     * 判断两个ZPoint是否重合
+     *
+     * @param other the other ZPoint
+     * @return boolean
+     */
+    public boolean equals(ZPoint other) {
+        if (other == this) {
+            return true;
+        }
+        if (other == null) {
+            return false;
+        }
+        if (Math.abs(other.xd() - this.xd()) > ZGeoMath.epsilon) {
+            return false;
+        }
+        if (Math.abs(other.yd() - this.yd()) > ZGeoMath.epsilon) {
+            return false;
+        }
+        if (Math.abs(other.zd() - this.zd()) > ZGeoMath.epsilon) {
+            return false;
+        }
+        return true;
+    }
 
     /**
      * 计算两点距离平方

@@ -1,6 +1,6 @@
 package subdivision;
 
-import geometry.ZGeoFactory;
+import geometry.ZFactory;
 import geometry.ZLine;
 import geometry.ZPoint;
 import math.ZGeoMath;
@@ -89,7 +89,7 @@ public class ZSD_SideStrip extends ZSubdivision {
      * @return void
      */
     private void createDivideLines() {
-        WB_PolyLine boundary = ZGeoFactory.createPolylineFromPolygon(super.getOriginPolygon(), offsetIndices);
+        WB_PolyLine boundary = ZFactory.createPolylineFromPolygon(super.getOriginPolygon(), offsetIndices);
         List<ZPoint> splitPoints = new ArrayList<>();
 
         // random or not

@@ -50,6 +50,9 @@ public class MainToolTests {
 //        PApplet.main("demoTest.TestLineMerger");
 
         /* 测试jts多种几何形的buffer效果 */
-        PApplet.main("demoTest.TestJtsBuffer");
+//        PApplet.main("demoTest.TestJtsBuffer");
+
+        /* 测试创建ZGraph和graph方法 */
+        PApplet.main("demoTest.TestZGraph");
     }
 }

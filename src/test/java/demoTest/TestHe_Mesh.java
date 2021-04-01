@@ -1,7 +1,7 @@
 package demoTest;
 
 import Guo_Cam.CameraController;
-import geometry.ZGeoFactory;
+import geometry.ZFactory;
 import math.ZGeoMath;
 import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
@@ -103,7 +103,7 @@ public class TestHe_Mesh extends PApplet {
         // jts的buffer功能使多边形反面
         buffer = ZGeoMath.polygonFaceUp(
                 ZTransform.validateWB_Polygon(
-                        ZGeoFactory.wbgf.createBufferedPolygonsStraight2D(poly1, 50).get(0)
+                        ZFactory.wbgf.createBufferedPolygonsStraight2D(poly1, 50).get(0)
                 )
         );
     }

@@ -1,6 +1,6 @@
 package subdivision;
 
-import geometry.ZGeoFactory;
+import geometry.ZFactory;
 import geometry.ZSkeleton;
 import math.ZGeoMath;
 import processing.core.PApplet;
@@ -60,7 +60,7 @@ public class ZSD_DoubleStrip extends ZSubdivision {
             if (logicalStreet.size() > 1) {
                 List<WB_Polygon> strip = new ArrayList<>();
                 for (Integer index : logicalStreet) {
-                    strip = ZGeoFactory.wbgf.unionPolygons2D(allFacePolys.get(index), strip);
+                    strip = ZFactory.wbgf.unionPolygons2D(allFacePolys.get(index), strip);
                 }
                 // check if union polygons is same direction with origin (usually not)
                 for (WB_Polygon p : strip) {

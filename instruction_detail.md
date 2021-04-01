@@ -98,8 +98,6 @@
 
 #### 二维轮廓找点相关
 
-* 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回结果点，或沿途的所有线段  
-  `segmentsOnGraphByDist` `pointsOnGraphByDist`
 * 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点  
   `pointsOnEdgeByDist`
 * 输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）   
@@ -137,7 +135,16 @@
 * 输入Geometry，设置Jts的Precision Model  
   `applyJtsPrecisionModel`
 
-增加中...
+## **ZGraphMath**
+
+与自定义图结构相关的计算工具
+
+* 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回结果点，或沿途的所有线段  
+  `pointsOnGraphByDist` `segmentsOnGraphByDist`
+* 给定起点，递归遍历出graph上从起点出发的所有链（返回ZEdge或ZNode）  
+  `getAllChainEdgeFromNode` `getAllChainNodeFromNode`
+* 找到一个无环图上的最长链  
+  `longestChain`
 
 ## **ZMath**
 
@@ -168,11 +175,12 @@
 
 #### IGeo <-> WB
 
-* IPoint -> WB_Point
+* IPoint <-> WB_Point
 * IPoint -> WB_Point 带缩放
 * ICurve -> WB_Geometry 根据点数和闭合与否返回WB_Polygon / WB_Polyline / WB_Segment
 * ICurve -> WB_Geometry 根据点数和闭合与否返回WB_Polygon / WB_Polyline / WB_Segment，带缩放
-* ICurve -> WB_PolyLine 带缩放
+* ICurve <-> WB_PolyLine 带缩放
+* WB_Coord -> IVec
 
 #### IGeo <-> jts
 
@@ -182,7 +190,8 @@
 
 #### WB <-> jts
 
-* WB_Point -> Point
+* WB_Coord <-> Point
+* WB_Coord <-> Coordinate
 * WB_Polygon -> Polygon 如果WB_Polygon第一点与最后一点不重合，就加上最后一点
 * Polygon -> WB_Polygon
 * LineString -> WB_PolyLine
@@ -199,19 +208,21 @@
 
 * Polygon -> LineString
 
-...增加中
-
 ## **ZGeoFactory**
 
 包含了jts的GeometryFactory和HE_Mesh的WB_GeometryFactory，以及其他创建命令：
 
-* 从一组首尾相接的线段创建Line String / WB_PolyLine  
-  `createLineString` `createWB_PolyLine`
-* 将WB_PolyLine / Line String在端点处断开，创建一组新折线
+* 从一组首尾相接的线段创建Line String / WB_PolyLine, 若有多条，则取最长  
+  `createLineString` `createWB_PolyLine`  
+* 将一系列首尾相接线段合成一组WB_PolyLine list  
+  `createWB_PolyLineList` 
+* 将WB_PolyLine / Line String在端点处断开，创建一组新折线  
   `breakWB_PolyLine` `breakLineString`
-* 给定线段序号，从WB_Polygon中创建一截WB_PloyLine
+* 给定线段序号，从WB_Polygon中创建一截WB_PloyLine  
   `createPolylineFromPolygon`
-
-...增加中
+* 将一条LineString向两端头微微延长一定距离（规避误差）  
+  `createExtendedLineString`
+* 从一组线段创建ZGraph 
+  `createZGraphFromSegments`
 
 ## 增加中...

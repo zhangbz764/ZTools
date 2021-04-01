@@ -1,6 +1,6 @@
 package demoTest;
 
-import geometry.ZGeoFactory;
+import geometry.ZFactory;
 import geometry.ZPoint;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.operation.buffer.BufferOp;
@@ -60,7 +60,7 @@ public class TestGeoRelation extends PApplet {
         buffer = bufferOp.getResultGeometry(20);
         mouse = new ZPoint(500, 500);
 
-        pl = ZGeoFactory.createPolylineFromPolygon(
+        pl = ZFactory.createPolylineFromPolygon(
                 ZTransform.jtsPolygonToWB_Polygon(poly), new int[]{2, 3, 4, 0}
         );
 
