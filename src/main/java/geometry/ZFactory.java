@@ -4,7 +4,10 @@ import math.ZMath;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.operation.linemerge.LineMergeGraph;
 import org.locationtech.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.planargraph.Edge;
+import org.locationtech.jts.planargraph.Node;
 import transform.ZTransform;
 import wblut.geom.*;
 
@@ -19,6 +22,7 @@ import java.util.List;
  * @date 2020/11/8
  * @time 22:04
  * <p>
+ * #### 创建几何图形
  * 将一系列首尾相接线段合成一条WB_PolyLine,若有多条，则取最长
  * 将一系列首尾相接线段合成一组WB_PolyLine list
  * 将一系列首尾相接线段合成一条LineString,若有多条，则取最长
@@ -26,13 +30,15 @@ import java.util.List;
  * 将LineString在端点处断开，创建一组新折线
  * 给定线段序号，从WB_Polygon中创建一截WB_PloyLine
  * 将一条LineString向两端头微微延长一定距离（规避误差）
- *
+ * <p>
+ * #### 创建图
  * 从一组线段创建ZGraph
+ * 从一组点根据距离创建最小生成树(Prim)
  */
 public class ZFactory {
     public static final WB_GeometryFactory wbgf = new WB_GeometryFactory();
     public static final GeometryFactory jtsgf = new GeometryFactory();
-    private static final double epsilon = 0.00000001;
+    private static final double epsilon = 0.0001;
 
     /*-------- create geometries --------*/
 
@@ -216,7 +222,7 @@ public class ZFactory {
      * @param dist extend distance
      * @return org.locationtech.jts.geom.LineString
      */
-    public static LineString createExtendedLineString(final LineString ls, double dist) {
+    public static LineString createExtendedLineString(final LineString ls, final double dist) {
         Coordinate[] coords = ls.getCoordinates();
 
         if (coords.length > 2) {
@@ -263,45 +269,121 @@ public class ZFactory {
      * @return geometry.ZGraph
      */
     public static ZGraph createZGraphFromSegments(final List<? extends ZLine> lines) {
+        // create LineMergeGraph
+        LineMergeGraph lmg = new LineMergeGraph();
+        for (ZLine l : lines) {
+            lmg.addEdge(l.toJtsLineString());
+        }
         List<ZNode> nodes = new ArrayList<>();
         List<ZEdge> edges = new ArrayList<>();
+        List<Node> tempNodes = new ArrayList<>();
 
-        List<ZPoint> checkList = new ArrayList<>();
-        for (ZLine l : lines) {
-            ZNode start = new ZNode(l.getPt0().xd(), l.getPt0().yd(), l.getPt0().zd());
-            ZNode end = new ZNode(l.getPt1().xd(), l.getPt1().yd(), l.getPt1().zd());
-            start.setRelationReady();
-            end.setRelationReady();
+        // convert to ZGraph
+        for (Object o : lmg.getEdges()) {
+            if (o instanceof Edge) {
+                Edge e = (Edge) o;
 
-            // 去重
-            for (ZNode n : nodes) {
-                if (n.equals(start)) {
-                    start = n;
-                    break;
+                Node from = e.getDirEdge(0).getFromNode();
+                ZNode start = new ZNode(from.getCoordinate());
+                Node to = e.getDirEdge(0).getToNode();
+                ZNode end = new ZNode(to.getCoordinate());
+
+                start.setRelationReady();
+                end.setRelationReady();
+
+                if (!tempNodes.contains(from)) {
+                    tempNodes.add(from);
+                    nodes.add(start);
+                } else {
+                    start = nodes.get(tempNodes.indexOf(from));
                 }
-                if (n.equals(end)) {
-                    end = n;
-                    break;
+
+                if (!tempNodes.contains(to)) {
+                    tempNodes.add(to);
+                    nodes.add(end);
+                } else {
+                    end = nodes.get(tempNodes.indexOf(to));
                 }
-            }
 
-            ZEdge edge = new ZEdge(start, end);
+                ZEdge edge = new ZEdge(start, end);
+                start.addNeighbor(end);
+                start.addLinkedEdge(edge);
+                end.addNeighbor(start);
+                end.addLinkedEdge(edge);
 
-            // 添加连接关系
-            start.addNeighbor(end);
-            start.addLinkedEdge(edge);
-            end.addNeighbor(start);
-            end.addLinkedEdge(edge);
-
-            // 添加至列表 避免重复
-            if (!nodes.contains(start)) {
-                nodes.add(start);
+                edges.add(edge);
             }
-            if (!nodes.contains(end)) {
-                nodes.add(end);
-            }
-            edges.add(edge);
         }
         return new ZGraph(nodes, edges);
+    }
+
+    /**
+     * 从一组点根据距离创建最小生成树(Prim)
+     *
+     * @param generator points to generate mini spanning tree
+     * @return geometry.ZGraph
+     */
+    public static ZGraph createMiniSpanningTree(final List<? extends ZPoint> generator) {
+        List<ZNode> nodes = new ArrayList<>();
+        for (ZPoint pt : generator) {
+            nodes.add((ZNode) pt);
+        }
+
+        // create adjacency matrix based on distance
+        double[][] adjMatrix = new double[generator.size()][generator.size()];
+        for (int i = 0; i < generator.size(); i++) {
+            for (int j = i; j < generator.size(); j++) {
+                if (i == j) {
+                    adjMatrix[i][j] = -1;
+                } else {
+                    adjMatrix[i][j] = adjMatrix[j][i] = generator.get(i).distance(generator.get(j));
+                }
+            }
+        }
+
+        // generate tree
+        // list to count each node
+        List<Integer> list = new ArrayList<>();
+        list.add(0);
+
+        int begin = 0;
+        int end = 0;
+        float weight;
+
+        // final tree indices (n-1)
+        int[] parent = new int[adjMatrix.length];
+        for (int i = 0; i < adjMatrix.length; i++) {
+            parent[i] = -1;
+        }
+        while (list.size() < adjMatrix.length) {
+            weight = Float.MAX_VALUE;
+            for (Integer row : list) {
+                for (int i = 0; i < adjMatrix.length; i++) {
+                    if (!list.contains(i)) {
+                        if (i >= row + 1) {
+                            if (adjMatrix[row][i] >= 0 && adjMatrix[row][i] < weight) {
+                                begin = row;
+                                end = i;
+                                weight = (float) adjMatrix[row][i];
+                            }
+                        } else if (i <= row - 1) {
+                            if (adjMatrix[i][row] >= 0 && adjMatrix[i][row] < weight) {
+                                begin = row;
+                                end = i;
+                                weight = (float) adjMatrix[i][row];
+                            }
+                        }
+                    }
+                }
+            }
+            list.add(end);
+            parent[end] = begin;
+        }
+
+        int[][] matrix = new int[parent.length - 1][];
+        for (int i = 1; i < parent.length; i++) {
+            matrix[i - 1] = new int[]{i, parent[i]};
+        }
+        return new ZGraph(nodes, matrix);
     }
 }

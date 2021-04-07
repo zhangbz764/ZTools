@@ -82,6 +82,7 @@ public class ZGraph {
         }
     }
 
+    // TODO: 2021/4/1 check loop in a graph 
     public boolean checkLoop() {
         ZNode startNode = nodes.get(0);
         for (int i = 0; i < startNode.getNeighborNum(); i++) {
@@ -150,7 +151,7 @@ public class ZGraph {
             edge.display(app);
         }
         for (ZNode node : nodes) {
-            node.displayAsPoint(app);
+            node.displayAsPoint(app,3);
         }
     }
 }

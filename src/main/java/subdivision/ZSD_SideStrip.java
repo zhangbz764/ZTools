@@ -95,11 +95,11 @@ public class ZSD_SideStrip extends ZSubdivision {
         // random or not
         if (!randomMode) {
             for (WB_PolyLine pl : finalPolyLines) {
-                splitPoints = ZGeoMath.splitWB_PolyLineEdgeByThreshold(pl, span + 3, span - 3);
+                splitPoints = ZGeoMath.splitPolyLineByThreshold(pl, span + 3, span - 3);
             }
         } else {
             for (WB_PolyLine pl : finalPolyLines) {
-                splitPoints = ZGeoMath.splitWB_PolyLineEdgeByRandomStep(pl, span, 5);
+                splitPoints = ZGeoMath.splitPolyLineByRandomStep(pl, span, 5);
             }
         }
 

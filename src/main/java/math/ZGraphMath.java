@@ -120,12 +120,12 @@ public class ZGraphMath {
         for (int i = 0; i < currNode.getNeighborNum(); i++) {
             ZNode neighbor = currNode.getNeighbor(i);
             if (neighbor != fatherNode) {
-                if (neighbor.getNeighborNum() == 1) {
-                    currChain.add(currNode.getNeighbor(i));
+                if (neighbor.isEnd()) {
+                    currChain.add(neighbor);
                     result.add(currChain);
                     currChain = new ArrayList<>(fatherChain);
                 } else {
-                    currChain.add(currNode.getNeighbor(i));
+                    currChain.add(neighbor);
                     result.addAll(getAllChainNodeFromNode(neighbor, currNode, currChain));
                     currChain = new ArrayList<>(fatherChain);
                 }

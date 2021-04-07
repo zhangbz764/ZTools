@@ -51,6 +51,12 @@ public class ZLine {
         init();
     }
 
+    public ZLine(double x0, double y0, double x1, double y1) {
+        this.pt0 = new ZPoint(x0, y0);
+        this.pt1 = new ZPoint(x1, y1);
+        init();
+    }
+
     /**
      * description
      *

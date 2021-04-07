@@ -1,10 +1,8 @@
 package subdivision;
 
-import geometry.ZFactory;
-import geometry.ZLine;
-import geometry.ZPoint;
-import geometry.ZSkeleton;
+import geometry.*;
 import math.ZGeoMath;
+import math.ZGraphMath;
 import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
 import wblut.geom.*;
@@ -40,6 +38,9 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
         super(originPolygon);
     }
 
+    List<ZEdge> longestChain;
+    ZGraph graph;
+
     @Override
     public void performDivide() {
         if (depth == 0) {
@@ -48,15 +49,19 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
             this.skeleton = new ZSkeleton(super.getOriginPolygon(), depth);
         }
 
-        List<ZLine> topSegments = skeleton.getTopEdges();
-
+        List<ZLine> topSegments = skeleton.getRidges();
         topSegments.addAll(skeleton.getExtendedRidges());
 
-        polyLine = ZFactory.createWB_PolyLine(topSegments);
+//        polyLine = ZFactory.createWB_PolyLine(topSegments);
+        ZGraph tempGraph = ZFactory.createZGraphFromSegments(topSegments);
+        graph = tempGraph;
+        System.out.println("graph : nodes num  " + tempGraph.getNodesNum());
+        longestChain = ZGraphMath.longestChain(tempGraph);
+        polyLine = ZFactory.createWB_PolyLine(longestChain);
 
         // polyLine maybe null because segments might not be nose to tail
         if (polyLine != null) {
-            voronoiGenerator = ZGeoMath.splitWB_PolyLineEdgeByThreshold(polyLine, span + 1, span - 1);
+            voronoiGenerator = ZGeoMath.splitPolyLineByStep(polyLine, span);
 //            voronoiGenerator = ZGeoMath.splitWB_PolyLineEachEdgeByThreshold(polyLine, span + 5, span - 5);
             if (voronoiGenerator.size() > 2 && depth == 0) {
                 voronoiGenerator.remove(0);
@@ -68,6 +73,7 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
             for (ZPoint p : voronoiGenerator) {
                 points.add(p.toWB_Point());
             }
+
             WB_Voronoi2D voronoi = WB_VoronoiCreator.getClippedVoronoi2D(points, super.getOriginPolygon());
 
             List<WB_Polygon> allSubPolygons = new ArrayList<>();
@@ -122,5 +128,14 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
             app.text(i, polyLine.getPoint(i).xf(), polyLine.getPoint(i).yf(), polyLine.getPoint(i).zf());
         }
         app.popStyle();
+
+        app.pushMatrix();
+        app.translate(0,0,250);
+        graph.display(app);
+        app.translate(0, 0, 250);
+        for (ZEdge e : longestChain) {
+            e.display(app);
+        }
+        app.popMatrix();
     }
 }

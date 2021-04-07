@@ -322,11 +322,12 @@ public class ZPoint {
     /* ------------- geometry method -------------*/
 
     /**
-     * 判断两个ZPoint是否重合
+     * 判断两个ZPoint是否重合( BUG )
      *
      * @param other the other ZPoint
      * @return boolean
      */
+    @Deprecated
     public boolean equals(ZPoint other) {
         if (other == this) {
             return true;

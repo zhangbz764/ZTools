@@ -61,7 +61,7 @@ public class TestPolySplit extends PApplet {
 
         // 按阈值剖分
         step = 50;
-        split = ZGeoMath.splitWB_PolyLineEdgeByThreshold(pl, 90, 84);
+        split = ZGeoMath.splitPolyLineByThreshold(pl, 90, 84);
         println("split: " + split.size());
 
         // 偏移一条边线
@@ -107,7 +107,7 @@ public class TestPolySplit extends PApplet {
 
     public void mouseDragged() {
         step = mouseX;
-        split = ZGeoMath.splitWB_PolyLineEdgeByStep(poly, step);
+        split = ZGeoMath.splitPolyLineByStep(poly, step);
         println("split: " + split.size());
     }
 }

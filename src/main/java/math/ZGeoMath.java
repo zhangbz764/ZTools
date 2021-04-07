@@ -22,27 +22,27 @@ import java.util.Map;
  * @date 2020/9/29
  * @time 15:38
  * <p>
- * ### 向量角度相关
+ * #### 向量角度相关
  * 求到角的角平分线向量
  * 按极角排序一组向量（返回原列表序号）
  * 按极角排序一组向量（返回排好的新向量或单位向量）
  * 找到多边形内的所有凹点（返回点list或者序号list）
  * 从一组向量中找与输入目标夹角最小者，不区分正负角（返回向量）
- * ### 二维相交相关
+ * #### 二维相交相关
  * 检查两个WB_Segment是否相交（用WB_GeometryOP）
  * 求任意两个线型对象交点（需输入类型：line, ray, segment）
  * 求射线与多边形交点
  * 求射线与多边形交点，返回按照与指定点升序排序的交点所在边序号
  * 将线段延长或剪切至多边形最近的交点
- * ### 二维距离相关
+ * #### 二维距离相关
  * 从一组线段中找到与目标点距离最近的点
  * 从一个WB_Polygon中找到与目标点距离最近边的序号
- * ### 二维位置判断相关
+ * #### 二维位置判断相关
  * 判断点是否在直线/射线/线段上（有epsilon）
  * 从一系列ZLine中找到点在哪条线上，返回线两边的端点
  * 找到点在多边形哪条边上（可返回WB_Segment, ZLine, 或两顶点序号）
  * 从一组多边形中找到包含输入点的那一个（返回序号）
- * ### 二维轮廓找点相关
+ * #### 二维轮廓找点相关
  * 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点
  * 输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）
  * 输入步长与抖动范围，剖分多段线或多边形的边，得到所有点（最后一段步长必然不足长）
@@ -51,14 +51,14 @@ import java.util.Map;
  * 给定阈值上下限，剖分多段线(WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap
  * 给定阈值上下限，剖分多段线的每条边(WB_PolyLine)，即剖分结果一定包含每个顶点，但步长不同
  * 输入等分数量，将多边形或多段线等分，得到所有点
- * ### 多边形工具
+ * #### 多边形工具
  * 使WB_Polygon点序反向
  * 检查两个WB_Polygon是否同向
  * 使WB_Polygon法向量Z坐标为正或为负（不是拍平到xy平面，只是翻个面）
  * 找到多边形中最长边和最短边，返回序号
  * 偏移多边形的某一条边线（默认输入为正向首尾相接多边形）
  * 偏移多边形的若干条边线（默认输入为正向首尾相接多边形），返回多段线或多边形
- * ### 其他
+ * #### 其他
  * 输入Geometry，设置Jts的Precision Model
  * <p>
  * ...增加中
@@ -808,7 +808,7 @@ public final class ZGeoMath {
         return index;
     }
 
-    /*-------- 二维轮廓找点相关 --------*/
+    /*-------- 二维轮廓找点与剖分相关 --------*/
 
     /**
      * 找到多边形边上某点沿边移动一定距离后的两个点（0为多边形点序正向，1为逆向）
@@ -871,32 +871,6 @@ public final class ZGeoMath {
     }
 
     /**
-     * 设置步长，剖分多边形的边 (Polygon)
-     *
-     * @param poly input polygon
-     * @param step step to divide
-     * @return java.util.List<geometry.ZPoint>
-     */
-    public static List<ZPoint> splitPolygonEdgeByStep(final Polygon poly, final double step) {
-        // 得到多边形所有点
-        Coordinate[] polyPoints = poly.getCoordinates();
-        return splitJTS(polyPoints, step, "Polygon");
-    }
-
-    /**
-     * 设置步长，剖分多段线的边 (LineString)
-     *
-     * @param ls   input LineString
-     * @param step step to divide
-     * @return java.util.List<geometry.ZPoint>
-     */
-    public static List<ZPoint> splitLineStringByStep(final LineString ls, final double step) {
-        // 得到LineString所有点
-        Coordinate[] lsPoints = ls.getCoordinates();
-        return splitJTS(lsPoints, step, "LineString");
-    }
-
-    /**
      * 设置步长，剖分jts Polygon 或 LineString 的边 (核心算法)
      *
      * @param coords input Coordinates
@@ -940,13 +914,39 @@ public final class ZGeoMath {
     }
 
     /**
+     * 设置步长，剖分多边形的边 (Polygon)
+     *
+     * @param poly input polygon
+     * @param step step to divide
+     * @return java.util.List<geometry.ZPoint>
+     */
+    public static List<ZPoint> splitPolygonEdgeByStep(final Polygon poly, final double step) {
+        // 得到多边形所有点
+        Coordinate[] polyPoints = poly.getCoordinates();
+        return splitJTS(polyPoints, step, "Polygon");
+    }
+
+    /**
+     * 设置步长，剖分多段线的边 (LineString)
+     *
+     * @param ls   input LineString
+     * @param step step to divide
+     * @return java.util.List<geometry.ZPoint>
+     */
+    public static List<ZPoint> splitPolyLineByStep(final LineString ls, final double step) {
+        // 得到LineString所有点
+        Coordinate[] lsPoints = ls.getCoordinates();
+        return splitJTS(lsPoints, step, "LineString");
+    }
+
+    /**
      * 设置步长，剖分多段线或多边形的边 (WB_PolyLine)
      *
      * @param poly input polyline (polygon)
      * @param step step to divide
      * @return java.util.List<geometry.ZPoint>
      */
-    public static List<ZPoint> splitWB_PolyLineEdgeByStep(final WB_PolyLine poly, final double step) {
+    public static List<ZPoint> splitPolyLineByStep(final WB_PolyLine poly, final double step) {
         // 得到多边形所有点
         WB_Coord[] polyPoints = poly.getPoints().toArray();
 
@@ -989,63 +989,13 @@ public final class ZGeoMath {
     }
 
     /**
-     * 设置步长与抖动范围，剖分多段线或多边形的边 (WB_PolyLine)
-     *
-     * @param poly  input polyline (polygon)
-     * @param step  step to divide
-     * @param shake threshold to shake
-     * @return java.util.List<geometry.ZPoint>
-     */
-    public static List<ZPoint> splitWB_PolyLineEdgeByRandomStep(final WB_PolyLine poly, final double step, final double shake) {
-        // 得到多边形所有点
-        WB_Coord[] polyPoints = poly.getPoints().toArray();
-
-        // 初始值
-        ZPoint start = new ZPoint(polyPoints[0]);
-        ZPoint end = new ZPoint(polyPoints[polyPoints.length - 1]);
-
-        ZPoint p1 = start;
-        double curr_span = step + ZMath.random(step - shake, step + shake);
-        double curr_dist;
-
-        List<ZPoint> result = new ArrayList<>();
-        result.add(p1);
-        for (int i = 1; i < poly.getNumberOfPoints(); i++) {
-            ZPoint p2 = new ZPoint(polyPoints[i]);
-            curr_dist = p1.distance(p2);
-            while (curr_dist >= curr_span) {
-                ZPoint p = p1.add(p2.sub(p1).unit().scaleTo(curr_span));
-                result.add(p);
-                p1 = p;
-                curr_span = step + ZMath.random(step - shake, step + shake);
-                curr_dist = p1.distance(p2);
-            }
-            p1 = p2;
-            curr_span = curr_span - curr_dist;
-        }
-
-        // 如果封闭，点数=段数，如果开放，点数=段数+1
-        if (poly instanceof WB_Ring) {
-            if (start.distance(result.get(result.size() - 1)) < epsilon) {
-                result.remove(result.size() - 1);
-            }
-        } else {
-            if (end.distance(result.get(result.size() - 1)) > epsilon) {
-                result.add(end);
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * 设置步长，剖分多段线或多边形的边 (WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap
      *
      * @param poly input polyline (polygon)
      * @param step step to divide
      * @return java.util.Map<geometry.ZPoint, java.lang.Integer>
      */
-    public static Map<ZPoint, Integer> splitWB_PolyLineEdgeByStepWithPos(final WB_PolyLine poly, final double step) {
+    public static Map<ZPoint, Integer> splitPolyLineByStepWithDir(final WB_PolyLine poly, final double step) {
         // 得到多边形所有点
         WB_Coord[] polyPoints = poly.getPoints().toArray();
 
@@ -1099,6 +1049,56 @@ public final class ZGeoMath {
     }
 
     /**
+     * 设置步长与抖动范围，剖分多段线或多边形的边 (WB_PolyLine)
+     *
+     * @param poly  input polyline (polygon)
+     * @param step  step to divide
+     * @param shake threshold to shake
+     * @return java.util.List<geometry.ZPoint>
+     */
+    public static List<ZPoint> splitPolyLineByRandomStep(final WB_PolyLine poly, final double step, final double shake) {
+        // 得到多边形所有点
+        WB_Coord[] polyPoints = poly.getPoints().toArray();
+
+        // 初始值
+        ZPoint start = new ZPoint(polyPoints[0]);
+        ZPoint end = new ZPoint(polyPoints[polyPoints.length - 1]);
+
+        ZPoint p1 = start;
+        double curr_span = step + ZMath.random(step - shake, step + shake);
+        double curr_dist;
+
+        List<ZPoint> result = new ArrayList<>();
+        result.add(p1);
+        for (int i = 1; i < poly.getNumberOfPoints(); i++) {
+            ZPoint p2 = new ZPoint(polyPoints[i]);
+            curr_dist = p1.distance(p2);
+            while (curr_dist >= curr_span) {
+                ZPoint p = p1.add(p2.sub(p1).unit().scaleTo(curr_span));
+                result.add(p);
+                p1 = p;
+                curr_span = step + ZMath.random(step - shake, step + shake);
+                curr_dist = p1.distance(p2);
+            }
+            p1 = p2;
+            curr_span = curr_span - curr_dist;
+        }
+
+        // 如果封闭，点数=段数，如果开放，点数=段数+1
+        if (poly instanceof WB_Ring) {
+            if (start.distance(result.get(result.size() - 1)) < epsilon) {
+                result.remove(result.size() - 1);
+            }
+        } else {
+            if (end.distance(result.get(result.size() - 1)) > epsilon) {
+                result.add(end);
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * 给定阈值上下限，剖分多边形(Polygon)
      *
      * @param poly    input polygon
@@ -1129,7 +1129,7 @@ public final class ZGeoMath {
      * @param minStep min step to divide
      * @return java.util.List<geometry.ZPoint>
      */
-    public static List<ZPoint> splitWB_PolyLineEdgeByThreshold(final WB_PolyLine poly, final double maxStep, final double minStep) {
+    public static List<ZPoint> splitPolyLineByThreshold(final WB_PolyLine poly, final double maxStep, final double minStep) {
         assert maxStep >= minStep : "please input valid threshold";
         double length = 0;
         for (int i = 0; i < poly.getNumberSegments(); i++) {
@@ -1142,10 +1142,11 @@ public final class ZGeoMath {
                 finalStep = curr_step;
                 break;
             } else if (curr_step < minStep) {
+                System.out.println("cannot generate split point by this step!");
                 return new ArrayList<ZPoint>();
             }
         }
-        return splitWB_PolyLineEdgeByStep(poly, finalStep);
+        return splitPolyLineByStep(poly, finalStep);
     }
 
     /**
@@ -1156,7 +1157,7 @@ public final class ZGeoMath {
      * @param minStep min step to divide
      * @return java.util.Map<geometry.ZPoint, java.lang.Integer>
      */
-    public static Map<ZPoint, Integer> splitWB_PolyLineEdgeByThresholdWithPos(final WB_PolyLine poly, final double maxStep, final double minStep) {
+    public static Map<ZPoint, Integer> splitPolyLineByThresholdWithDir(final WB_PolyLine poly, final double maxStep, final double minStep) {
         assert maxStep >= minStep : "please input valid threshold";
         double length = 0;
         for (int i = 0; i < poly.getNumberSegments(); i++) {
@@ -1172,7 +1173,7 @@ public final class ZGeoMath {
                 return new LinkedHashMap<>();
             }
         }
-        return splitWB_PolyLineEdgeByStepWithPos(poly, finalStep);
+        return splitPolyLineByStepWithDir(poly, finalStep);
     }
 
     /**
@@ -1183,7 +1184,7 @@ public final class ZGeoMath {
      * @param minStep min step to divide
      * @return java.util.List<geometry.ZPoint>
      */
-    public static List<ZPoint> splitWB_PolyLineEachEdgeByThreshold(final WB_PolyLine poly, final double maxStep, final double minStep) {
+    public static List<ZPoint> splitPolyLineEachEdgeByThreshold(final WB_PolyLine poly, final double maxStep, final double minStep) {
         assert maxStep >= minStep : "please input valid threshold";
         List<ZPoint> result = new ArrayList<>();
         for (int i = 0; i < poly.getNumberSegments(); i++) {
@@ -1228,9 +1229,27 @@ public final class ZGeoMath {
      * @param splitNum number to split
      * @return java.util.List<geometry.ZPoint>
      */
-    public static List<ZPoint> splitLineString(final LineString ls, final int splitNum) {
+    public static List<ZPoint> splitPolyLineEdge(final LineString ls, final int splitNum) {
         double step = ls.getLength() / splitNum;
-        return splitLineStringByStep(ls, step);
+        return splitPolyLineByStep(ls, step);
+    }
+
+    /**
+     * 将多边形或多段线轮廓等分为若干点(WB_PolyLine)
+     *
+     * @param poly     input polyline (polygon)
+     * @param splitNum number to split
+     * @return java.util.List<geometry.ZPoint>
+     */
+    public static List<ZPoint> splitPolyLineEdge(final WB_PolyLine poly, final int splitNum) {
+        // 计算步长
+        double length = 0;
+        for (int i = 0; i < poly.getNumberSegments(); i++) {
+            length = length + poly.getSegment(i).getLength();
+        }
+        double step = length / splitNum;
+
+        return splitPolyLineByStep(poly, step);
     }
 
     /**
@@ -1243,24 +1262,6 @@ public final class ZGeoMath {
     public static List<ZPoint> splitPolygonEdge(final Polygon poly, final int splitNum) {
         double step = poly.getLength() / splitNum;
         return splitPolygonEdgeByStep(poly, step);
-    }
-
-    /**
-     * 将多边形或多段线轮廓等分为若干点(WB_PolyLine)
-     *
-     * @param poly     input polyline (polygon)
-     * @param splitNum number to split
-     * @return java.util.List<geometry.ZPoint>
-     */
-    public static List<ZPoint> splitWB_PolyLineEdge(final WB_PolyLine poly, final int splitNum) {
-        // 计算步长
-        double length = 0;
-        for (int i = 0; i < poly.getNumberSegments(); i++) {
-            length = length + poly.getSegment(i).getLength();
-        }
-        double step = length / splitNum;
-
-        return splitWB_PolyLineEdgeByStep(poly, step);
     }
 
     /*-------- 多边形工具 --------*/

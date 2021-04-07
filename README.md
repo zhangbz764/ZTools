@@ -64,7 +64,7 @@
 常用库几何数据的相互转换  
 *目前主要针对简单多边形，部分涉及带洞*
 
-## **ZGeoFactory**
+## **ZFactory**
 
 包含了jts的GeometryFactory和HE_Mesh的WB_GeometryFactory，以及其他创建命令：
 

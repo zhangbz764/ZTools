@@ -101,19 +101,19 @@
 * 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点  
   `pointsOnEdgeByDist`
 * 输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）   
-  `splitPolygonEdgeByStep` `splitLineStringByStep` `splitWB_PolyLineEdgeByStep`  
+  `splitPolygonEdgeByStep` `splitPolyLineByStep`  
 * 输入步长与抖动范围，剖分多段线或多边形的边，得到所有点（最后一段步长必然不足长）  
-  `splitWB_PolyLineEdgeByRandomStep`
+  `splitPolyLineByRandomStep`
 * 输入步长，剖分多段线或多边形的边 (WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap  
-  `splitWB_PolyLineEdgeByStepWithPos`
+  `splitPolyLineByStepWithDir`
 * 给定阈值上下限，将多边形或多段线按阈值内最大值等分，得到所有点    
-  `splitPolygonEdgeByThreshold` `splitWB_PolyLineEdgeByThreshold`
+  `splitPolygonEdgeByThreshold` `splitPolyLineByThreshold`
 * 给定阈值上下限，剖分多段线(WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap    
-  `splitWB_PolyLineEdgeByThresholdWithPos`
+  `splitPolyLineByThresholdWithDir`
 * 给定阈值上下限，剖分多段线的每条边(WB_PolyLine)，即剖分结果一定包含每个顶点，但步长不同  
-  `splitWB_PolyLineEachEdgeByThreshold`
+  `splitPolyLineEachEdgeByThreshold`
 * 输入等分数量，将多边形或多段线等分，得到所有点   
-  `splitPolygonEdge` `splitWB_PolyLineEdge` `splitLineString`
+  `splitPolygonEdge` `splitPolyLineEdge`
 
 #### 多边形工具
 
@@ -162,8 +162,6 @@
 * 给定范围生成随机整数
 * 将目标数字从一个范围映射到另一个范围内的对应数字
 
-增加中...
-
 ## **ZSubdivision**
 
 （尚未完成）若干种多边形剖分模式
@@ -208,9 +206,11 @@
 
 * Polygon -> LineString
 
-## **ZGeoFactory**
+## **ZFactory**
 
 包含了jts的GeometryFactory和HE_Mesh的WB_GeometryFactory，以及其他创建命令：
+
+#### 创建几何图形
 
 * 从一组首尾相接的线段创建Line String / WB_PolyLine, 若有多条，则取最长  
   `createLineString` `createWB_PolyLine`  
@@ -222,7 +222,10 @@
   `createPolylineFromPolygon`
 * 将一条LineString向两端头微微延长一定距离（规避误差）  
   `createExtendedLineString`
-* 从一组线段创建ZGraph 
-  `createZGraphFromSegments`
 
-## 增加中...
+#### 创建图
+* 从一组线段创建ZGraph  
+  `createZGraphFromSegments`  
+* 从一组点根据距离创建最小生成树(Prim)  
+  `createMiniSpanningTree`
+  
