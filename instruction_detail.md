@@ -71,18 +71,20 @@
   `checkWB_SegmentIntersect`
 * 求任意两个线型对象交点（需输入类型：line, ray, segment）  
   `simpleLineElementsIntersect2D`
-* 求射线与多边形交点  
-  `rayPolygonIntersect2D`
+* 求射线、直线与多边形交点  
+  `rayPolygonIntersect2D` `linePolygonIntersect2D`
 * 求射线与多边形交点，返回按照与指定点升序排序的交点所在边序号  
   `rayPolygonIntersectIndices2D`
 * 将线段延长或剪切至多边形最近的交点  
-  `extendSegmentToPolygon`
-
+  `extendSegmentToPolygon`  
+* 将多边形内的线段两端延长至多边形的交点（起点在多边形内）  
+  `extendSegmentToPolygonBothSides`
+  
 #### 二维距离相关
 
 * 从一组线段中找到与目标点距离最近的点  
   `closestPointToLineList`
-* 从一个WB_Polygon中找到与目标点距离最近边的序号  
+* 从一个WB_Polygon，一组线段中找到与目标点距离最近边的序号  
   `closestSegment`
 
 #### 二维位置判断相关
@@ -115,8 +117,10 @@
 * 输入等分数量，将多边形或多段线等分，得到所有点   
   `splitPolygonEdge` `splitPolyLineEdge`
 
-#### 多边形工具
+#### 多边形工具  
 
+* 计算多边形最小外接矩形的朝向（与较长边垂直）
+  `miniRectDir`
 * 使WB_Polygon点序反向，支持带洞  
   `reversePolygon`
 * 检查两个WB_Polygon是否同向  
@@ -139,8 +143,10 @@
 
 与自定义图结构相关的计算工具
 
-* 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回结果点，或沿途的所有线段  
-  `pointsOnGraphByDist` `segmentsOnGraphByDist`
+* 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回结果点/沿途的所有线段/沿途节点  
+  `pointsOnGraphByDist` `segmentsOnGraphByDist` `nodesOnGraphByDist`
+* 给定步长，将graph每条edge按照步长剖分，返回全部剖分点  
+  `splitGraphEachEdgeByStep`  
 * 给定起点，递归遍历出graph上从起点出发的所有链（返回ZEdge或ZNode）  
   `getAllChainEdgeFromNode` `getAllChainNodeFromNode`
 * 找到一个无环图上的最长链  

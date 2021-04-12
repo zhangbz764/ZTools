@@ -15,7 +15,7 @@ import wblut.processing.WB_Render;
  * @date 2020/10/29
  * @time 15:34
  */
-public class TestDistCloset extends PApplet {
+public class TestDistClosest extends PApplet {
     public void settings() {
         size(1000, 1000, P2D);
     }
@@ -23,7 +23,7 @@ public class TestDistCloset extends PApplet {
     WB_Point origin;
     WB_Polygon poly;
     WB_PolyLine pl;
-    WB_Point closet;
+    WB_Point closest;
 
     WB_Render render;
 
@@ -42,7 +42,7 @@ public class TestDistCloset extends PApplet {
         poly = new WB_Polygon(pts1);
         pl = new WB_PolyLine(pts2);
 
-        closet = WB_GeometryOp.getClosestPoint2D(origin,(WB_PolyLine) poly);
+        closest = WB_GeometryOp.getClosestPoint2D(origin,(WB_PolyLine) poly);
     }
 
     public void draw() {
@@ -50,7 +50,7 @@ public class TestDistCloset extends PApplet {
         noFill();
         render.drawPolyLine2D(poly);
         render.drawPoint2D(origin, 20);
-        render.drawPoint2D(closet, 20);
+        render.drawPoint2D(closest, 20);
 
         ZLine seg = new ZLine(new ZPoint(100, 900), new ZPoint(mouseX, mouseY));
         ZLine extend = ZGeoMath.extendSegmentToPolygon(seg.toLinePD(), poly);

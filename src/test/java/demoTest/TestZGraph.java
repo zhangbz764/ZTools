@@ -32,8 +32,11 @@ public class TestZGraph extends PApplet {
     public ZNode select;
 
     public List<ZLine> resultSegments;
+    public List<ZNode> resultNodes;
 
     public List<ZEdge> longestChain;
+
+    public List<ZPoint> splitResult;
 
     public void setup() {
         long start, end;
@@ -46,17 +49,17 @@ public class TestZGraph extends PApplet {
         nodes.add(new ZNode(300, 600));
         nodes.add(new ZNode(400, 500));
         nodes.add(new ZNode(300, 450));
-//        int[][] connection = new int[][]{
-//                {0, 1},
-//                {1, 2},
-//                {1, 3},
-//                {3, 4},
-//                {4, 5},
-//                {3, 6}
-//        };
-//        start = System.currentTimeMillis();
-//        this.graph = new ZGraph(nodes, connection);
-//        end = System.currentTimeMillis();
+        int[][] connection = new int[][]{
+                {0, 1},
+                {1, 2},
+                {1, 3},
+                {3, 4},
+                {4, 5},
+                {3, 6}
+        };
+        start = System.currentTimeMillis();
+        this.graph = new ZGraph(nodes, connection);
+        end = System.currentTimeMillis();
 
         // 创建 mini spanning tree
 //        start = System.currentTimeMillis();
@@ -77,26 +80,21 @@ public class TestZGraph extends PApplet {
 //        end = System.currentTimeMillis();
 //        System.out.println("运行时间：" + (end - start) + " ms");
 
-        // 创建jts graph
-
-        Coordinate[] test = new Coordinate[3]; // 如果LineString点数大于2，node数量正常添加，edge只算一根
-        test[0] = new Coordinate(50, 400);
-        test[1] = new Coordinate(100, 500);
-        test[2] = new Coordinate(200, 50);
-
-        List<ZLine> segments = new ArrayList<>();
-        segments.add(new ZLine(100, 500, 200, 500));
-        segments.add(new ZLine(200, 500, 200, 400));
-        segments.add(new ZLine(200, 500, 250, 500));
-        segments.add(new ZLine(250, 500, 300, 600));
-        segments.add(new ZLine(250, 500, 300, 450));
-        segments.add(new ZLine(300, 450, 400, 500));
-
-        List<ZNode> nodes = new ArrayList<>();
-        List<ZEdge> edges = new ArrayList<>();
-        List<Node> tempNodes = new ArrayList<>();
-
-        this.graph = ZFactory.createZGraphFromSegments(segments);
+//        // 创建jts graph
+//        Coordinate[] test = new Coordinate[3]; // 如果LineString点数大于2，node数量正常添加，edge只算一根
+//        test[0] = new Coordinate(50, 400);
+//        test[1] = new Coordinate(100, 500);
+//        test[2] = new Coordinate(200, 50);
+//
+//        List<ZLine> segments = new ArrayList<>();
+//        segments.add(new ZLine(100, 500, 200, 500));
+//        segments.add(new ZLine(200, 500, 200, 400));
+//        segments.add(new ZLine(200, 500, 250, 500));
+//        segments.add(new ZLine(250, 500, 300, 600));
+//        segments.add(new ZLine(250, 500, 300, 450));
+//        segments.add(new ZLine(300, 450, 400, 500));
+//
+//        this.graph = ZFactory.createZGraphFromSegments(segments);
 
         // 测试找全部链
 //        List<List<ZEdge>> allChains = ZGraphMath.getAllChainEdgeFromNode(graph.getNodeN(1), null, new ArrayList<ZEdge>());
@@ -129,9 +127,18 @@ public class TestZGraph extends PApplet {
 //        select = nodes.get(1);
 //        this.resultSegments = ZGraphMath.segmentsOnGraphByDist(nodes.get(1), null, 80);
         select = graph.getNodes().get(1);
-        this.resultSegments = ZGraphMath.segmentsOnGraphByDist(select, null, 80);
+        this.resultSegments = ZGraphMath.segmentsOnGraphByDist(select, null, 150);
+        this.resultNodes = ZGraphMath.nodesOnGraphByDist(select, null, 150);
 
-        System.out.println("find by dist on graph: " + resultSegments.size());
+        // 测试graph剖分
+//        this.splitResult = ZGraphMath.splitGraphEdgeByStep(graph, graph.getNodeN(0), null, 30, 30);
+        this.splitResult = ZGraphMath.splitGraphEachEdgeByStep(graph, 20);
+        System.out.println("splitResult.size() " + splitResult.size());
+        for (ZPoint p : splitResult) {
+            System.out.println(p.toString());
+        }
+        System.out.println("find resultSegments by dist on graph: " + resultSegments.size());
+        System.out.println("find resultNodes by dist on graph: " + resultNodes.size());
     }
 
     /* ------------- draw ------------- */
@@ -147,9 +154,18 @@ public class TestZGraph extends PApplet {
         for (ZLine l : resultSegments) {
             l.display(this);
         }
+        for (ZNode n : resultNodes) {
+            n.displayAsPoint(this, 8);
+        }
         if (select != null) {
             stroke(255, 0, 0);
             rect(select.xf() - 10, select.yf() - 10, 40, 20);
+        }
+
+        if (splitResult != null) {
+            for (ZPoint p : splitResult) {
+                p.displayAsPoint(this, 2);
+            }
         }
 
         pushMatrix();
@@ -165,15 +181,17 @@ public class TestZGraph extends PApplet {
             if (node.distance(new ZPoint(mouseX, mouseY)) < node.rd()) {
                 select = node;
                 this.resultSegments = ZGraphMath.segmentsOnGraphByDist(node, null, 150);
+                this.resultNodes = ZGraphMath.nodesOnGraphByDist(select, null, 150);
+                System.out.println("find resultSegments by dist on graph: " + resultSegments.size());
+                System.out.println("find resultNodes by dist on graph: " + resultNodes.size());;
             }
         }
-        System.out.println("find by dist on graph: " + resultSegments.size());
     }
 
     public void keyPressed() {
         if (key == 'r') {
-            this.longestChain = ZGraphMath.longestChain(graph);
-            System.out.println("refreshed");
+            ZPoint p = new ZPoint(mouseX, mouseY);
+            this.graph.addNodeByDist(p);
         }
     }
 }

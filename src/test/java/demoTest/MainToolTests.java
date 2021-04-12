@@ -23,7 +23,7 @@ public class MainToolTests {
 //        PApplet.main("demoTest.TestPolySplit");
 
         /* 测试hemesh里的最近点计算、线段trim和extend计算、op里的检测线段二维相交 */
-//        PApplet.main("demoTest.TestDistCloset");
+//        PApplet.main("demoTest.TestDistClosest");
 
         /* 测试ZSkeleton */
 //        PApplet.main("demoTest.TestSkeleton");
@@ -35,13 +35,16 @@ public class MainToolTests {
 //        PApplet.main("demoTest.TestConvexHull");
 
         /* 测试ZSkeleton带洞 */
-//        PApplet.main("demoTest.TestCampSkeleton");
+        PApplet.main("demoTest.TestCampSkeleton");
 
         /* 测试几种剖分方法 */
 //        PApplet.main("demoTest.TestSubdivision");
 
         /* 测试gurobi */
 //        PApplet.main("demoTest.TestGurobi");
+
+        /* 测试gurobi */
+//        PApplet.main("demoTest.TestGurobi2");
 
         /* 测试hemesh里的洞 */
 //        PApplet.main("demoTest.TestHolesHE_Mesh");
@@ -53,6 +56,6 @@ public class MainToolTests {
 //        PApplet.main("demoTest.TestJtsBuffer");
 
         /* 测试创建ZGraph和graph方法 */
-        PApplet.main("demoTest.TestZGraph");
+//        PApplet.main("demoTest.TestZGraph");
     }
 }

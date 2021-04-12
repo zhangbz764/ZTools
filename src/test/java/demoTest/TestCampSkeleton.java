@@ -2,7 +2,11 @@ package demoTest;
 
 import Guo_Cam.CameraController;
 import geometry.ZSkeleton;
+import math.ZMath;
 import org.locationtech.jts.geom.*;
+import org.twak.camp.Machine;
+import org.twak.camp.Output;
+import org.twak.camp.Skeleton;
 import processing.core.PApplet;
 import render.JtsRender;
 import transform.ZTransform;
@@ -42,28 +46,28 @@ public class TestCampSkeleton extends PApplet {
         render = new WB_Render(this);
 
         Coordinate[] outer = new Coordinate[6]; // counter clockwise
-        outer[0] = new Coordinate(100, 100,0);
-        outer[1] = new Coordinate(700, 100,0);
-        outer[2] = new Coordinate(800, 400,0);
-        outer[3] = new Coordinate(500, 800,0);
-        outer[4] = new Coordinate(100, 600,0);
-        outer[5] = new Coordinate(100, 100,0);
+        outer[0] = new Coordinate(100, 100, 0);
+        outer[1] = new Coordinate(700, 100, 0);
+        outer[2] = new Coordinate(800, 400, 0);
+        outer[3] = new Coordinate(500, 800, 0);
+        outer[4] = new Coordinate(100, 600, 0);
+        outer[5] = new Coordinate(100, 100, 0);
         LinearRing outerL = gf.createLinearRing(outer);
 
         Coordinate[] inner0 = new Coordinate[5]; // clockwise
-        inner0[0] = new Coordinate(250, 200,0);
-        inner0[1] = new Coordinate(250, 400,0);
-        inner0[2] = new Coordinate(450, 400,0);
-        inner0[3] = new Coordinate(450, 200,0);
-        inner0[4] = new Coordinate(250, 200,0);
+        inner0[0] = new Coordinate(250, 200, 0);
+        inner0[1] = new Coordinate(250, 400, 0);
+        inner0[2] = new Coordinate(450, 400, 0);
+        inner0[3] = new Coordinate(450, 200, 0);
+        inner0[4] = new Coordinate(250, 200, 0);
         LinearRing innerL1 = gf.createLinearRing(inner0);
 
         Coordinate[] inner1 = new Coordinate[5]; // clockwise
-        inner1[0] = new Coordinate(500, 500,0);
-        inner1[1] = new Coordinate(400, 600,0);
-        inner1[2] = new Coordinate(500, 700,0);
-        inner1[3] = new Coordinate(600, 500,0);
-        inner1[4] = new Coordinate(500, 500,0);
+        inner1[0] = new Coordinate(500, 500, 0);
+        inner1[1] = new Coordinate(400, 600, 0);
+        inner1[2] = new Coordinate(500, 700, 0);
+        inner1[3] = new Coordinate(600, 500, 0);
+        inner1[4] = new Coordinate(500, 500, 0);
         LinearRing innerL2 = gf.createLinearRing(inner1);
 
         LinearRing[] inner = new LinearRing[2];
@@ -107,6 +111,16 @@ public class TestCampSkeleton extends PApplet {
 
 
         skeleton.display(this);
+    }
+
+    double mach = Math.PI / 4;
+
+    public void mouseClicked() {
+        Skeleton skel = this.skeleton.getSkeleton();
+        for (Output.Face f : skel.output.faces.values()) {
+            mach += ZMath.random(0, Math.PI / 16);
+            f.edge.machine = new Machine(mach);
+        }
     }
 
 }

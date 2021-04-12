@@ -1,5 +1,8 @@
 package geometry;
 
+import igeo.IVecR;
+import math.ZGeoMath;
+import math.ZGraphMath;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
@@ -30,7 +33,7 @@ public class ZGraph {
      * @param nodes input nodes
      * @param edges input edges
      */
-    public ZGraph(List<ZNode> nodes, List<ZEdge> edges) {
+    public ZGraph(List<? extends ZNode> nodes, List<ZEdge> edges) {
         setNodes(nodes);
         setEdges(edges);
         this.matrix = new int[edges.size()][];
@@ -82,6 +85,76 @@ public class ZGraph {
         }
     }
 
+    public boolean contains(ZNode node) {
+        return this.nodes.contains(node);
+    }
+
+    public boolean contains(ZEdge edge) {
+        return this.edges.contains(edge);
+    }
+
+    /**
+     * 给定点point，指定插入的edge，将原edge打断，point连接到原edge两端的node
+     *
+     * @param point input point
+     * @param edge  target edge
+     * @return void
+     */
+    public void addNodeIntoEdge(ZPoint point, ZEdge edge) {
+        ZNode newNode;
+        if (point instanceof ZNode) {
+            newNode = (ZNode) point;
+        } else {
+            newNode = new ZNode(point.xd(), point.yd(), point.zd());
+        }
+        ZNode s = edge.getStart();
+        ZNode e = edge.getEnd();
+
+        newNode.setRelationReady();
+
+        newNode.addNeighbor(s);
+        s.removeNeighbor(e);
+        s.addNeighbor(newNode);
+        ZEdge newEdge1 = new ZEdge(s, newNode);
+        s.addLinkedEdge(newEdge1);
+        newNode.addLinkedEdge(newEdge1);
+
+        newNode.addNeighbor(e);
+        e.removeNeighbor(s);
+        e.addNeighbor(newNode);
+        ZEdge newEdge2 = new ZEdge(newNode, e);
+        e.addLinkedEdge(newEdge2);
+        newNode.addLinkedEdge(newEdge2);
+
+        this.nodes.add(newNode);
+        this.edges.add(newEdge1);
+        this.edges.add(newEdge2);
+        this.edges.remove(edge);
+    }
+
+    /**
+     * 根据几何距离自动找到需要插入的edge
+     *
+     * @param point input point
+     * @return void
+     */
+    public void addNodeByDist(ZPoint point) {
+        ZEdge targetEdge = null;
+        for (ZEdge edge : getEdges()) {
+            if (ZGeoMath.pointOnSegment(point, edge)) {
+                // 如果点在线上，连接线两端的点
+                targetEdge = edge;
+                break;
+            }
+        }
+        if (targetEdge == null) {
+            // 如果点不在线上，找到最近线，连接线两端的点
+            int closest = ZGeoMath.closestSegment(point, this.edges);
+            targetEdge = edges.get(closest);
+        }
+        addNodeIntoEdge(point, targetEdge);
+    }
+
     // TODO: 2021/4/1 check loop in a graph 
     public boolean checkLoop() {
         ZNode startNode = nodes.get(0);
@@ -97,8 +170,9 @@ public class ZGraph {
         this.edges = edges;
     }
 
-    public void setNodes(List<ZNode> nodes) {
-        this.nodes = nodes;
+    public void setNodes(List<? extends ZNode> nodes) {
+        this.nodes = new ArrayList<>();
+        this.nodes.addAll(nodes);
     }
 
     public void setMatrix(int[][] matrix) {
@@ -113,8 +187,12 @@ public class ZGraph {
         return nodes;
     }
 
-    public ZNode getNodeN(int index){
+    public ZNode getNodeN(int index) {
         return nodes.get(index);
+    }
+
+    public ZEdge getEdgeN(int index) {
+        return edges.get(index);
     }
 
     public int[][] getMatrix() {
@@ -151,7 +229,7 @@ public class ZGraph {
             edge.display(app);
         }
         for (ZNode node : nodes) {
-            node.displayAsPoint(app,3);
+            node.displayAsPoint(app, 3);
         }
     }
 }

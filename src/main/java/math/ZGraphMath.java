@@ -14,11 +14,12 @@ import java.util.List;
  * @date 2021/3/30
  * @time 11:03
  * <p>
- * 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回结果点，或沿途的所有线段
+ * 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回结果点/沿途的所有线段/沿途节点
+ * 给定步长，将graph每条edge按照步长剖分，返回全部剖分点
  * 给定起点，递归遍历出graph上从起点出发的所有链（返回ZEdge或ZNode）
  * 找到一个无环图上的最长链
  */
-public class ZGraphMath {
+public final class ZGraphMath {
 
     /**
      * 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回结果点
@@ -49,7 +50,34 @@ public class ZGraphMath {
     }
 
     /**
-     * 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回沿途的所有线段
+    * 找到graph上某节点开始点沿边移动一定距离后，沿途经过的所有节点（不包括起点）
+    *
+    * @param currNode
+    * @param fatherNode
+    * @param dist
+    * @return java.util.List<geometry.ZNode>
+    */
+    public static List<ZNode> nodesOnGraphByDist(final ZNode currNode, final ZNode fatherNode, final double dist) {
+        List<ZNode> result = new ArrayList<>();
+        for (int i = 0; i < currNode.getNeighborNum(); i++) {
+            // 排除父节点
+            if (currNode.getNeighbor(i) != fatherNode) {
+                double curr_span = dist;
+                if (currNode.getLinkedEdge(i).getLength() <= curr_span) {
+                    result.add(currNode.getNeighbor(i));
+                    if (currNode.getNeighbor(i).getNeighborNum() != 1) {
+                        // 若已检索到端头节点，则停止
+                        curr_span = curr_span - currNode.getLinkedEdge(i).getLength();
+                        result.addAll(nodesOnGraphByDist(currNode.getNeighbor(i), currNode, curr_span));
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 找到graph上某节点开始点沿边移动一定距离后，沿途的所有线段
      *
      * @param currNode start node
      * @param dist     distance to move
@@ -58,7 +86,8 @@ public class ZGraphMath {
     public static List<ZLine> segmentsOnGraphByDist(final ZNode currNode, final ZNode fatherNode, final double dist) {
         List<ZLine> result = new ArrayList<>();
         for (int i = 0; i < currNode.getNeighborNum(); i++) {
-            if (currNode.getNeighbor(i) != fatherNode) { // 排除父节点
+            // 排除父节点
+            if (currNode.getNeighbor(i) != fatherNode) {
                 double curr_span = dist;
                 if (currNode.getLinkedEdge(i).getLength() >= curr_span) {
                     // 若edge长度大于当前步长，记录该步长的线段并停止
@@ -73,6 +102,66 @@ public class ZGraphMath {
                 }
             }
         }
+        return result;
+    }
+
+    // FIXME: 2021/4/9 graph剖分
+    public static List<ZPoint> splitGraphEdgeByStep(final ZGraph graph, final ZNode startNode, final ZNode fatherNode, final double step, final double currSpan) {
+        List<ZPoint> result = new ArrayList<>();
+        if (graph.contains(startNode)) {
+            ZPoint p1 = startNode;
+            double curr_span = currSpan;
+            double curr_dist;
+
+            result.add(startNode);
+            for (ZNode nei : startNode.getNeighbors()) {
+                if (nei != fatherNode) {
+                    ZPoint p2 = nei;
+                    curr_dist = p1.distance(p2);
+                    while (curr_dist >= curr_span) {
+                        ZPoint p = p1.add(p2.sub(p1).unit().scaleTo(curr_span));
+                        result.add(p);
+                        p1 = p;
+                        curr_span = step;
+                        curr_dist = p1.distance(p2);
+                    }
+                    if (nei.isEnd()) {
+                        result.add(nei);
+                    } else {
+                        curr_span = curr_span - curr_dist;
+
+                        List<ZPoint> nextResult = splitGraphEdgeByStep(graph, nei, startNode, step, curr_span);
+                        for (ZPoint p : nextResult) {
+                            if (!result.contains(p)) {
+                                result.add(p);
+                            }
+                        }
+                    }
+                    p1 = startNode;
+                }
+            }
+        } else {
+            System.out.println("start node isn't in the graph, return empty result");
+        }
+        return result;
+    }
+
+    /**
+     * 将graph每条edge按照步长剖分，返回全部剖分点
+     *
+     * @param graph input ZGraph
+     * @param step  step for each edge to split
+     * @return java.util.List<geometry.ZPoint>
+     */
+    public static List<ZPoint> splitGraphEachEdgeByStep(final ZGraph graph, final double step) {
+        List<ZPoint> result = new ArrayList<>();
+        for (int i = 0; i < graph.getEdgesNum(); i++) {
+            List<ZPoint> pts = graph.getEdgeN(i).splitByStep(step);
+            pts.remove(0);
+            pts.remove(pts.size() - 1);
+            result.addAll(pts);
+        }
+        result.addAll(graph.getNodes());
         return result;
     }
 

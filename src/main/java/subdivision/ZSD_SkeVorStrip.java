@@ -38,7 +38,6 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
         super(originPolygon);
     }
 
-    List<ZEdge> longestChain;
     ZGraph graph;
 
     @Override
@@ -52,11 +51,9 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
         List<ZLine> topSegments = skeleton.getRidges();
         topSegments.addAll(skeleton.getExtendedRidges());
 
-//        polyLine = ZFactory.createWB_PolyLine(topSegments);
         ZGraph tempGraph = ZFactory.createZGraphFromSegments(topSegments);
         graph = tempGraph;
-        System.out.println("graph : nodes num  " + tempGraph.getNodesNum());
-        longestChain = ZGraphMath.longestChain(tempGraph);
+        List<ZEdge> longestChain = ZGraphMath.longestChain(tempGraph);
         polyLine = ZFactory.createWB_PolyLine(longestChain);
 
         // polyLine maybe null because segments might not be nose to tail
@@ -67,7 +64,6 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
                 voronoiGenerator.remove(0);
                 voronoiGenerator.remove(voronoiGenerator.size() - 1);
             }
-            System.out.println("voronoiGenerator: " + voronoiGenerator.size());
             // generate voronoi
             List<WB_Point> points = new ArrayList<>();
             for (ZPoint p : voronoiGenerator) {
@@ -119,23 +115,19 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
         app.noStroke();
         app.fill(255, 0, 0);
         for (ZPoint p : voronoiGenerator) {
-            p.displayAsPoint(app, 10);
+            p.displayAsPoint(app, 5);
         }
 
-        app.fill(0);
-        app.textSize(15);
-        for (int i = 0; i < polyLine.getNumberOfPoints(); i++) {
-            app.text(i, polyLine.getPoint(i).xf(), polyLine.getPoint(i).yf(), polyLine.getPoint(i).zf());
-        }
+//        app.fill(0);
+//        app.textSize(15);
+//        for (int i = 0; i < polyLine.getNumberOfPoints(); i++) {
+//            app.text(i, polyLine.getPoint(i).xf(), polyLine.getPoint(i).yf(), polyLine.getPoint(i).zf());
+//        }
         app.popStyle();
 
         app.pushMatrix();
         app.translate(0,0,250);
         graph.display(app);
-        app.translate(0, 0, 250);
-        for (ZEdge e : longestChain) {
-            e.display(app);
-        }
         app.popMatrix();
     }
 }

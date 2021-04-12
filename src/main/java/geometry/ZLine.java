@@ -9,6 +9,9 @@ import wblut.geom.WB_Point;
 import wblut.geom.WB_Ray;
 import wblut.geom.WB_Segment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 自定义的线数据类型，可代表直线、射线、线段，也可转化为 p+td 的形式
  *
@@ -128,6 +131,26 @@ public class ZLine {
      */
     public ZLine reverse() {
         return new ZLine(this.pt1, this.pt0);
+    }
+
+    public List<ZPoint> splitByStep(final double step) {
+        List<ZPoint> result = new ArrayList<>();
+
+        ZPoint start = this.pt0;
+        result.add(start);
+
+        if (this.getLength() > step) {
+            double currDist = this.getLength();
+
+            while (currDist > step) {
+                start = start.add(this.getDirectionUnit().scaleTo(step));
+                result.add(start);
+                currDist -= step;
+            }
+        }
+
+        result.add(this.pt1);
+        return result;
     }
 
     /* ------------- setter & getter ------------- */

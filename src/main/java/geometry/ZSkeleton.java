@@ -118,6 +118,10 @@ public class ZSkeleton {
         this.generalMachine = generalMachine;
     }
 
+    public Skeleton getSkeleton() {
+        return skeleton;
+    }
+
     public List<ZLine> getAllEdges() {
         return this.allEdges;
     }

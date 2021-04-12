@@ -63,7 +63,7 @@ public class ZNode extends ZPoint {
     public void removeNeighbor(ZNode neighbor) { // remove one node
         ZEdge edge = null;
         for (ZEdge e : linkedEdges) {
-            if (e.getStart() == neighbor && e.getEnd() == neighbor) {
+            if (e.getStart() == neighbor || e.getEnd() == neighbor) {
                 edge = e;
             }
         }

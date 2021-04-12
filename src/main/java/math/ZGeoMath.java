@@ -4,6 +4,7 @@ import geometry.ZEdge;
 import geometry.ZLine;
 import geometry.ZNode;
 import geometry.ZPoint;
+import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.*;
 import transform.ZTransform;
 import wblut.geom.*;
@@ -31,12 +32,13 @@ import java.util.Map;
  * #### 二维相交相关
  * 检查两个WB_Segment是否相交（用WB_GeometryOP）
  * 求任意两个线型对象交点（需输入类型：line, ray, segment）
- * 求射线与多边形交点
+ * 求射线、直线与多边形交点
  * 求射线与多边形交点，返回按照与指定点升序排序的交点所在边序号
  * 将线段延长或剪切至多边形最近的交点
+ * 将多边形内的线段两端延长至多边形的交点（起点在多边形内）
  * #### 二维距离相关
  * 从一组线段中找到与目标点距离最近的点
- * 从一个WB_Polygon中找到与目标点距离最近边的序号
+ * 从一个WB_Polygon，一组线段中找到与目标点距离最近边的序号
  * #### 二维位置判断相关
  * 判断点是否在直线/射线/线段上（有epsilon）
  * 从一系列ZLine中找到点在哪条线上，返回线两边的端点
@@ -52,6 +54,7 @@ import java.util.Map;
  * 给定阈值上下限，剖分多段线的每条边(WB_PolyLine)，即剖分结果一定包含每个顶点，但步长不同
  * 输入等分数量，将多边形或多段线等分，得到所有点
  * #### 多边形工具
+ * 计算多边形最小外接矩形的朝向（与较长边垂直）
  * 使WB_Polygon点序反向
  * 检查两个WB_Polygon是否同向
  * 使WB_Polygon法向量Z坐标为正或为负（不是拍平到xy平面，只是翻个面）
@@ -278,6 +281,13 @@ public final class ZGeoMath {
         }
     }
 
+    /**
+     * 检测直线和线段是否相交
+     *
+     * @param line line {point P, direction d}
+     * @param seg  segment {point P, direction d}
+     * @return boolean
+     */
     public static boolean checkLineSegmentIntersection(final ZPoint[] line, final ZPoint[] seg) {
         ZPoint delta = seg[0].sub(line[0]);
         double crossBase = line[1].cross2D(seg[1]);
@@ -497,7 +507,6 @@ public final class ZGeoMath {
         }
     }
 
-
     /**
      * 求射线与多边形交点（每段线段是 [——) 关系）
      *
@@ -509,17 +518,29 @@ public final class ZGeoMath {
         List<ZPoint> result = new ArrayList<>();
         for (int i = 0; i < poly.getNumberSegments(); i++) {
             ZPoint[] polySeg = new ZLine(poly.getSegment(i)).toLinePD();
-            ZPoint delta = polySeg[0].sub(ray[0]);
-            double crossBase = ray[1].cross2D(polySeg[1]);
-            double crossDelta0 = delta.cross2D(ray[1]);
-            double crossDelta1 = delta.cross2D(polySeg[1]);
 
-            if (Math.abs(crossBase) >= epsilon) {
-                double s = crossDelta1 / crossBase; // ray
-                double t = crossDelta0 / crossBase; // seg
-                if (s >= 0 && t > 0 && t <= 1) {
-                    result.add(polySeg[0].add(polySeg[1].scaleTo(t)));
-                }
+            ZPoint intersect = raySegmentIntersect2D(ray, polySeg);
+            if (intersect != null) {
+                result.add(intersect);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 求直线与多边形交点（每段线段是 [——) 关系）
+     *
+     * @param line line {point P, direction d}
+     * @param poly input polygon
+     * @return java.util.List<geometry.ZPoint>
+     */
+    public static List<ZPoint> linePolygonIntersect2D(final ZPoint[] line, final WB_Polygon poly) {
+        List<ZPoint> result = new ArrayList<>();
+        for (int i = 0; i < poly.getNumberSegments(); i++) {
+            ZPoint[] polySeg = new ZLine(poly.getSegment(i)).toLinePD();
+            ZPoint intersect = lineSegmentIntersect2D(line, polySeg);
+            if (intersect != null) {
+                result.add(intersect);
             }
         }
         return result;
@@ -593,6 +614,30 @@ public final class ZGeoMath {
         }
     }
 
+    /**
+     * 将多边形内的线段两端延长至多边形的交点（起点在多边形内）
+     *
+     * @param segment segment {point P, direction d}
+     * @param poly    input polygon
+     * @return geometry.ZLine
+     */
+    public static ZLine extendSegmentToPolygonBothSides(final ZPoint[] segment, final WB_Polygon poly) {
+        assert WB_GeometryOp.contains2D(segment[0].toWB_Point(), poly) : "input point must be within the polygon";
+        List<ZPoint> interResult = linePolygonIntersect2D(segment, poly);
+        if (interResult.size() == 2) {
+            return new ZLine(interResult.get(0), interResult.get(1));
+        } else if (interResult.size() > 2) {
+            double[] resultDist = new double[interResult.size()];
+            for (int i = 0; i < interResult.size(); i++) {
+                resultDist[i] = segment[0].distanceSq(interResult.get(i));
+            }
+            int[] ascending = ZMath.getArraySortedIndices(resultDist);
+            return new ZLine(interResult.get(ascending[0]), interResult.get(ascending[1]));
+        } else {
+            return null;
+        }
+    }
+
     /*-------- 二维距离相关 --------*/
 
     /**
@@ -625,6 +670,22 @@ public final class ZGeoMath {
         WB_Point pt = p.toWB_Point();
         for (int i = 0; i < poly.getNumberSegments(); i++) {
             dist[i] = WB_GeometryOp.getDistance2D(pt, poly.getSegment(i));
+        }
+        return ZMath.getMinIndex(dist);
+    }
+
+    /**
+     * 从一组线段中中找到与目标点距离最近边的序号
+     *
+     * @param p    target point
+     * @param segs input list ofsegments
+     * @return int
+     */
+    public static int closestSegment(final ZPoint p, final List<? extends ZLine> segs) {
+        double[] dist = new double[segs.size()];
+        WB_Point pt = p.toWB_Point();
+        for (int i = 0; i < segs.size(); i++) {
+            dist[i] = WB_GeometryOp.getDistance2D(pt, segs.get(i).toWB_Segment());
         }
         return ZMath.getMinIndex(dist);
     }
@@ -1265,6 +1326,42 @@ public final class ZGeoMath {
     }
 
     /*-------- 多边形工具 --------*/
+
+    /**
+     * 计算多边形最小外接矩形的朝向（与较长边垂直）
+     *
+     * @param polygon input polygon
+     * @return geometry.ZPoint
+     */
+    public static ZPoint miniRectDir(final WB_Polygon polygon) {
+        Polygon rect = (Polygon) MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToJtsPolygon(polygon));
+        Coordinate c0 = rect.getCoordinates()[0];
+        Coordinate c1 = rect.getCoordinates()[1];
+        Coordinate c2 = rect.getCoordinates()[2];
+
+        ZPoint dir1 = new ZPoint(c0).sub(new ZPoint(c1)).unit();
+        ZPoint dir2 = new ZPoint(c2).sub(new ZPoint(c1)).unit();
+
+        return c0.distance(c1) >= c1.distance(c2) ? dir2 : dir1;
+    }
+
+    /**
+     * 计算多边形最小外接矩形的朝向（与较长边垂直）
+     *
+     * @param polygon input polygon
+     * @return geometry.ZPoint
+     */
+    public static ZPoint miniRectDir(final Polygon polygon) {
+        Polygon rect = (Polygon) MinimumDiameter.getMinimumRectangle(polygon);
+        Coordinate c0 = rect.getCoordinates()[0];
+        Coordinate c1 = rect.getCoordinates()[1];
+        Coordinate c2 = rect.getCoordinates()[2];
+
+        ZPoint dir1 = new ZPoint(c0).sub(new ZPoint(c1)).unit();
+        ZPoint dir2 = new ZPoint(c2).sub(new ZPoint(c1)).unit();
+
+        return c0.distance(c1) >= c1.distance(c2) ? dir2 : dir1;
+    }
 
     /**
      * WB_Polygon 点序反向（支持带洞）
