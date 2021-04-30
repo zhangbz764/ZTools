@@ -1,6 +1,6 @@
 package demoTest;
 
-import geometry.ZFactory;
+import basicGeometry.ZFactory;
 import math.ZGeoMath;
 import processing.core.PApplet;
 import wblut.geom.WB_Point;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * description
+ * test holes in hemesh
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -28,12 +28,12 @@ public class TestHolesHE_Mesh extends PApplet {
 
     /* ------------- setup ------------- */
 
-    List<WB_Polygon> outer;
-    List<WB_Polygon> inner;
+    private List<WB_Polygon> outer;
+    private List<WB_Polygon> inner;
 
-    List<WB_Polygon> subtractResult;
+    private List<WB_Polygon> subtractResult;
 
-    WB_Render render;
+    private WB_Render render;
 
     public void setup() {
         render = new WB_Render(this);

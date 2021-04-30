@@ -1,4 +1,4 @@
-package subdivision;
+package advancedGeometry.subdivision;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.shape.random.RandomPointsBuilder;

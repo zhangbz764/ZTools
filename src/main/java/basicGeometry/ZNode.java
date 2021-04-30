@@ -1,4 +1,4 @@
-package geometry;
+package basicGeometry;
 
 import igeo.IPoint;
 import org.locationtech.jts.geom.Coordinate;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * extends ZPoint 代表graph中的node
+ * represent the node in a graph
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class ZNode extends ZPoint {
     private List<ZNode> neighbors;
-    private List<ZPoint> vecUnitToNeighbors;
+    private List<ZPoint> vecNorToNeighbors;
     private List<ZEdge> linkedEdges;
 
     /* ------------- constructor ------------- */
@@ -50,14 +50,14 @@ public class ZNode extends ZPoint {
     public void setRelationReady() {
         this.linkedEdges = new ArrayList<>();
         this.neighbors = new ArrayList<>();
-        this.vecUnitToNeighbors = new ArrayList<>();
+        this.vecNorToNeighbors = new ArrayList<>();
     }
 
     /* ------------- set & get relations ------------- */
 
     public void addNeighbor(ZNode neighbor) {  // set one node
         this.neighbors.add(neighbor);
-        this.vecUnitToNeighbors.add(neighbor.sub(this).unit());
+        this.vecNorToNeighbors.add(neighbor.sub(this).normalize());
     }
 
     public void removeNeighbor(ZNode neighbor) { // remove one node
@@ -117,12 +117,12 @@ public class ZNode extends ZPoint {
         return this.neighbors.size();
     }
 
-    public List<ZPoint> getVecUnitToNeighbors() {
-        return this.vecUnitToNeighbors;
+    public List<ZPoint> getVecNorToNeighbors() {
+        return this.vecNorToNeighbors;
     }
 
-    public ZPoint getVecUnitToNeighbor(int i) {
-        return this.vecUnitToNeighbors.get(i);
+    public ZPoint getVecNorToNeighbor(int i) {
+        return this.vecNorToNeighbors.get(i);
     }
 
     public List<ZEdge> getLinkedEdges() {

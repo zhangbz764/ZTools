@@ -1,7 +1,7 @@
 package demoTest;
 
 import Guo_Cam.CameraController;
-import geometry.ZSkeleton;
+import advancedGeometry.ZSkeleton;
 import math.ZMath;
 import org.locationtech.jts.geom.*;
 import org.twak.camp.Machine;
@@ -14,7 +14,7 @@ import wblut.geom.WB_Polygon;
 import wblut.processing.WB_Render;
 
 /**
- * 测试ZSkeleton带洞
+ * test ZSkeleton with holes
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -30,15 +30,15 @@ public class TestCampSkeleton extends PApplet {
     }
 
     /* ------------- setup ------------- */
-    Polygon boundary;
-    Polygon polygon;
-    WB_Polygon wb_polygon;
-    GeometryFactory gf = new GeometryFactory();
+    private Polygon boundary;
+    private Polygon polygon;
+    private WB_Polygon wb_polygon;
+    private GeometryFactory gf = new GeometryFactory();
 
-    CameraController gcam;
-    ZSkeleton skeleton;
-    JtsRender jtsRender;
-    WB_Render render;
+    private CameraController gcam;
+    private ZSkeleton skeleton;
+    private JtsRender jtsRender;
+    private WB_Render render;
 
     public void setup() {
         gcam = new CameraController(this);
@@ -113,7 +113,7 @@ public class TestCampSkeleton extends PApplet {
         skeleton.display(this);
     }
 
-    double mach = Math.PI / 4;
+    private double mach = Math.PI / 4;
 
     public void mouseClicked() {
         Skeleton skel = this.skeleton.getSkeleton();

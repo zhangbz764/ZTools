@@ -1,6 +1,6 @@
 package demoTest;
 
-import geometry.ZPoint;
+import basicGeometry.ZPoint;
 import math.ZGeoMath;
 import processing.core.PApplet;
 
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 测试极角排序、角平分线等向量运算
+ * test polar angle order and other vector methods
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -20,16 +20,16 @@ public class TestPolarAngle extends PApplet {
         size(1000, 1000, P3D);
     }
 
-    ZPoint oo = new ZPoint(700, 200);
-    ZPoint aa = new ZPoint(800, 100);
-    ZPoint bb = new ZPoint(500, 500);
+    private ZPoint oo = new ZPoint(700, 200);
+    private ZPoint aa = new ZPoint(800, 100);
+    private ZPoint bb = new ZPoint(500, 500);
 
-    ZPoint[] pts = new ZPoint[6];
-    List<ZPoint> vcs;
-    ZPoint o = new ZPoint(500, 500);
-    int[] sort = new int[pts.length];
+    private ZPoint[] pts = new ZPoint[6];
+    private List<ZPoint> vcs;
+    private ZPoint o = new ZPoint(500, 500);
+    private int[] sort = new int[pts.length];
 
-    ZPoint bisector;
+    private ZPoint bisector;
 
     public void randomP() {
         vcs = new ArrayList<>();
@@ -67,7 +67,7 @@ public class TestPolarAngle extends PApplet {
         line((float) oo.xd(), (float) oo.yd(), (float) bb.xd(), (float) bb.yd());
 
         ZPoint center = new ZPoint((oo.xd() + bb.xd()) * 0.5, (oo.yd() + bb.yd()) * 0.5);
-        ZPoint rotate = bb.add(center.sub(bb).unit().rotate2D(Math.PI * 1.25).scaleTo(100));
+        ZPoint rotate = bb.add(center.sub(bb).normalize().rotate2D(Math.PI * 1.25).scaleTo(100));
 
         line((float) bb.xd(), (float) bb.yd(), (float) rotate.xd(), (float) rotate.yd());
 

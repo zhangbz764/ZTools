@@ -1,4 +1,4 @@
-package geometry;
+package basicGeometry;
 
 import math.ZMath;
 import org.locationtech.jts.geom.Coordinate;
@@ -15,25 +15,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 包含了jts的GeometryFactory和HE_Mesh的WB_GeometryFactory，以及其他创建命令
+ * a class to create geometries and graphs
+ * including GeometryFactory and WB_GeometryFactory
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/11/8
  * @time 22:04
  * <p>
- * #### 创建几何图形
- * 将一系列首尾相接线段合成一条WB_PolyLine,若有多条，则取最长
- * 将一系列首尾相接线段合成一组WB_PolyLine list
- * 将一系列首尾相接线段合成一条LineString,若有多条，则取最长
- * 将WB_PolyLine在端点处断开，创建一组新折线
- * 将LineString在端点处断开，创建一组新折线
- * 给定线段序号，从WB_Polygon中创建一截WB_PloyLine
- * 将一条LineString向两端头微微延长一定距离（规避误差）
+ * #### create geometries
+ * create a LineString from a list of segments, if the result is MultiLineString, choose the longest one
+ * create a list of WB_PolyLine from a list of segments
+ * create a WB_PolyLine from a list of segments, if the result is MultiLineString, choose the longest one
+ * break WB_PolyLine by giving point indices to break
+ * break LineString by giving point indices to break
+ * cut out a WB_PolyLine from a WB_Polygon by giving indices
+ * extend both ends of a LineString
  * <p>
- * #### 创建图
- * 从一组线段创建ZGraph
- * 从一组点根据距离创建最小生成树(Prim)
+ * #### create graphs
+ * create a ZGraph from a list of segments
+ * create a mini-spanning tree from a list of points (Prim algorithm)
  */
 public class ZFactory {
     public static final WB_GeometryFactory wbgf = new WB_GeometryFactory();
@@ -43,8 +44,8 @@ public class ZFactory {
     /*-------- create geometries --------*/
 
     /**
-     * 将一系列首尾相接线段合成一条LineString
-     * 若有多条，则取最长一条
+     * create a LineString from a list of segments
+     * if the result is MultiLineString, choose the longest one
      *
      * @param lines list of lines
      * @return org.locationtech.jts.geom.LineString
@@ -71,8 +72,8 @@ public class ZFactory {
     }
 
     /**
-     * 将一系列首尾相接线段合成一条WB_PolyLine
-     * 若有多条，则取最长一条
+     * create a WB_PolyLine from a list of segments
+     * if the result is MultiLineString, choose the longest one
      *
      * @param lines list of lines
      * @return wblut.geom.WB_PolyLine
@@ -103,7 +104,7 @@ public class ZFactory {
     }
 
     /**
-     * 将一系列首尾相接线段合成若干段WB_PolyLine
+     * create a list of WB_PolyLine from a list of segments
      *
      * @param lines list of lines
      * @return java.util.List<wblut.geom.WB_PolyLine>
@@ -128,7 +129,7 @@ public class ZFactory {
     }
 
     /**
-     * 将WB_PolyLine在端点处断开，创建一组新折线
+     * break WB_PolyLine by giving point indices to break
      *
      * @param polyLine   polyLine to be break
      * @param breakPoint indices of break point
@@ -170,7 +171,7 @@ public class ZFactory {
     }
 
     /**
-     * 将LineString在端点处断开，创建一组新折线
+     * break LineString by giving point indices to break
      *
      * @param lineString lineString to be break
      * @param breakPoint indices of break point
@@ -198,7 +199,7 @@ public class ZFactory {
     }
 
     /**
-     * 给定线段序号，从WB_Polygon中截取一段WB_PloyLine
+     * cut out a WB_PolyLine from a WB_Polygon by giving indices
      *
      * @param polygon polygon to be extracted
      * @param index   segment indices to extract
@@ -216,7 +217,7 @@ public class ZFactory {
     }
 
     /**
-     * 将一条LineString向两端头微微延长一定距离（规避误差）
+     * extend both ends of a LineString
      *
      * @param ls   input LineString to extend
      * @param dist extend distance
@@ -233,8 +234,8 @@ public class ZFactory {
             ZPoint p2 = new ZPoint(coords[coords.length - 2]);
             ZPoint p3 = new ZPoint(coords[coords.length - 1]);
 
-            ZPoint v1 = p0.sub(p1).unit();
-            ZPoint v2 = p3.sub(p2).unit();
+            ZPoint v1 = p0.sub(p1).normalize();
+            ZPoint v2 = p3.sub(p2).normalize();
 
             Coordinate newC0 = p0.add(v1.scaleTo(dist)).toJtsCoordinate();
             Coordinate newC3 = p3.add(v2.scaleTo(dist)).toJtsCoordinate();
@@ -248,8 +249,8 @@ public class ZFactory {
             ZPoint p0 = new ZPoint(coords[0]);
             ZPoint p1 = new ZPoint(coords[1]);
 
-            ZPoint v1 = p0.sub(p1).unit();
-            ZPoint v2 = p1.sub(p0).unit();
+            ZPoint v1 = p0.sub(p1).normalize();
+            ZPoint v2 = p1.sub(p0).normalize();
 
             Coordinate newC0 = p0.add(v1.scaleTo(dist)).toJtsCoordinate();
             Coordinate newC1 = p1.add(v2.scaleTo(dist)).toJtsCoordinate();
@@ -263,7 +264,7 @@ public class ZFactory {
     /*-------- create graphs --------*/
 
     /**
-     * 从一组线段创建ZGraph
+     * create a ZGraph from a list of segments
      *
      * @param lines input segments list
      * @return geometry.ZGraph
@@ -318,7 +319,7 @@ public class ZFactory {
     }
 
     /**
-     * 从一组点根据距离创建最小生成树(Prim)
+     * create a mini-spanning tree from a list of points (Prim algorithm)
      *
      * @param generator points to generate mini spanning tree
      * @return geometry.ZGraph

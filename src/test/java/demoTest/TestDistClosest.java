@@ -1,14 +1,14 @@
 package demoTest;
 
-import geometry.ZLine;
-import geometry.ZPoint;
+import basicGeometry.ZLine;
+import basicGeometry.ZPoint;
 import math.ZGeoMath;
 import processing.core.PApplet;
 import wblut.geom.*;
 import wblut.processing.WB_Render;
 
 /**
- * 测试hemesh里的最近点计算、线段trim和extend计算，op里的检测线段二维相交
+ * test hemesh closest point、extend and trim、segments intersection
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -20,12 +20,12 @@ public class TestDistClosest extends PApplet {
         size(1000, 1000, P2D);
     }
 
-    WB_Point origin;
-    WB_Polygon poly;
-    WB_PolyLine pl;
-    WB_Point closest;
+    private WB_Point origin;
+    private WB_Polygon poly;
+    private WB_PolyLine pl;
+    private WB_Point closest;
 
-    WB_Render render;
+    private WB_Render render;
 
     public void setup() {
         render = new WB_Render(this);
@@ -42,7 +42,7 @@ public class TestDistClosest extends PApplet {
         poly = new WB_Polygon(pts1);
         pl = new WB_PolyLine(pts2);
 
-        closest = WB_GeometryOp.getClosestPoint2D(origin,(WB_PolyLine) poly);
+        closest = WB_GeometryOp.getClosestPoint2D(origin, (WB_PolyLine) poly);
     }
 
     public void draw() {
@@ -55,7 +55,7 @@ public class TestDistClosest extends PApplet {
         ZLine seg = new ZLine(new ZPoint(100, 900), new ZPoint(mouseX, mouseY));
         ZLine extend = ZGeoMath.extendSegmentToPolygon(seg.toLinePD(), poly);
 
-        println(ZGeoMath.checkWB_SegmentIntersect(poly.getSegment(3),new WB_Segment(new WB_Point(100, 900),new WB_Point(mouseX, mouseY))));
+        println(ZGeoMath.checkWB_SegmentIntersect(poly.getSegment(3), new WB_Segment(new WB_Point(100, 900), new WB_Point(mouseX, mouseY))));
 //        println(WB_GeometryOp.checkIntersection2DProper(poly.getPoint(3), poly.getPoint(4), new WB_Point(100, 900), new WB_Point(mouseX, mouseY)));
 
         if (extend != null) {

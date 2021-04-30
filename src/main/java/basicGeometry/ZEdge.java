@@ -1,11 +1,11 @@
-package geometry;
+package basicGeometry;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * extends ZLine 代表graph中的edge
+ * represent the edge in a graph
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall

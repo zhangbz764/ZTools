@@ -1,4 +1,4 @@
-package geometry;
+package basicGeometry;
 
 import igeo.IPoint;
 import math.ZGeoMath;
@@ -13,7 +13,8 @@ import wblut.geom.WB_Vector;
 import java.util.List;
 
 /**
- * 自定义的点数据类型，可代表点或向量
+ * custom point class
+ * can represent a point or a vector
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -30,9 +31,10 @@ public class ZPoint {
     /* ------------- constructor ------------- */
 
     public ZPoint() {
-
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
     }
-
 
     public ZPoint(double x, double y, double z) {
         this.x = x;
@@ -148,7 +150,7 @@ public class ZPoint {
     /*--------basic vector math--------*/
 
     /**
-     * 向量相加
+     * add
      *
      * @param v
      * @return geometry.ZPoint
@@ -158,7 +160,7 @@ public class ZPoint {
     }
 
     /**
-     * 向量相加
+     * add
      *
      * @param x
      * @param y
@@ -170,7 +172,7 @@ public class ZPoint {
     }
 
     /**
-     * 向量相加（改变自身）
+     * add self
      *
      * @param v
      * @return void
@@ -180,7 +182,7 @@ public class ZPoint {
     }
 
     /**
-     * 向量相减
+     * subtract
      *
      * @param v
      * @return geometry.ZPoint
@@ -190,7 +192,7 @@ public class ZPoint {
     }
 
     /**
-     * 向量相减
+     * subtract
      *
      * @param x
      * @param y
@@ -202,7 +204,7 @@ public class ZPoint {
     }
 
     /**
-     * 向量模长
+     * length of a vector
      *
      * @param
      * @return double
@@ -212,7 +214,7 @@ public class ZPoint {
     }
 
     /**
-     * 向量缩放（改变自身）
+     * scale the vector self
      *
      * @param t
      * @return void
@@ -222,7 +224,7 @@ public class ZPoint {
     }
 
     /**
-     * 向量缩放
+     * scale the vector
      *
      * @param t
      * @return geometry.ZPoint
@@ -232,18 +234,18 @@ public class ZPoint {
     }
 
     /**
-     * 得到单位向量
+     * get the normalized vector
      *
      * @param
      * @return geometry.ZPoint
      */
-    public ZPoint unit() {
+    public ZPoint normalize() {
         double length = this.getLength();
         return scaleTo(1.0 / length);
     }
 
     /**
-     * 向量旋转（2D）
+     * rotate the vector (2D)
      *
      * @param angle
      * @return geometry.ZPoint
@@ -253,7 +255,7 @@ public class ZPoint {
     }
 
     /**
-     * 计算与另一点的中点
+     * calculate the center point with the other ZPoint
      *
      * @param other other point
      * @return geometry.ZPoint
@@ -263,7 +265,7 @@ public class ZPoint {
     }
 
     /**
-     * 向量点积（2D）
+     * dot product (2D)
      *
      * @param v
      * @return double
@@ -273,7 +275,7 @@ public class ZPoint {
     }
 
     /**
-     * 向量叉积（2D）
+     * cross product (2D)
      *
      * @param v
      * @return double
@@ -283,17 +285,16 @@ public class ZPoint {
     }
 
     /**
-     * 判断向量是否是单位向量
+     * determine if the vector is normalized
      *
-     * @param
      * @return boolean
      */
-    public boolean isUnit() {
+    public boolean isNormalized() {
         return Math.abs(this.getLength() - 1) < 0.00000001;
     }
 
     /**
-     * 判断向量是否共线
+     * determine if the vector is colinear with another
      *
      * @param v
      * @return boolean
@@ -303,7 +304,7 @@ public class ZPoint {
     }
 
     /**
-     * 判断是否与另一个点太近
+     * determine if the point is too close to another
      *
      * @param other the other ZPoint
      * @param dist  distance to check
@@ -322,7 +323,7 @@ public class ZPoint {
     /* ------------- geometry method -------------*/
 
     /**
-     * 判断两个ZPoint是否重合( BUG )
+     * determine if the point is equal to another ( BUG )
      *
      * @param other the other ZPoint
      * @return boolean
@@ -348,7 +349,7 @@ public class ZPoint {
     }
 
     /**
-     * 计算两点距离平方
+     * get the square of distance with another point
      *
      * @param other
      * @return double
@@ -358,7 +359,7 @@ public class ZPoint {
     }
 
     /**
-     * 计算两点距离
+     * get the distance with another point
      *
      * @param other
      * @return double
@@ -370,7 +371,7 @@ public class ZPoint {
     /* ------------- draw -------------*/
 
     /**
-     * 将点绘制为圆（默认半径）
+     * draw the point as a circle in Processing (default radium)
      *
      * @param app
      * @return void
@@ -380,7 +381,7 @@ public class ZPoint {
     }
 
     /**
-     * 将点绘制为圆（输入半径）
+     * draw the point as a circle in Processing (input radium)
      *
      * @param app
      * @param r
@@ -391,7 +392,7 @@ public class ZPoint {
     }
 
     /**
-     * 绘制为向量（设置基点）
+     * draw the vector in Processing (set base point)
      *
      * @param app
      * @param base base point of a vector
@@ -408,7 +409,7 @@ public class ZPoint {
     }
 
     /**
-     * 绘制为向量（设置基点和缩放比例）
+     * draw the vector in Processing (set base point and scale number)
      *
      * @param app
      * @param base  base point of a vector

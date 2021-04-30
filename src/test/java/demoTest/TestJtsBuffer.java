@@ -1,6 +1,6 @@
 package demoTest;
 
-import geometry.ZFactory;
+import basicGeometry.ZFactory;
 import igeo.ICurve;
 import igeo.IG;
 import org.locationtech.jts.geom.*;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 测试jts多种几何形的buffer效果以及intersection
+ * test jts buffer and intersection
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -32,25 +32,25 @@ public class TestJtsBuffer extends PApplet {
 
     /* ------------- setup ------------- */
 
-    public List<Geometry> geometries;
-    public Geometry buffer;
-    public Polygon boundary;
-    public Geometry inter;
+    private List<Geometry> geometries;
+    private Geometry buffer;
+    private Polygon boundary;
+    private Geometry inter;
 
-    public JtsRender jtsRender;
+    private JtsRender jtsRender;
 
     public void setup() {
         jtsRender = new JtsRender(this);
         Coordinate[] boundaryPts = new Coordinate[5];
-        boundaryPts[0] = new Coordinate(100,100);
-        boundaryPts[1] = new Coordinate(900,100);
-        boundaryPts[2] = new Coordinate(900,900);
-        boundaryPts[3] = new Coordinate(100,900);
-        boundaryPts[4] = new Coordinate(100,100);
+        boundaryPts[0] = new Coordinate(100, 100);
+        boundaryPts[1] = new Coordinate(900, 100);
+        boundaryPts[2] = new Coordinate(900, 900);
+        boundaryPts[3] = new Coordinate(100, 900);
+        boundaryPts[4] = new Coordinate(100, 100);
         this.boundary = ZFactory.jtsgf.createPolygon(boundaryPts);
 
         System.out.println(this.getClass().getClassLoader().getResource("").getPath());
-        // 载入几何模型
+        // load
         String path = Objects.requireNonNull(
                 this.getClass().getClassLoader().getResource("./test_jts_buffer.3dm")
         ).getPath();
@@ -66,7 +66,7 @@ public class TestJtsBuffer extends PApplet {
             geometries.add(geo);
         }
 
-        // 做buffer
+        // buffer
         GeometryFactory gf = new GeometryFactory();
 
         Geometry[] geos = geometries.toArray(new Geometry[0]);
@@ -74,8 +74,8 @@ public class TestJtsBuffer extends PApplet {
 
         BufferOp bop = new BufferOp(collection);
         bop.setEndCapStyle(BufferParameters.CAP_SQUARE);
-
         buffer = bop.getResultGeometry(20);
+
         LineString bufferLS = ZTransform.PolygonToLineString((Polygon) buffer).get(0);
 
         inter = bufferLS.intersection(boundary);

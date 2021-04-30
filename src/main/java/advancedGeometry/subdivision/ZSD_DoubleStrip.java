@@ -1,7 +1,7 @@
-package subdivision;
+package advancedGeometry.subdivision;
 
-import geometry.ZFactory;
-import geometry.ZSkeleton;
+import basicGeometry.ZFactory;
+import advancedGeometry.ZSkeleton;
 import math.ZGeoMath;
 import processing.core.PApplet;
 import wblut.geom.WB_Point;
@@ -18,7 +18,7 @@ import java.util.List;
 // TODO: 2020/12/10 double strip
 
 /**
- * double-strip subdivision
+ * double-strip advancedGeometry.subdivision
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall

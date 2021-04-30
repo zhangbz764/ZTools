@@ -5,7 +5,7 @@ import processing.core.PConstants;
 import wblut.geom.WB_Polygon;
 
 /**
- * 基本显示工具
+ * render tools in Processing
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -14,10 +14,10 @@ import wblut.geom.WB_Polygon;
  */
 public class ZRender {
 
-    /*-------- 坐标轴 --------*/
+    /*-------- axis --------*/
 
     /**
-     * 绘制2D坐标轴（默认长度）
+     * 2D axis (default length)
      *
      * @param app PApplet
      * @return void
@@ -33,7 +33,7 @@ public class ZRender {
     }
 
     /**
-     * 绘制2D坐标轴（输入长度）
+     * 2D axis (input length)
      *
      * @param app    PApplet
      * @param length axis length
@@ -50,7 +50,7 @@ public class ZRender {
     }
 
     /**
-     * 绘制3D坐标轴（默认长度）
+     * 3D axis (default length)
      *
      * @param app PApplet
      * @return void
@@ -68,7 +68,7 @@ public class ZRender {
     }
 
     /**
-     * 绘制3D坐标轴（输入长度）
+     * 3D axis (input length)
      *
      * @param app    PApplet
      * @param length axis length
@@ -87,7 +87,7 @@ public class ZRender {
     }
 
     /**
-     * 绘制带洞多边形WB_Polygon
+     * draw WB_Polygon with holes
      *
      * @param polygon input polygon
      * @param app     PApplet

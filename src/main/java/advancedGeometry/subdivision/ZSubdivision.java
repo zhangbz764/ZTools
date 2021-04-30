@@ -1,5 +1,6 @@
-package subdivision;
+package advancedGeometry.subdivision;
 
+import math.ZGeoMath;
 import math.ZMath;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.Geometry;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * interface of subdivision
+ * interface of advancedGeometry.subdivision
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -45,7 +46,7 @@ public abstract class ZSubdivision {
     }
 
     /**
-     * main method to perform subdivision
+     * main method to perform advancedGeometry.subdivision
      *
      * @param
      * @return void
@@ -163,6 +164,14 @@ public abstract class ZSubdivision {
 
     public List<WB_Polygon> getAllSubPolygons() {
         return allSubPolygons;
+    }
+
+    public List<WB_Polygon> getAllValidSubPolygon() {
+        List<WB_Polygon> result = new ArrayList<>();
+        for (WB_Polygon p : allSubPolygons) {
+            result.add(ZGeoMath.polygonFaceUp(p));
+        }
+        return result;
     }
 
     public List<WB_Polygon> getRedundantPolygons() {

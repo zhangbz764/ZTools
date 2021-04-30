@@ -27,8 +27,10 @@
 
 ## **ZSkeleton**
 
-计算直骨架（straight skeleton），可以生成2D或3Dskeleton结果，支持带洞多边形。  
+计算直骨架（straight skeleton），可以生成2D或3Dskeleton结果，支持带洞多边形。
+
 #### External Dependencies:
+
 [campskeleton](https://github.com/twak/campskeleton "campskeleton")
 
 支持一些几何元素提取，包括：
@@ -41,12 +43,18 @@
 * 全部脊线点 `getRidgePoints`
 * 全部脊线延长线（到边线中点） `getExtendedRidges`
 
-## **ZLargestRectangleRatio**
+## **ZLargestRectangle**
 
-计算给定长宽比的最大内接矩形  
+粒子群算法优化计算多边形的最大内接矩形
+
 #### External Dependencies:
+
 [LargestRectangle](https://github.com/dawnwords/LargestRectangle "LargestRectangle")  
 [JSwarm-PSO](http://jswarm-pso.sourceforge.net/ "JSwarm-PSO")
+
+## **ZRectCover**
+
+使用轮廓点+射线的方法近似找到给定数量的最小矩形覆盖
 
 ## **ZGeomath**
 
@@ -59,7 +67,7 @@
 * 按极角排序一组向量（返回原列表序号）  
   `sortPolarAngleIndices`
 * 按极角排序一组向量（返回排好的新向量或单位向量）  
-  `sortPolarAngle` `sortPolarAngleUnit`
+  `sortPolarAngle` `sortPolarAngleNor`
 * 找到多边形内的所有凹点（返回点list或者序号list）  
   `getConcavePoints` `getConcavePointIndices`
 * 从一组向量中找与输入目标夹角最小者，不区分正负角（返回向量）   
@@ -76,10 +84,10 @@
 * 求射线与多边形交点，返回按照与指定点升序排序的交点所在边序号  
   `rayPolygonIntersectIndices2D`
 * 将线段延长或剪切至多边形最近的交点  
-  `extendSegmentToPolygon`  
+  `extendSegmentToPolygon`
 * 将多边形内的线段两端延长至多边形的交点（起点在多边形内）  
   `extendSegmentToPolygonBothSides`
-  
+
 #### 二维距离相关
 
 * 从一组线段中找到与目标点距离最近的点  
@@ -103,7 +111,7 @@
 * 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点  
   `pointsOnEdgeByDist`
 * 输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）   
-  `splitPolygonEdgeByStep` `splitPolyLineByStep`  
+  `splitPolygonEdgeByStep` `splitPolyLineByStep`
 * 输入步长与抖动范围，剖分多段线或多边形的边，得到所有点（最后一段步长必然不足长）  
   `splitPolyLineByRandomStep`
 * 输入步长，剖分多段线或多边形的边 (WB_PolyLine)，返回剖分点与所在边序号的LinkedHashMap  
@@ -117,7 +125,7 @@
 * 输入等分数量，将多边形或多段线等分，得到所有点   
   `splitPolygonEdge` `splitPolyLineEdge`
 
-#### 多边形工具  
+#### 多边形工具
 
 * 计算多边形最小外接矩形的朝向（与较长边垂直）
   `miniRectDir`
@@ -138,6 +146,10 @@
 
 * 输入Geometry，设置Jts的Precision Model  
   `applyJtsPrecisionModel`
+* 将OBB对半切分   
+  `halvingOBB`
+* 得到基本OBBTree  
+  `performOBBTree`
 
 ## **ZGraphMath**
 
@@ -146,7 +158,9 @@
 * 找到graph上某节点开始点沿边移动一定距离后的若干个点，返回结果点/沿途的所有线段/沿途节点  
   `pointsOnGraphByDist` `segmentsOnGraphByDist` `nodesOnGraphByDist`
 * 给定步长，将graph每条edge按照步长剖分，返回全部剖分点  
-  `splitGraphEachEdgeByStep`  
+  `splitGraphEachEdgeByStep`
+* 给定步长和起点，得到整个graph的剖分点  
+  `splitGraphEdgeByStep`
 * 给定起点，递归遍历出graph上从起点出发的所有链（返回ZEdge或ZNode）  
   `getAllChainEdgeFromNode` `getAllChainNodeFromNode`
 * 找到一个无环图上的最长链  
@@ -158,6 +172,7 @@
 
 #### 数组相关
 
+* 创建一组升序数列
 * 最大最小值序号
 * 升序排序的原序号
 
@@ -167,6 +182,14 @@
 * 给定范围生成一组随机数
 * 给定范围生成随机整数
 * 将目标数字从一个范围映射到另一个范围内的对应数字
+
+#### 其他
+
+* 阶乘
+
+## **ZPermuCombi**
+
+整数序号的排列组合
 
 ## **ZSubdivision**
 
@@ -219,9 +242,9 @@
 #### 创建几何图形
 
 * 从一组首尾相接的线段创建Line String / WB_PolyLine, 若有多条，则取最长  
-  `createLineString` `createWB_PolyLine`  
+  `createLineString` `createWB_PolyLine`
 * 将一系列首尾相接线段合成一组WB_PolyLine list  
-  `createWB_PolyLineList` 
+  `createWB_PolyLineList`
 * 将WB_PolyLine / Line String在端点处断开，创建一组新折线  
   `breakWB_PolyLine` `breakLineString`
 * 给定线段序号，从WB_Polygon中创建一截WB_PloyLine  
@@ -230,8 +253,9 @@
   `createExtendedLineString`
 
 #### 创建图
+
 * 从一组线段创建ZGraph  
-  `createZGraphFromSegments`  
+  `createZGraphFromSegments`
 * 从一组点根据距离创建最小生成树(Prim)  
   `createMiniSpanningTree`
   

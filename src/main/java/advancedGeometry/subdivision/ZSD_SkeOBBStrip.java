@@ -1,5 +1,7 @@
-package subdivision;
+package advancedGeometry.subdivision;
 
+import advancedGeometry.ZSkeleton;
+import basicGeometry.*;
 import geometry.*;
 import math.ZGeoMath;
 import math.ZGraphMath;
@@ -17,7 +19,10 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 找到originPolygon直骨架脊线，在脊线上均匀布点，按照被剖分多边形OBB方向来划线剖分
+ * set subdivide width (span)
+ * find the straight skeleton of original polygon
+ * generate points on the ridge of skeleton
+ * perform advancedGeometry.subdivision along the direction of OBB shorter edge
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -28,7 +33,7 @@ public class ZSD_SkeOBBStrip extends ZSubdivision {
     private ZSkeleton skeleton;
     private List<ZPoint> generator;
 
-    private double span = 50; // 宽度
+    private double span = 50;
 
     ZGraph graph;
 
@@ -125,7 +130,7 @@ public class ZSD_SkeOBBStrip extends ZSubdivision {
         app.popStyle();
 
         app.pushMatrix();
-        app.translate(0,0,250);
+        app.translate(0, 0, 250);
         graph.display(app);
         app.popMatrix();
     }

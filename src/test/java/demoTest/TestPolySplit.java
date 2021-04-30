@@ -1,7 +1,7 @@
 package demoTest;
 
-import geometry.ZLine;
-import geometry.ZPoint;
+import basicGeometry.ZLine;
+import basicGeometry.ZPoint;
 import math.ZGeoMath;
 import processing.core.PApplet;
 import wblut.geom.WB_Point;
@@ -12,7 +12,7 @@ import wblut.processing.WB_Render2D;
 import java.util.List;
 
 /**
- * 测试多边形等分、沿多边形边找点、多边形边线offset
+ * test polygon split and offset methods
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -24,27 +24,27 @@ public class TestPolySplit extends PApplet {
         size(1000, 1000, P2D);
     }
 
-    WB_Render2D render;
-    WB_Polygon poly;
-    WB_PolyLine pl;
+    private WB_Render2D render;
+    private WB_Polygon poly;
+    private WB_PolyLine pl;
 
-    // 测试沿轮廓找点
-    ZPoint test = new ZPoint(600, 100);
-    ZPoint[] besides = new ZPoint[2];
+    // points along boundary
+    private ZPoint test = new ZPoint(600, 100);
+    private ZPoint[] besides = new ZPoint[2];
 
-    // 测试剖分，记录结果的list
-    List<ZPoint> split;
+    // split points
+    private List<ZPoint> split;
 
-    // 测试多边形的边序号，以及offset功能
-    int count = 0;
-    int index;
-    ZLine offset;
-    double step;
+    // indices and offset
+    private int count = 0;
+    private int index;
+    private ZLine offset;
+    private double step;
 
     public void setup() {
         render = new WB_Render2D(this);
 
-        // 创建多边形和多段线
+        // create
         WB_Point[] pts1 = new WB_Point[6]; // polygon
         WB_Point[] pts2 = new WB_Point[5]; // polyline
         pts2[0] = pts1[0] = new WB_Point(100, 100);
@@ -56,15 +56,15 @@ public class TestPolySplit extends PApplet {
         this.poly = new WB_Polygon(pts1);
         this.pl = new WB_PolyLine(pts2);
 
-        // 多边形找点
+        // find points
         besides = ZGeoMath.pointsOnEdgeByDist(test, poly, 450);
 
-        // 按阈值剖分
+        // split by threshold
         step = 50;
         split = ZGeoMath.splitPolyLineByThreshold(pl, 90, 84);
         println("split: " + split.size());
 
-        // 偏移一条边线
+        // offset
         index = count % poly.getNumberSegments();
         println(index);
         offset = ZGeoMath.offsetWB_PolygonSegment(poly, index, 30);

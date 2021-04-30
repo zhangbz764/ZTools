@@ -1,7 +1,7 @@
 package demoTest;
 
 import Guo_Cam.CameraController;
-import geometry.ZSkeleton;
+import advancedGeometry.ZSkeleton;
 import igeo.ICurve;
 import igeo.IG;
 import processing.core.PApplet;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 测试ZSkeleton
+ * test ZSkeleton
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -30,13 +30,13 @@ public class TestSkeleton extends PApplet {
         size(1800, 1000, P3D);
     }
 
-    WB_Point[] pts;
-    List<WB_Polygon> inputBoundary;
-    List<ZSkeleton> skeletons;
+    private WB_Point[] pts;
+    private List<WB_Polygon> inputBoundary;
+    private List<ZSkeleton> skeletons;
 
-    WB_Render render;
-    CameraController gcam;
-    WB_GeometryFactory3D wbgf = new WB_GeometryFactory3D();
+    private WB_Render render;
+    private CameraController gcam;
+    private WB_GeometryFactory3D wbgf = new WB_GeometryFactory3D();
 
     public void setup() {
         gcam = new CameraController(this);

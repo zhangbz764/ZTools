@@ -1,5 +1,7 @@
-package subdivision;
+package advancedGeometry.subdivision;
 
+import advancedGeometry.ZSkeleton;
+import basicGeometry.*;
 import geometry.*;
 import math.ZGeoMath;
 import math.ZGraphMath;
@@ -12,7 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 找到originPolygon直骨架脊线，在脊线上均匀布点，voronoi剖分，单条形式
+ * set subdivide width (span)
+ * find the straight skeleton of original polygon
+ * generate points on the ridge of skeleton
+ * perform voronoi advancedGeometry.subdivision
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -51,10 +56,15 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
         List<ZLine> topSegments = skeleton.getRidges();
         topSegments.addAll(skeleton.getExtendedRidges());
 
-        ZGraph tempGraph = ZFactory.createZGraphFromSegments(topSegments);
-        graph = tempGraph;
-        List<ZEdge> longestChain = ZGraphMath.longestChain(tempGraph);
-        polyLine = ZFactory.createWB_PolyLine(longestChain);
+        // check loop
+        if (super.getOriginPolygon().getNumberOfHoles() == 0) {
+            ZGraph tempGraph = ZFactory.createZGraphFromSegments(topSegments);
+            graph = tempGraph;
+            List<ZEdge> longestChain = ZGraphMath.longestChain(tempGraph);
+            polyLine = ZFactory.createWB_PolyLine(longestChain);
+        } else {
+            polyLine = ZFactory.createWB_PolyLine(topSegments);
+        }
 
         // polyLine maybe null because segments might not be nose to tail
         if (polyLine != null) {
@@ -126,7 +136,7 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
         app.popStyle();
 
         app.pushMatrix();
-        app.translate(0,0,250);
+        app.translate(0, 0, 250);
         graph.display(app);
         app.popMatrix();
     }

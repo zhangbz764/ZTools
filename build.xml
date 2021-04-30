@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ZTools" default="createdoc">
+<property name="E:\AAA_Study\0_JavaTools\Ztools\src" value="src"/>
+<property name="E:\AAA_Study\0_JavaTools\Ztools\doc" value="doc"/>
+<target name="createdoc">
+<delete dir="${E:\AAA_Study\0_JavaTools\Ztools\doc}" />
+<mkdir dir="${E:\AAA_Study\0_JavaTools\Ztools\doc}"/>
+<javadoc destdir="${E:\AAA_Study\0_JavaTools\Ztools\doc}" encoding="UTF-8" docencoding="UTF-8">
+<packageset dir="${E:\AAA_Study\0_JavaTools\Ztools\src}">
+<include name="**"/>
+</packageset>
+</javadoc>
+</target>
+</project>

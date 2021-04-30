@@ -22,7 +22,7 @@ public class JtsRender {
     }
 
     /**
-     * 绘制jts Geometry
+     * draw jts Geometry
      *
      * @param geo input geometry
      * @return void
@@ -56,7 +56,7 @@ public class JtsRender {
     }
 
     /**
-     * 将Point画成圆
+     * draw Point as a circle
      *
      * @param geo input geometry
      * @return void
@@ -67,7 +67,7 @@ public class JtsRender {
     }
 
     /**
-     * 将LineString画成多条线段
+     * draw LineString as multiple lines
      *
      * @param geo input geometry
      * @return void
@@ -80,7 +80,7 @@ public class JtsRender {
     }
 
     /**
-     * 将LinearRing画成封闭多边形
+     * draw LinearRing as a closed shape
      *
      * @param geo input geometry
      * @return void
@@ -96,7 +96,7 @@ public class JtsRender {
     }
 
     /**
-     * 将Polygon画成封闭多边形
+     * draw Polygon as a closed shape
      *
      * @param geo input geometry
      * @return void
@@ -127,7 +127,7 @@ public class JtsRender {
     }
 
     /**
-     * 绘制delaunay三角网
+     * draw delaunay triangles
      *
      * @param delaunayBuilder
      * @return void
@@ -142,7 +142,7 @@ public class JtsRender {
     }
 
     /**
-     * 绘制voronoi多边形
+     * draw voronoi polygons
      *
      * @param voronoiBuilder
      * @return void

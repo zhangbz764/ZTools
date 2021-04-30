@@ -1,8 +1,9 @@
-package math;
+package advancedGeometry.largestRectangle;
 
 import core.MyFitnessFunction;
 import core.MyParticle;
 import core.MyRectangle;
+import math.ZGeoMath;
 import net.sourceforge.jswarm_pso.Swarm;
 import transform.ZTransform;
 import wblut.geom.WB_Point;
@@ -24,15 +25,16 @@ import java.util.List;
  * @date 2021/1/6
  * @time 21:23
  */
+@Deprecated
 public class ZLargestRectangleRatio {
     private Path2D.Double polygonPath;
     private double whRatio;
 
-    private final static int ITERATIONTIME = 1000;
+    private final static int ITERATION_TIME = 1000;
     private int particleNum = 2500;
-    private final static double[] MAXVELOCITY = new double[]{1.0, 1.0, 1.0, 0.1};
-    private final static double[] MINVELOCITY = new double[]{0.1, 0.1, 0.1, 0.01};
-    private final static int NEIGHBORNUM = 0;
+    private final static double[] MAX_VELOCITY = new double[]{1.0, 1.0, 1.0, 0.1};
+    private final static double[] MIN_VELOCITY = new double[]{0.1, 0.1, 0.1, 0.01};
+    private final static int NEIGHBOR_NUM = 0;
 
     private MyRectangle rectangleResult;
     private WB_Polygon largestRectangle;
@@ -47,15 +49,15 @@ public class ZLargestRectangleRatio {
     /* ------------- member function ------------- */
 
     /**
-    * main initializer
-    *
-    * @return void
-    */
+     * main initializer
+     *
+     * @return void
+     */
     public void init() {
         int i = 0;
         Swarm swarm = initSwarm();
         // evolve
-        while (i < ITERATIONTIME) {
+        while (i < ITERATION_TIME) {
             swarm.evolve();
             i++;
         }
@@ -73,9 +75,9 @@ public class ZLargestRectangleRatio {
         this.polygonPath = new Path2D.Double();
         WB_Polygon input = ZGeoMath.polygonFaceUp(ZTransform.validateWB_Polygon(polygon));
 
-        polygonPath.moveTo(polygon.getPoint(0).xd(), polygon.getPoint(0).yd());
-        for (int i = 1; i < polygon.getNumberOfShellPoints() - 1; i++) {
-            polygonPath.lineTo(polygon.getPoint(i).xd(), polygon.getPoint(i).yd());
+        polygonPath.moveTo(input.getPoint(0).xd(), input.getPoint(0).yd());
+        for (int i = 1; i < input.getNumberOfShellPoints() - 1; i++) {
+            polygonPath.lineTo(input.getPoint(i).xd(), input.getPoint(i).yd());
         }
         polygonPath.closePath();
     }
@@ -107,11 +109,11 @@ public class ZLargestRectangleRatio {
 
         swarm.setMaxPosition(maxPosition);
         swarm.setMinPosition(minPosition);
-        swarm.setMaxVelocity(MAXVELOCITY);
-        swarm.setMinVelocity(MINVELOCITY);
+        swarm.setMaxVelocity(MAX_VELOCITY);
+        swarm.setMinVelocity(MIN_VELOCITY);
 
         // Use neighborhood
-        int neighborNum = NEIGHBORNUM;
+        int neighborNum = NEIGHBOR_NUM;
 //        if (neighborNum > 0) {
 //            swarm.setNeighborhood(new Neighborhood1D(neighborNum, true));
 //            swarm.setNeighborhoodIncrement(0.9);

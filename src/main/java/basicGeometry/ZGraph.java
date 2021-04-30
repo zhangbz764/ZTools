@@ -1,15 +1,14 @@
-package geometry;
+package basicGeometry;
 
-import igeo.IVecR;
 import math.ZGeoMath;
-import math.ZGraphMath;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 图数据结构，包含若干节点ZNode，连接边ZEdge，记录相互引用关系
+ * custom graph class
+ * including nodes, edges, and reference relations
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -72,7 +71,7 @@ public class ZGraph {
     /* ------------- member function ------------- */
 
     /**
-     * 找出graph边界节点，即仅有单个连接的
+     * find boundary nodes in the graph
      *
      * @return void
      */
@@ -94,7 +93,7 @@ public class ZGraph {
     }
 
     /**
-     * 给定点point，指定插入的edge，将原edge打断，point连接到原edge两端的node
+     * add a node to the graph by giving a point and an edge to insert
      *
      * @param point input point
      * @param edge  target edge
@@ -133,7 +132,7 @@ public class ZGraph {
     }
 
     /**
-     * 根据几何距离自动找到需要插入的edge
+     * add a node to the graph by finding the closest edge to insert
      *
      * @param point input point
      * @return void
@@ -142,13 +141,13 @@ public class ZGraph {
         ZEdge targetEdge = null;
         for (ZEdge edge : getEdges()) {
             if (ZGeoMath.pointOnSegment(point, edge)) {
-                // 如果点在线上，连接线两端的点
+                // on edge
                 targetEdge = edge;
                 break;
             }
         }
         if (targetEdge == null) {
-            // 如果点不在线上，找到最近线，连接线两端的点
+            // not on edge
             int closest = ZGeoMath.closestSegment(point, this.edges);
             targetEdge = edges.get(closest);
         }

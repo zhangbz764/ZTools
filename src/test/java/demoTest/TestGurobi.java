@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 测试gurobi
+ * test gurobi
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -27,11 +27,11 @@ public class TestGurobi extends PApplet {
 
 //    PeasyCam cam;
 
-    int cellWidth;
-    int cellHeight;
+    private int cellWidth;
+    private int cellHeight;
 
-    List<Integer[]> optimizeResult;
-    List<Integer[]> colors;
+    private List<Integer[]> optimizeResult;
+    private List<Integer[]> colors;
 
     public void setup() {
 //        cam = new PeasyCam(this, 300);
@@ -157,7 +157,7 @@ public class TestGurobi extends PApplet {
         }
     }
 
-    /* ------------- 模板类 ------------- */
+    /* ------------- templateT ------------- */
 
 //    public class TemplateT {
 //        int[] color;

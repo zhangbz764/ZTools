@@ -10,41 +10,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 常用库几何数据的相互转换
+ * transform between different geometries packages
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/10/9
  * @time 17:27
- * 目前仅涉及简单多边形，部分涉及带洞
+ * most only support simple polygon
  * ** IGeo <-> WB **
  * IPoint <-> WB_Point
- * IPoint -> WB_Point 带缩放
- * ICurve -> WB_Geometry 根据点数和闭合与否返回WB_Polygon / WB_Polyline / WB_Segment
- * ICurve -> WB_Geometry 根据点数和闭合与否返回WB_Polygon / WB_Polyline / WB_Segment，带缩放
- * ICurve -> WB_PolyLine 带缩放
+ * IPoint -> WB_Point (scale)
+ * ICurve -> WB_Geometry WB_Polygon / WB_Polyline / WB_Segment
+ * ICurve -> WB_Geometry WB_Polygon / WB_Polyline / WB_Segment, (scale)
+ * ICurve -> WB_PolyLine (scale)
  * WB_Coord -> IVec
  * WB_PolyLine -> ICurve
  * ** IGeo <-> jts **
  * IPoint -> Coordinate
  * IPoint -> Point
- * ICurve -> Geometry 根据点数和闭合与否返回Polygon / LineString
+ * ICurve -> Geometry Polygon / LineString
  * ** WB <-> jts **
  * WB_Coord <-> Point
  * WB_Coord <-> Coordinate
- * WB_Polygon -> Polygon 如果WB_Polygon第一点与最后一点不重合，就加上最后一点
+ * WB_Polygon -> Polygon (validate)
  * Polygon -> WB_Polygon
  * LineString -> WB_PolyLine
  * WB_PolyLine -> LineString
  * WB_Segment -> LineString
  * ** WB <-> WB **
- * WB_Polygon -> WB_Polygon 检查WB_Polygon第一点与最后一点是否重合，不重合则加上
+ * WB_Polygon -> WB_Polygon (validate)
  * WB_Polygon -> WB_PolyLine
  * WB_AABB -> WB_AABB offset WB_AABB
  * ** jts <-> jts **
  * Polygon -> LineString
  * <p>
- * ...增加中
  */
 public class ZTransform {
     private static final GeometryFactory gf = new GeometryFactory();
@@ -54,7 +53,7 @@ public class ZTransform {
     /*-------- IGeo <-> WB --------*/
 
     /**
-     * 将IPoint转换为WB_Point
+     * IPoint -> WB_Point
      *
      * @param point input IPoint
      * @return wblut.geom.WB_Point
@@ -64,7 +63,7 @@ public class ZTransform {
     }
 
     /**
-     * 将IPoint转换为WB_Point（改变比例）
+     * IPoint -> WB_Point (scale)
      *
      * @param point input IPoint
      * @param scale scale
@@ -85,7 +84,7 @@ public class ZTransform {
     }
 
     /**
-     * 将WB_Coord转换为IVec
+     * WB_Coord -> IVec
      *
      * @param point input WB_Point
      * @return igeo.IVec
@@ -95,7 +94,7 @@ public class ZTransform {
     }
 
     /**
-     * 将ICurve转换为WB_Geometry（根据点数和封闭情况转换为WB_PolyLine, WB_Polygon, WB_Segment）
+     * ICurve -> WB_Geometry (WB_PolyLine, WB_Polygon, WB_Segment)
      *
      * @param curve input ICurve
      * @return wblut.geom.WB_Geometry2D
@@ -124,7 +123,7 @@ public class ZTransform {
     }
 
     /**
-     * 将ICurve转换为WB_Geometry（根据点数和封闭情况转换为WB_PolyLine, WB_Polygon, WB_Segment）（改变比例）
+     * ICurve -> WB_Geometry (WB_PolyLine, WB_Polygon, WB_Segment) (scale)
      *
      * @param curve input ICurve
      * @param scale scale
@@ -154,7 +153,7 @@ public class ZTransform {
     }
 
     /**
-     * 将ICurve转换为WB_PolyLine
+     * ICurve -> WB_PolyLine
      *
      * @param curve input ICurve
      * @param scale scale ratio
@@ -174,7 +173,7 @@ public class ZTransform {
     }
 
     /**
-     * 将WB_PolyLine转换为ICurve
+     * WB_PolyLine -> ICurve
      *
      * @param polyLine input WB_PolyLine
      * @return igeo.ICurve
@@ -190,7 +189,7 @@ public class ZTransform {
     /*-------- IGeo <-> Jts --------*/
 
     /**
-     * 将IPoint转换为Coordinate
+     * IPoint -> Coordinate
      *
      * @param point input IPoint
      * @return org.locationtech.jts.geom.Coordinate
@@ -200,7 +199,7 @@ public class ZTransform {
     }
 
     /**
-     * 将IPoint转换为Point
+     * IPoint -> Point
      *
      * @param point input IPoint
      * @return org.locationtech.jts.geom.Point
@@ -210,7 +209,7 @@ public class ZTransform {
     }
 
     /**
-     * 将ICurve转换为Geometry（根据点数和封闭情况转换为Polygon, LineString）
+     * ICurve -> Geometry (Polygon, LineString)
      *
      * @param curve input ICurve
      * @return org.locationtech.jts.geom.Geometry
@@ -243,7 +242,7 @@ public class ZTransform {
     /*-------- WB <-> Jts --------*/
 
     /**
-     * 将WB_Coord转换为Point
+     * WB_Coord -> Point
      *
      * @param p input WB_Coord
      * @return org.locationtech.jts.geom.Point
@@ -253,7 +252,7 @@ public class ZTransform {
     }
 
     /**
-     * 将Point转换为WB_Point
+     * Point ->WB_Point
      *
      * @param p input Point
      * @return wblut.geom.WB_Point
@@ -263,7 +262,7 @@ public class ZTransform {
     }
 
     /**
-     * 将WB_Coord转换为Coordinate
+     * WB_Coord -> Coordinate
      *
      * @param p input WB_Coord
      * @return org.locationtech.jts.geom.Coordinate
@@ -273,22 +272,22 @@ public class ZTransform {
     }
 
     /**
-     * 将Coordinate转换为WB_Point
+     * Coordinate -> WB_Point
      *
      * @param c input Coordinate
      * @return wblut.geom.WB_Point
      */
     public static WB_Point PointToWB_Point(final Coordinate c) {
-        double z = c.getZ();
+        double z = c.z;
         if (Double.isNaN(z)) {
-            return new WB_Point(c.getX(), c.getY(), 0);
+            return new WB_Point(c.x, c.y, 0);
         } else {
-            return new WB_Point(c.getX(), c.getY(), c.getZ());
+            return new WB_Point(c.x, c.y, c.z);
         }
     }
 
     /**
-     * 将WB_Polygon转换为Polygon（支持带洞）
+     * WB_Polygon -> Polygon (holes supported)
      *
      * @param wbp input WB_Polygon
      * @return org.locationtech.jts.geom.Polygon
@@ -341,7 +340,7 @@ public class ZTransform {
     }
 
     /**
-     * 将Polygon转换为WB_Polygon（支持带洞）
+     * Polygon -> WB_Polygon (holes supported)
      *
      * @param p input Polygon
      * @return wblut.geom.WB_Polygon
@@ -376,7 +375,7 @@ public class ZTransform {
     }
 
     /**
-     * 将LineString转换为WB_PolyLine
+     * LineString -> WB_PolyLine
      *
      * @param p input LineString
      * @return wblut.geom.WB_PolyLine
@@ -390,7 +389,7 @@ public class ZTransform {
     }
 
     /**
-     * 将WB_PolyLine转换为LineString
+     * WB_PolyLine -> LineString
      *
      * @param wbp input WB_PolyLine
      * @return org.locationtech.jts.geom.LineString
@@ -404,7 +403,7 @@ public class ZTransform {
     }
 
     /**
-     * 将WB_Segment转换为LineString
+     * WB_Segment -> LineString
      *
      * @param seg input WB_Segment
      * @return org.locationtech.jts.geom.LineString
@@ -419,7 +418,8 @@ public class ZTransform {
     /*-------- WB <-> WB --------*/
 
     /**
-     * 检查WB_Polygon首末点是否重合，返回标准的多边形（支持带洞）
+     * check the start point and the end point of a WB_Polygon
+     * validate WB_Polygon (holes supported)
      *
      * @param polygon input WB_Polygon
      * @return wblut.geom.WB_Polygon
@@ -468,7 +468,7 @@ public class ZTransform {
     }
 
     /**
-     * 将WB_Polygon转换为WB_PolyLine
+     * WB_Polygon -> WB_PolyLine
      *
      * @param polygon input WB_Polygon
      * @return wblut.geom.WB_PolyLine
@@ -482,7 +482,7 @@ public class ZTransform {
     }
 
     /**
-     * 按比例缩放WB_AABB
+     * offset WB_AABB
      *
      * @param aabb input WB_AABB
      * @param t    offset scale
@@ -499,7 +499,7 @@ public class ZTransform {
     /*-------- jts <-> jts --------*/
 
     /**
-     * Polygon转换为LineString
+     * Polygon -> LineString
      *
      * @param polygon input Polygon
      * @return java.util.List<org.locationtech.jts.geom.LineString>

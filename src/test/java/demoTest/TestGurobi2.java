@@ -4,7 +4,7 @@ import gurobi.*;
 import processing.core.PApplet;
 
 /**
- * description
+ * test Gurobi 2
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -40,6 +40,7 @@ public class TestGurobi2 extends PApplet {
                 expr.addTerm(1.0, vars[i]);
             }
             model.setObjective(expr, GRB.MINIMIZE);
+
 
             // Add constraint
             expr = new GRBLinExpr();

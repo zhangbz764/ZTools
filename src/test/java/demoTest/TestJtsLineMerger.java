@@ -1,8 +1,8 @@
 package demoTest;
 
-import geometry.ZFactory;
-import geometry.ZLine;
-import geometry.ZPoint;
+import basicGeometry.ZFactory;
+import basicGeometry.ZLine;
+import basicGeometry.ZPoint;
 import processing.core.PApplet;
 import wblut.geom.WB_PolyLine;
 import wblut.processing.WB_Render;
@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * description
+ * test jts LineMerger
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2021/1/20
  * @time 16:55
  */
-public class TestLineMerger extends PApplet {
+public class TestJtsLineMerger extends PApplet {
 
     /* ------------- settings ------------- */
 
@@ -26,10 +26,10 @@ public class TestLineMerger extends PApplet {
         size(1000, 1000, P3D);
     }
 
-    List<ZLine> segments;
-    List<WB_PolyLine> polyLines;
+    private List<ZLine> segments;
+    private List<WB_PolyLine> polyLines;
 
-    WB_Render render;
+    private WB_Render render;
 
     /* ------------- setup ------------- */
 

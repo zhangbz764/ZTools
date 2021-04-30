@@ -1,6 +1,6 @@
-package subdivision;
+package advancedGeometry.subdivision;
 
-import geometry.ZFactory;
+import basicGeometry.ZFactory;
 import math.ZMath;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.Coordinate;
@@ -18,7 +18,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 不断计算OBB，沿OBB长边中线剖分，直到剖分至面积下限
+ * set subdivide times
+ * split a polygon by the center line of the longer edge of its OBB
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -90,6 +91,7 @@ public class ZSD_OBB extends ZSubdivision {
                         (currOBB.getCoordinates()[max + 2].z + currOBB.getCoordinates()[max + 3].z) * 0.5
                 );
 
+                // extend
                 Coordinate[] dividePoints = new Coordinate[2];
                 dividePoints[0] = new Coordinate(
                         centerPoints[0].x + (centerPoints[0].x - centerPoints[1].x),

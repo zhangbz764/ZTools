@@ -3,14 +3,14 @@ package demoTest;
 import Guo_Cam.CameraController;
 import org.locationtech.jts.geom.GeometryFactory;
 import processing.core.PApplet;
-import subdivision.*;
+import advancedGeometry.subdivision.*;
 import wblut.geom.WB_GeometryFactory;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Polygon;
 import wblut.processing.WB_Render;
 
 /**
- * 测试几种剖分方法
+ * test advancedGeometry.subdivision methods
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -27,14 +27,14 @@ public class TestSubdivision extends PApplet {
 
     /* ------------- setup ------------- */
 
-    WB_Polygon inputPolygon;
-    ZSubdivision subdivision;
-    boolean updateShape;
+    private WB_Polygon inputPolygon;
+    private ZSubdivision subdivision;
+    private boolean updateShape;
 
-    GeometryFactory gf = new GeometryFactory();
-    WB_GeometryFactory wbgf = new WB_GeometryFactory();
-    WB_Render render;
-    CameraController gcam;
+    private GeometryFactory gf = new GeometryFactory();
+    private WB_GeometryFactory wbgf = new WB_GeometryFactory();
+    private WB_Render render;
+    private CameraController gcam;
 
     public void setup() {
         render = new WB_Render(this);

@@ -1,5 +1,7 @@
-package geometry;
+package advancedGeometry;
 
+import basicGeometry.ZLine;
+import basicGeometry.ZPoint;
 import math.ZGeoMath;
 import org.twak.camp.*;
 import org.twak.utils.collections.Loop;
@@ -20,8 +22,7 @@ import java.util.Set;
 
 /**
  * compute straight skeleton using campskeleton by twak
- * and extract some useful geometries, support 2D polygon with holes
- * <p>
+ * and extract some geometries, support 2D polygon with holes
  * polygon shell must be counter clockwise
  * polygon should be valid (first point coincides with last point)
  *
@@ -35,7 +36,7 @@ public class ZSkeleton {
     private WB_Polygon polygon;
     private double capHeight = 0;
     private double offsetDist = 0;
-    private double generalMachine = Math.PI / 4;
+    private double generalMachine = Math.PI / 3;
 
     private Skeleton skeleton;
 
@@ -367,7 +368,6 @@ public class ZSkeleton {
             }
         }
     }
-
 
     /*-------- print & draw --------*/
 

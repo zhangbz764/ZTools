@@ -1,7 +1,7 @@
 package demoTest;
 
 import Guo_Cam.CameraController;
-import geometry.ZFactory;
+import basicGeometry.ZFactory;
 import math.ZGeoMath;
 import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
@@ -18,7 +18,7 @@ import wblut.processing.WB_Render;
 import java.util.List;
 
 /**
- * 测试hemesh的mesh以及union
+ * test hemesh mesh and union，buffer
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -33,19 +33,19 @@ public class TestHe_Mesh extends PApplet {
         size(1000, 1000, P3D);
     }
 
-    WB_Polygon poly0;
-    WB_Polygon poly1;
-    WB_Polygon poly2;
-    WB_Polygon poly3;
-    WB_Polygon poly4;
+    private WB_Polygon poly0;
+    private WB_Polygon poly1;
+    private WB_Polygon poly2;
+    private WB_Polygon poly3;
+    private WB_Polygon poly4;
 
-    WB_Polygon buffer;
+    private WB_Polygon buffer;
 
-    HE_Mesh mesh;
+    private HE_Mesh mesh;
 
-    WB_Render render;
-    CameraController gcam;
-    WB_GeometryFactory wbgf = new WB_GeometryFactory();
+    private WB_Render render;
+    private CameraController gcam;
+    private WB_GeometryFactory wbgf = new WB_GeometryFactory();
 
     /* ------------- setup ------------- */
 
@@ -99,8 +99,8 @@ public class TestHe_Mesh extends PApplet {
         poly4 = new WB_Polygon(pts4);
         System.out.println(poly0.getSimplePolygon().getNumberOfPoints());
 
-        // hemesh中buffer之后的多边形少一个点
-        // jts的buffer功能使多边形反面
+        // after buffer , the polygon is invalid
+        // also face down
         buffer = ZGeoMath.polygonFaceUp(
                 ZTransform.validateWB_Polygon(
                         ZFactory.wbgf.createBufferedPolygonsStraight2D(poly1, 50).get(0)

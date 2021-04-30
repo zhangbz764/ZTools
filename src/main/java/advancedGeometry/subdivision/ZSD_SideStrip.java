@@ -1,8 +1,8 @@
-package subdivision;
+package advancedGeometry.subdivision;
 
-import geometry.ZFactory;
-import geometry.ZLine;
-import geometry.ZPoint;
+import basicGeometry.ZFactory;
+import basicGeometry.ZLine;
+import basicGeometry.ZPoint;
 import math.ZGeoMath;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
@@ -18,7 +18,7 @@ import wblut.processing.WB_Render;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-// TODO: 2021/1/4 重新整理新的sidestrip
+// TODO: 2021/1/4 sidestrip
 
 /**
  * description
@@ -47,10 +47,10 @@ public class ZSD_SideStrip extends ZSubdivision {
     public void performDivide() {
         this.divideLines = new ArrayList<>();
 
-        offsetEdges(); // 偏移选取的边线
-        createDivideLines(); // 创建一系列竖线
+        offsetEdges();
+        createDivideLines();
 
-        divideByPolygonizer(); // 使用polgonizer进行剖分
+        divideByPolygonizer();
     }
 
     /* ------------- member function ------------- */
@@ -61,7 +61,7 @@ public class ZSD_SideStrip extends ZSubdivision {
      * @return void
      */
     private void divideByPolygonizer() {
-        // FIXME: 2020/12/11 目前只支持polyline
+        // FIXME: 2020/12/11  only support polyline now
         Polygonizer pr = new Polygonizer();
         Geometry allGeometry = ZTransform.PolygonToLineString(ZTransform.WB_PolygonToJtsPolygon(super.getOriginPolygon())).get(0);
         for (WB_PolyLine pl : finalPolyLines) {
