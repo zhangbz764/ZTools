@@ -1,7 +1,7 @@
 package advancedGeometry.subdivision;
 
-import basicGeometry.ZFactory;
 import advancedGeometry.ZSkeleton;
+import basicGeometry.ZFactory;
 import math.ZGeoMath;
 import processing.core.PApplet;
 import wblut.geom.WB_Point;

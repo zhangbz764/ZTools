@@ -2,7 +2,6 @@ package advancedGeometry.subdivision;
 
 import advancedGeometry.ZSkeleton;
 import basicGeometry.*;
-import geometry.*;
 import math.ZGeoMath;
 import math.ZGraphMath;
 import org.locationtech.jts.geom.Polygon;

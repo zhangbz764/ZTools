@@ -26,8 +26,6 @@ public class ZPoint {
     private final float r = 5;
     private final float vecCap = 3;
 
-    private static final GeometryFactory gf = new GeometryFactory();
-
     /* ------------- constructor ------------- */
 
     public ZPoint() {
@@ -135,7 +133,7 @@ public class ZPoint {
     }
 
     public Point toJtsPoint() {
-        return gf.createPoint(this.toJtsCoordinate());
+        return ZFactory.jtsgf.createPoint(this.toJtsCoordinate());
     }
 
     public IPoint toIPoint() {

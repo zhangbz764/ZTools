@@ -16,7 +16,7 @@ import wblut.geom.WB_Polygon;
  * @date 2021/4/29
  * @time 17:34
  */
-class LRFitnessFunction extends FitnessFunction {
+public class LRFitnessFunction extends FitnessFunction {
     public static final int X = 0;
     public static final int Y = 1;
     public static final int W = 2;

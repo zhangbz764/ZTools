@@ -1,8 +1,8 @@
 package demoTest;
 
-import basicGeometry.ZPoint;
 import advancedGeometry.rectCover.RCFitnessFunction;
 import advancedGeometry.rectCover.RCParticle;
+import basicGeometry.ZPoint;
 import net.sourceforge.jswarm_pso.Swarm;
 import processing.core.PApplet;
 import transform.ZTransform;

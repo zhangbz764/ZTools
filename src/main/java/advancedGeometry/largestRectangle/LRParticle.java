@@ -10,7 +10,7 @@ import net.sourceforge.jswarm_pso.Particle;
  * @date 2021/4/29
  * @time 17:33
  */
-class LRParticle extends Particle {
+public class LRParticle extends Particle {
     public static final int DIMENSION = 5;
 
     public LRParticle() {

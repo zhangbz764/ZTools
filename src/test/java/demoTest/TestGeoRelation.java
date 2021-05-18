@@ -1,6 +1,7 @@
 package demoTest;
 
 import basicGeometry.ZFactory;
+import basicGeometry.ZLine;
 import basicGeometry.ZPoint;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.operation.buffer.BufferOp;
@@ -13,6 +14,7 @@ import wblut.geom.WB_PolyLine;
 /**
  * test jts geometry relation
  * cut out WB_PolyLine
+ * ZLine angle
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -37,6 +39,8 @@ public class TestGeoRelation extends PApplet {
     private WB_PolyLine pl;
 
     private JtsRender jtsRender;
+
+    private ZLine l1, l2;
 
     public void setup() {
         jtsRender = new JtsRender(this);
@@ -88,6 +92,10 @@ public class TestGeoRelation extends PApplet {
         pl = ZFactory.createPolylineFromPolygon(
                 ZTransform.jtsPolygonToWB_Polygon(poly1), new int[]{2, 3, 4, 0}
         );
+
+        // line angle
+        l1 = new ZLine(500, 500, 800, 500);
+        l2 = new ZLine(500, 500, 800, 500);
     }
 
     public void draw() {
@@ -117,10 +125,14 @@ public class TestGeoRelation extends PApplet {
                     pl.getPoint(i + 1).yf()
             );
         }
+
+        l2 = new ZLine(500, 500, mouseX, mouseY);
+        l1.display(this);
+        l2.display(this);
     }
 
     public void mouseClicked() {
         println(multiPolygon.contains(mousePoly));
+        println(l1.angleCosWith(l2));
     }
-
 }

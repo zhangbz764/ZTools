@@ -1,13 +1,15 @@
 package math;
 
 import basicGeometry.*;
-import geometry.*;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.*;
 import transform.ZTransform;
 import wblut.geom.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * geometry math tools
@@ -24,15 +26,19 @@ import java.util.*;
  * sort a list of vectors by polar coordinates (return vectors or normalized vectors)
  * find all concave points(or indices) in a polygon (WB_Polygon)
  * find the nearest vector in a list of vector
+ *
  * #### intersection 2D
  * check if two WB_Segments are intersecting
  * check a ray and a segment are intersecting
  * check a line and a segment are intersecting
+ * check a ray and a polyline are intersecting
  * get intersection points: line, ray or segment
  * get intersection points of a ray / line and a polygon ([--) for each edge)
  * get intersection points of a ray and a polygon (return indices by distance order)
+ * get intersection points of a segment and a polyline ([--) for each edge, [--] for the last one)
  * extend or trim the segment to polygon boundary
  * extend the segment both ends to polygon boundary
+ *
  * #### distance 2D
  * find the closest point in a list of lines
  * find the closest edge index in a polygon / list of segments
@@ -41,6 +47,7 @@ import java.util.*;
  * check if a point is on polygon boundary
  * find the point is on which segment (return WB_Segment, ZLine, or indices of two points)
  * find the point is within which polygon(-1)
+ *
  * #### boundary methods
  * giving start point and distance, find two points along polygon boundary (0 forward, 1 backward)
  * giving step to split a polygon
@@ -50,6 +57,7 @@ import java.util.*;
  * giving step threshold to split a WB_PolyLine or WB_Polygon, return a LinkedHashMap of split point and edge index
  * giving step threshold to split each segment of a WB_PolyLine or WB_Polygon
  * giving a split number, split a polygon or a polyline equally
+ *
  * #### polygon tools
  * get the direction of a OBB
  * reverse the order of a polygon (holes supported)
@@ -58,6 +66,7 @@ import java.util.*;
  * find the longest segment and the shortest segment in a polygon
  * offset one segment of a polygon (input valid, face up polygon)
  * offset several segments of a polygon (input valid, face up polygon), return polyline or polygon
+ *
  * #### other methods
  * set jts precision model (FLOAT, FLOAT_SINGLE, FIXED)
  * halving a OBB
@@ -232,7 +241,7 @@ public final class ZGeoMath {
      * @param other  vector list
      * @return geometry.ZPoint
      */
-    public static ZPoint getclosestVec(final ZPoint target, final List<? extends ZPoint> other) {
+    public static ZPoint getClosestVec(final ZPoint target, final List<? extends ZPoint> other) {
         assert other != null && other.size() != 0 : "invalid input vectors";
         double[] dotValue = new double[other.size()];
         for (int i = 0; i < other.size(); i++) {
@@ -298,6 +307,38 @@ public final class ZGeoMath {
             double t = crossDelta0 / crossBase; // seg
             return t >= 0 && t <= 1;
         }
+    }
+
+    /**
+     * check a ray and a polyline are intersecting
+     *
+     * @param ray ray {point P, direction d}
+     * @param pl  polyline
+     * @return boolean
+     */
+    public static boolean checkRayPolyLineIntersection(final ZPoint[] ray, final WB_PolyLine pl) {
+        for (int i = 0; i < pl.getNumberSegments(); i++) {
+            if (checkRaySegmentIntersection(ray, new ZLine(pl.getSegment(i)).toLinePD())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * check a ray and a polyline are intersecting
+     *
+     * @param ray ray {point P, direction d}
+     * @param ls  polyline
+     * @return boolean
+     */
+    public static boolean checkRayPolyLineIntersection(final ZPoint[] ray, final LineString ls) {
+        for (int i = 0; i < ls.getCoordinates().length - 1; i++) {
+            if (checkRaySegmentIntersection(ray, new ZLine(ls.getCoordinateN(i), ls.getCoordinateN(i + 1)).toLinePD())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -504,6 +545,59 @@ public final class ZGeoMath {
                 return null;
             }
         }
+    }
+
+    /**
+     * get intersection points of a segment and a polyline ([--) for each edge, [--] for the last one)
+     *
+     * @param seg seg {point P, direction d}
+     * @param pl  input polyline
+     * @return java.util.List<basicGeometry.ZPoint>
+     */
+    public static List<ZPoint> segmentPolyLineIntersect2D(final ZPoint[] seg, final WB_PolyLine pl) {
+        List<ZPoint> result = new ArrayList<>();
+        for (int i = 0; i < pl.getNumberSegments() - 1; i++) {
+            ZPoint[] polySeg = new ZLine(pl.getSegment(i)).toLinePD();
+            ZPoint intersect = null;
+
+            ZPoint delta = polySeg[0].sub(seg[0]);
+            double crossBase = seg[1].cross2D(polySeg[1]);
+            double crossDelta0 = delta.cross2D(seg[1]);
+            double crossDelta1 = delta.cross2D(polySeg[1]);
+
+            if (Math.abs(crossBase) >= epsilon) {
+                double s = crossDelta1 / crossBase; // seg
+                double t = crossDelta0 / crossBase; // polySeg
+                if (s >= 0 && s <= 1 && t >= 0 && t < 1) {
+                    intersect = polySeg[0].add(polySeg[1].scaleTo(t));
+                }
+            }
+            if (intersect != null) {
+                result.add(intersect);
+            }
+        }
+
+        // final polyline segment: [--]
+        ZPoint[] polySeg = new ZLine(pl.getSegment(pl.getNumberSegments() - 1)).toLinePD();
+        ZPoint intersect = null;
+
+        ZPoint delta = polySeg[0].sub(seg[0]);
+        double crossBase = seg[1].cross2D(polySeg[1]);
+        double crossDelta0 = delta.cross2D(seg[1]);
+        double crossDelta1 = delta.cross2D(polySeg[1]);
+
+        if (Math.abs(crossBase) >= epsilon) {
+            double s = crossDelta1 / crossBase; // seg
+            double t = crossDelta0 / crossBase; // polySeg
+            if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
+                intersect = polySeg[0].add(polySeg[1].scaleTo(t));
+            }
+        }
+        if (intersect != null) {
+            result.add(intersect);
+        }
+
+        return result;
     }
 
     /**

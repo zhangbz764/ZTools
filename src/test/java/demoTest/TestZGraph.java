@@ -1,7 +1,6 @@
 package demoTest;
 
 import basicGeometry.*;
-import geometry.*;
 import math.ZGraphMath;
 import processing.core.PApplet;
 

@@ -1,9 +1,9 @@
 package demoTest;
 
 import Guo_Cam.CameraController;
+import advancedGeometry.largestRectangle.ZLargestRectangle;
 import basicGeometry.ZLine;
 import basicGeometry.ZPoint;
-import advancedGeometry.largestRectangle.ZLargestRectangle;
 import igeo.ICurve;
 import igeo.IG;
 import math.ZGeoMath;
@@ -32,6 +32,9 @@ import java.util.Objects;
  * @time 20:48
  */
 public class TestConvexHull extends PApplet {
+    public static void main(String[] args) {
+        PApplet.main("demoTest.TestConvexHull");
+    }
 
     /* ------------- settings ------------- */
 

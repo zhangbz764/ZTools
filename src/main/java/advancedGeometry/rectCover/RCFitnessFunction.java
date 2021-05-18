@@ -1,7 +1,7 @@
 package advancedGeometry.rectCover;
 
-import basicGeometry.ZPoint;
 import basicGeometry.ZFactory;
+import basicGeometry.ZPoint;
 import net.sourceforge.jswarm_pso.FitnessFunction;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;

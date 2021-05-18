@@ -1,7 +1,7 @@
 # 个人java工具包 慎用
 
-详细说明见 instruction_detail.md  
-测试类见 src/test/java/demoTest
+详细说明见 [instruction_detail](https://github.com/Agent14zbz/ZTools/blob/main/instruction_detail.md "instruction_detail.md")
+测试类见 [demoTest](https://github.com/Agent14zbz/ZTools/tree/main/src/test/java/demoTest "demoTest")
 
 #### Global Dependencies:
 
@@ -32,16 +32,25 @@
 
 ## **ZSkeleton**
 
-计算直骨架（straight skeleton），可以生成2D或3Dskeleton结果，支持带洞多边形。  
+计算直骨架（straight skeleton），可以生成2D或3D结果，支持带洞多边形  
 #### External Dependencies:
 [campskeleton](https://github.com/twak/campskeleton "campskeleton")
 
-## **ZLargestRectangleRatio**
+## **ZCatmullRom**
 
-计算给定长宽比的最大内接矩形  
+创建Catmull-Rom曲线  
+inspired by [CatmullRomSpline](https://github.com/jurajstrecha/CatmullRomSpline)
+
+## **ZLargestRectangle**
+
+粒子群算法优化计算多边形的最大内接矩形  
+inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "LargestRectangle")
 #### External Dependencies:  
-[LargestRectangle](https://github.com/dawnwords/LargestRectangle "LargestRectangle")  
 [JSwarm-PSO](http://jswarm-pso.sourceforge.net/ "JSwarm-PSO")
+
+## **ZRectCover**
+
+使用轮廓点+射线的方法近似找到给定数量的最小矩形覆盖
 
 ## **ZGeomath**
 
@@ -54,6 +63,10 @@
 ## **ZMath**
 
 一些数学工具
+
+## **ZPermuCombi**
+
+整数的排列组合
 
 ## **ZSubdivision**
 

@@ -47,7 +47,7 @@ public class MainToolTests {
 //        PApplet.main("demoTest.TestPolarAngle");
 
         /* test polygon decomposition */
-        PApplet.main("demoTest.TestPolyDecomp");
+//        PApplet.main("demoTest.TestPolyDecomp");
 
         /* test polygon split and offset methods */
 //        PApplet.main("demoTest.TestPolySplit");
@@ -63,5 +63,8 @@ public class MainToolTests {
 
         /* test ZGraph and graph methods */
 //        PApplet.main("demoTest.TestZGraph");
+
+        /* test Catmull-Rom curve and WB_BSpline */
+        PApplet.main("demoTest.TestCurve");
     }
 }

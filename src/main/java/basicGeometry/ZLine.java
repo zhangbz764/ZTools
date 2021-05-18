@@ -51,6 +51,12 @@ public class ZLine {
         init();
     }
 
+    public ZLine(Coordinate pt0, Coordinate pt1) {
+        this.pt0 = new ZPoint(pt0);
+        this.pt1 = new ZPoint(pt1);
+        init();
+    }
+
     public ZLine(WB_Segment segment) {
         this.pt0 = new ZPoint(segment.getOrigin());
         this.pt1 = new ZPoint(segment.getEndpoint());
@@ -98,6 +104,17 @@ public class ZLine {
     public ZLine extendSlightly(double dist) {
         ZPoint newPt1 = pt1.add(getDirectionNor().scaleTo(dist));
         return new ZLine(pt0, newPt1);
+    }
+
+    /**
+     * absolute cosine value of this line and the other line
+     *
+     * @param other the other ZLine
+     * @return double
+     */
+    public double angleCosWith(ZLine other) {
+        double dot = this.direction.dot2D(other.direction);
+        return Math.abs(dot / (this.length * other.length));
     }
 
     /**

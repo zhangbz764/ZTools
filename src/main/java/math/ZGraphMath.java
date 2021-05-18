@@ -1,7 +1,6 @@
 package math;
 
 import basicGeometry.*;
-import geometry.*;
 
 import java.util.ArrayList;
 import java.util.List;

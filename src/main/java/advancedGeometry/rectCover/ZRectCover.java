@@ -38,19 +38,22 @@ public class ZRectCover {
     // rectangles and nets
     private int rectNum = 3;
     private List<Polygon> bestRects;
-    private List<List<ZLine>> net;
+    private List<List<ZLine>> grid;
+    private int[] threshold = {7, 9};
 
     /* ------------- constructor ------------- */
 
-    public ZRectCover(WB_Polygon boundary, int rectNum) {
+    public ZRectCover(WB_Polygon boundary, int rectNum, int[] threshold) {
         setBoundary(boundary);
         setRectNum(rectNum);
+        setThreshold(threshold);
         init();
     }
 
-    public ZRectCover(WB_Polygon boundary, int rectNum, int rayDensity) {
+    public ZRectCover(WB_Polygon boundary, int rectNum, int[] threshold, int rayDensity) {
         setBoundary(boundary);
         setRectNum(rectNum);
+        setThreshold(threshold);
         setRayDensity(rayDensity);
         init();
     }
@@ -96,7 +99,6 @@ public class ZRectCover {
     /**
      * find tightest covering rectangle by the giving number
      *
-     * @param
      * @return void
      */
     private void coverRectangles() {
@@ -158,7 +160,7 @@ public class ZRectCover {
 
         // generate nets
         this.bestRects = new ArrayList<>();
-        this.net = new ArrayList<>();
+        this.grid = new ArrayList<>();
         for (Polygon p : allSplitPolygons.get(validI.get(max))) {
             Polygon obb = (Polygon) MinimumDiameter.getMinimumRectangle(p);
             bestRects.add(obb);
@@ -172,8 +174,8 @@ public class ZRectCover {
             ZPoint dir10 = new ZPoint(c0.x - c1.x, c0.y - c1.y);
             ZPoint dir12 = new ZPoint(c2.x - c1.x, c2.y - c1.y);
 
-            List<ZPoint> dividePoint01 = line01.divideByThreshold(28, 36);
-            List<ZPoint> dividePoint12 = line12.divideByThreshold(28, 36);
+            List<ZPoint> dividePoint01 = line01.divideByThreshold(threshold[0], threshold[1]);
+            List<ZPoint> dividePoint12 = line12.divideByThreshold(threshold[0], threshold[1]);
 
             List<ZLine> divideLines = new ArrayList<>();
             for (ZPoint pt : dividePoint01) {
@@ -182,7 +184,7 @@ public class ZRectCover {
             for (ZPoint pt : dividePoint12) {
                 divideLines.add(new ZLine(pt, pt.add(dir10)));
             }
-            net.add(divideLines);
+            grid.add(divideLines);
         }
     }
 
@@ -200,12 +202,24 @@ public class ZRectCover {
         this.boundary = boundary;
     }
 
+    public void setThreshold(int[] threshold) {
+        this.threshold = threshold;
+    }
+
+    public List<ZLine> getRayExtends() {
+        return rayExtends;
+    }
+
     public List<Polygon> getBestRects() {
         return bestRects;
     }
 
-    public List<List<ZLine>> getNet() {
-        return net;
+    public List<List<ZLine>> getGrid() {
+        return grid;
+    }
+
+    public int[] getThreshold() {
+        return threshold;
     }
 
     /* ------------- draw ------------- */

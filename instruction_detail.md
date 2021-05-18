@@ -43,9 +43,14 @@
 * 全部脊线点 `getRidgePoints`
 * 全部脊线延长线（到边线中点） `getExtendedRidges`
 
+## **ZCatmullRom**
+
+创建Catmull-Rom曲线  
+inspired by [CatmullRomSpline](https://github.com/jurajstrecha/CatmullRomSpline)
+
 ## **ZLargestRectangle**
 
-粒子群算法优化计算多边形的最大内接矩形
+粒子群优化算法计算多边形的最大内接矩形
 
 #### External Dependencies:
 
@@ -77,10 +82,16 @@
 
 * 检查两个WB_Segment是否相交（用WB_GeometryOP）   
   `checkWB_SegmentIntersect`
+* 检查两个线型对象是否相交    
+  `checkRaySegmentIntersection` `checkLineSegmentIntersection`
+* 检查射线与多段线是否相交    
+  `checkRayPolyLineIntersection`  
 * 求任意两个线型对象交点（需输入类型：line, ray, segment）  
   `simpleLineElementsIntersect2D`
 * 求射线、直线与多边形交点  
   `rayPolygonIntersect2D` `linePolygonIntersect2D`
+* 求线段与多段线交点  
+  `segmentPolyLineIntersect2D`
 * 求射线与多边形交点，返回按照与指定点升序排序的交点所在边序号  
   `rayPolygonIntersectIndices2D`
 * 将线段延长或剪切至多边形最近的交点  

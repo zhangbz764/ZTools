@@ -1,9 +1,9 @@
 package demoTest;
 
 import Guo_Cam.CameraController;
+import advancedGeometry.subdivision.*;
 import org.locationtech.jts.geom.GeometryFactory;
 import processing.core.PApplet;
-import advancedGeometry.subdivision.*;
 import wblut.geom.WB_GeometryFactory;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Polygon;
