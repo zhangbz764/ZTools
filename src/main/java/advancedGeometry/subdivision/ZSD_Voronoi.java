@@ -37,7 +37,7 @@ public class ZSD_Voronoi extends ZSubdivision {
     public void performDivide() {
         // get random points
         RandomPointsBuilder randomPointsBuilder = new RandomPointsBuilder();
-        randomPointsBuilder.setExtent(ZTransform.WB_PolygonToJtsPolygon(super.getOriginPolygon()));
+        randomPointsBuilder.setExtent(ZTransform.WB_PolygonToPolygon(super.getOriginPolygon()));
         randomPointsBuilder.setNumPoints(pointNum);
         Coordinate[] randomPoints = randomPointsBuilder.getGeometry().getCoordinates();
         System.out.println(randomPoints.length);

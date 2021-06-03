@@ -61,7 +61,7 @@ public class TestPolyDecomp extends PApplet {
 //        this.halves = ZGeoMath.halvingOBB(obbTree.get(0));
 
         // test rays on concave
-        this.zrc = new ZRectCover(boundary, 3, new int[]{28, 36});
+        this.zrc = new ZRectCover(boundary, 3);
 
         // WB_PolygonDecomposer
 //        System.out.println(boundary.getNormal());
@@ -131,20 +131,20 @@ public class TestPolyDecomp extends PApplet {
         for (ZLine l : zrc.getRayExtends()) {
             l.display(this);
         }
-        strokeWeight(1.5f);
-        stroke(255, 0, 0);
-        for (List<ZLine> lineList : zrc.getGrid()) {
-            for (ZLine l : lineList) {
-                l.display(this, 1.5f);
-            }
-        }
+//        strokeWeight(1.5f);
+//        stroke(255, 0, 0);
+//        for (List<ZLine> lineList : zrc.getGrid()) {
+//            for (ZLine l : lineList) {
+//                l.display(this, 1.5f);
+//            }
+//        }
         popStyle();
     }
 
     public void keyPressed() {
         if (key == 'r') {
             setBoundary();
-            this.zrc = new ZRectCover(boundary, 3, new int[]{28, 36});
+            this.zrc = new ZRectCover(boundary, 3);
         }
     }
 }

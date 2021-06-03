@@ -79,7 +79,7 @@ public class TestCampSkeleton extends PApplet {
         println(polygon.isSimple());
 
 
-        wb_polygon = ZTransform.jtsPolygonToWB_Polygon(polygon);
+        wb_polygon = ZTransform.PolygonToWB_Polygon(polygon);
         println(wb_polygon.isSimple());
         println(wb_polygon.getNormal());
 

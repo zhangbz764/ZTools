@@ -88,7 +88,7 @@ public class TestConvexHull extends PApplet {
         this.largestRectangles = new ArrayList<>();
         for (Geometry g : convexHull) {
             if (g instanceof Polygon) {
-                ZLargestRectangle rectangle = new ZLargestRectangle(ZTransform.jtsPolygonToWB_Polygon((Polygon) g));
+                ZLargestRectangle rectangle = new ZLargestRectangle(ZTransform.PolygonToWB_Polygon((Polygon) g));
                 rectangle.init();
                 largestRectangles.add(rectangle.getRectangleResult());
             }
@@ -103,7 +103,7 @@ public class TestConvexHull extends PApplet {
         stroke(0);
 
         // intersection
-        WB_Polygon newPoly = ZTransform.jtsPolygonToWB_Polygon((Polygon) polys.get(0));
+        WB_Polygon newPoly = ZTransform.PolygonToWB_Polygon((Polygon) polys.get(0));
         ZLine ray = new ZLine(new ZPoint(650, 250), new ZPoint(mouseX, mouseY));
         ray.display(this);
         List<ZPoint> inters = ZGeoMath.rayPolygonIntersect2D(ray.toLinePD(), newPoly);

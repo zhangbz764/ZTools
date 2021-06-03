@@ -37,8 +37,8 @@ public class MainToolTests {
         /* test holes in hemesh*/
 //        PApplet.main("demoTest.TestHolesHE_Mesh");
 
-        /* test jts buffer */
-//        PApplet.main("demoTest.TestJtsBuffer");
+        /* test jts buffer, intersection and geometry centroid */
+        PApplet.main("demoTest.TestJtsBuffer");
 
         /* test jts LineMerger */
 //        PApplet.main("demoTest.TestJtsLineMerger");
@@ -65,6 +65,6 @@ public class MainToolTests {
 //        PApplet.main("demoTest.TestZGraph");
 
         /* test Catmull-Rom curve and WB_BSpline */
-        PApplet.main("demoTest.TestCurve");
+//        PApplet.main("demoTest.TestCurve");
     }
 }

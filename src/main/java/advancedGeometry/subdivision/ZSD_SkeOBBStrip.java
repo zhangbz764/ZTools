@@ -80,7 +80,7 @@ public class ZSD_SkeOBBStrip extends ZSubdivision {
 
             // polygonize
             Polygonizer pr = new Polygonizer();
-            Geometry nodedLineStrings = ZTransform.WB_PolyLineToJtsLineString(super.getOriginPolygon());
+            Geometry nodedLineStrings = ZTransform.WB_PolyLineToLineString(super.getOriginPolygon());
             for (ZLine l : divideLine) {
                 nodedLineStrings = nodedLineStrings.union(l.toJtsLineString());
             }
@@ -88,7 +88,7 @@ public class ZSD_SkeOBBStrip extends ZSubdivision {
             Collection<Polygon> allPolys = pr.getPolygons();
             List<WB_Polygon> polys = new ArrayList<>();
             for (Polygon p : allPolys) {
-                polys.add(ZTransform.jtsPolygonToWB_Polygon(p));
+                polys.add(ZTransform.PolygonToWB_Polygon(p));
             }
             super.setAllSubPolygons(polys);
         } else {

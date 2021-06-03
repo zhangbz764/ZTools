@@ -1,5 +1,6 @@
 package transform;
 
+import basicGeometry.ZFactory;
 import igeo.ICurve;
 import igeo.IPoint;
 import igeo.IVec;
@@ -46,8 +47,6 @@ import java.util.List;
  * <p>
  */
 public class ZTransform {
-    private static final GeometryFactory gf = new GeometryFactory();
-    private static final WB_GeometryFactory wbgf = new WB_GeometryFactory();
     private static final double epsilon = 0.00000001;
 
     /*-------- IGeo <-> WB --------*/
@@ -105,13 +104,13 @@ public class ZTransform {
             for (int i = 0; i < curve.cpNum(); i++) {
                 points[i] = new WB_Point(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z());
             }
-            return wbgf.createPolyLine(points);
+            return ZFactory.wbgf.createPolyLine(points);
         } else if (curve.cpNum() > 2 && curve.isClosed()) {
             WB_Point[] points = new WB_Point[curve.cpNum()];
             for (int i = 0; i < curve.cpNum(); i++) {
                 points[i] = new WB_Point(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z());
             }
-            return wbgf.createSimplePolygon(points);
+            return ZFactory.wbgf.createSimplePolygon(points);
         } else if (curve.cpNum() == 2) {
             WB_Point start = new WB_Point(curve.cp(0).x(), curve.cp(0).y(), curve.cp(0).z());
             WB_Point end = new WB_Point(curve.cp(1).x(), curve.cp(1).y(), curve.cp(1).z());
@@ -135,13 +134,13 @@ public class ZTransform {
             for (int i = 0; i < curve.cpNum(); i++) {
                 points[i] = new WB_Point(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z()).scale(scale);
             }
-            return wbgf.createPolyLine(points);
+            return ZFactory.wbgf.createPolyLine(points);
         } else if (curve.cpNum() > 2 && curve.isClosed()) {
             WB_Point[] points = new WB_Point[curve.cpNum()];
             for (int i = 0; i < curve.cpNum(); i++) {
                 points[i] = new WB_Point(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z()).scale(scale);
             }
-            return wbgf.createSimplePolygon(points);
+            return ZFactory.wbgf.createSimplePolygon(points);
         } else if (curve.cpNum() == 2) {
             WB_Point start = new WB_Point(curve.cp(0).x(), curve.cp(0).y(), curve.cp(0).z()).scale(scale);
             WB_Point end = new WB_Point(curve.cp(1).x(), curve.cp(1).y(), curve.cp(1).z()).scale(scale);
@@ -165,7 +164,7 @@ public class ZTransform {
             for (int i = 0; i < curve.cpNum(); i++) {
                 points[i] = new WB_Point(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z()).scale(scale);
             }
-            return wbgf.createPolyLine(points);
+            return ZFactory.wbgf.createPolyLine(points);
         } else {
             System.out.println("***MAYBE OTHER TYPE OF GEOMETRY***");
             return null;
@@ -194,7 +193,7 @@ public class ZTransform {
      * @param point input IPoint
      * @return org.locationtech.jts.geom.Coordinate
      */
-    public static Coordinate IPointToJtsCoordinate(final IPoint point) {
+    public static Coordinate IPointToCoordinate(final IPoint point) {
         return new Coordinate(point.x(), point.y(), point.z());
     }
 
@@ -204,8 +203,8 @@ public class ZTransform {
      * @param point input IPoint
      * @return org.locationtech.jts.geom.Point
      */
-    public static Point IPointToJtsPoint(final IPoint point) {
-        return gf.createPoint(IPointToJtsCoordinate(point));
+    public static Point IPointToPoint(final IPoint point) {
+        return ZFactory.jtsgf.createPoint(IPointToCoordinate(point));
     }
 
     /**
@@ -220,19 +219,19 @@ public class ZTransform {
             for (int i = 0; i < curve.cpNum(); i++) {
                 curvePts[i] = new Coordinate(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z());
             }
-            return gf.createPolygon(curvePts);
+            return ZFactory.jtsgf.createPolygon(curvePts);
         } else if (curve.cpNum() > 2 && !curve.isClosed()) {
             Coordinate[] curvePts = new Coordinate[curve.cpNum()];
             for (int i = 0; i < curve.cpNum(); i++) {
                 curvePts[i] = new Coordinate(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z());
             }
-            return gf.createLineString(curvePts);
+            return ZFactory.jtsgf.createLineString(curvePts);
         } else if (curve.cpNum() == 2) {
             Coordinate[] curvePts = new Coordinate[curve.cpNum()];
             for (int i = 0; i < curve.cpNum(); i++) {
                 curvePts[i] = new Coordinate(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z());
             }
-            return gf.createLineString(curvePts);
+            return ZFactory.jtsgf.createLineString(curvePts);
         } else {
             System.out.println("***MAYBE OTHER TYPE OF GEOMETRY***");
             return null;
@@ -248,7 +247,7 @@ public class ZTransform {
      * @return org.locationtech.jts.geom.Point
      */
     public static Point WB_CoordToPoint(final WB_Coord p) {
-        return gf.createPoint(new Coordinate(p.xd(), p.yd(), p.zd()));
+        return ZFactory.jtsgf.createPoint(new Coordinate(p.xd(), p.yd(), p.zd()));
     }
 
     /**
@@ -292,21 +291,21 @@ public class ZTransform {
      * @param wbp input WB_Polygon
      * @return org.locationtech.jts.geom.Polygon
      */
-    public static Polygon WB_PolygonToJtsPolygon(final WB_Polygon wbp) {
+    public static Polygon WB_PolygonToPolygon(final WB_Polygon wbp) {
         if (wbp.getNumberOfHoles() == 0) {
             if (wbp.getPoint(0).equals(wbp.getPoint(wbp.getNumberOfPoints() - 1))) {
                 Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints()];
                 for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
                     coords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
                 }
-                return gf.createPolygon(coords);
+                return ZFactory.jtsgf.createPolygon(coords);
             } else {
                 Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints() + 1];
                 for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
                     coords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
                 }
                 coords[wbp.getNumberOfPoints()] = coords[0];
-                return gf.createPolygon(coords);
+                return ZFactory.jtsgf.createPolygon(coords);
             }
         } else {
             // exterior
@@ -317,7 +316,7 @@ public class ZTransform {
             if (exteriorCoords.get(0).equals3D(exteriorCoords.get(exteriorCoords.size() - 1))) {
                 exteriorCoords.add(exteriorCoords.get(0));
             }
-            LinearRing exteriorLinearRing = gf.createLinearRing(exteriorCoords.toArray(new Coordinate[0]));
+            LinearRing exteriorLinearRing = ZFactory.jtsgf.createLinearRing(exteriorCoords.toArray(new Coordinate[0]));
 
             // interior
             final int[] npc = wbp.getNumberOfPointsPerContour();
@@ -332,10 +331,10 @@ public class ZTransform {
                 if (!contour.get(0).equals3D(contour.get(contour.size() - 1))) {
                     contour.add(contour.get(0));
                 }
-                interiorLinearRings[i] = gf.createLinearRing(contour.toArray(new Coordinate[0]));
+                interiorLinearRings[i] = ZFactory.jtsgf.createLinearRing(contour.toArray(new Coordinate[0]));
             }
 
-            return gf.createPolygon(exteriorLinearRing, interiorLinearRings);
+            return ZFactory.jtsgf.createPolygon(exteriorLinearRing, interiorLinearRings);
         }
     }
 
@@ -345,7 +344,7 @@ public class ZTransform {
      * @param p input Polygon
      * @return wblut.geom.WB_Polygon
      */
-    public static WB_Polygon jtsPolygonToWB_Polygon(final Polygon p) {
+    public static WB_Polygon PolygonToWB_Polygon(final Polygon p) {
         if (p.getNumInteriorRing() == 0) {
             WB_Coord[] points = new WB_Point[p.getNumPoints()];
             for (int i = 0; i < p.getNumPoints(); i++) {
@@ -377,29 +376,15 @@ public class ZTransform {
     /**
      * LineString -> WB_PolyLine
      *
-     * @param p input LineString
+     * @param ls input LineString
      * @return wblut.geom.WB_PolyLine
      */
-    public static WB_PolyLine jtsLineStringToWB_PolyLine(final LineString p) {
-        WB_Coord[] points = new WB_Point[p.getNumPoints()];
-        for (int i = 0; i < p.getNumPoints(); i++) {
-            points[i] = new WB_Point(p.getCoordinates()[i].x, p.getCoordinates()[i].y, p.getCoordinates()[i].z);
+    public static WB_PolyLine LineStringToWB_PolyLine(final LineString ls) {
+        WB_Coord[] points = new WB_Point[ls.getNumPoints()];
+        for (int i = 0; i < ls.getNumPoints(); i++) {
+            points[i] = new WB_Point(ls.getCoordinates()[i].x, ls.getCoordinates()[i].y, ls.getCoordinates()[i].z);
         }
         return new WB_PolyLine(points);
-    }
-
-    /**
-     * WB_PolyLine -> LineString
-     *
-     * @param wbp input WB_PolyLine
-     * @return org.locationtech.jts.geom.LineString
-     */
-    public static LineString WB_PolyLineToJtsLineString(final WB_PolyLine wbp) {
-        Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints()];
-        for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
-            coords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
-        }
-        return gf.createLineString(coords);
     }
 
     /**
@@ -408,11 +393,116 @@ public class ZTransform {
      * @param seg input WB_Segment
      * @return org.locationtech.jts.geom.LineString
      */
-    public static LineString WB_SegmentToJtsLineString(final WB_Segment seg) {
+    public static LineString WB_SegmentToLineString(final WB_Segment seg) {
         Coordinate[] coords = new Coordinate[2];
         coords[0] = new Coordinate(seg.getOrigin().xd(), seg.getOrigin().yd(), seg.getOrigin().zd());
         coords[1] = new Coordinate(seg.getEndpoint().xd(), seg.getEndpoint().yd(), seg.getEndpoint().zd());
-        return gf.createLineString(coords);
+        return ZFactory.jtsgf.createLineString(coords);
+    }
+
+    /**
+     * WB_PolyLine -> LineString
+     *
+     * @param wbp input WB_PolyLine
+     * @return org.locationtech.jts.geom.LineString
+     */
+    public static LineString WB_PolyLineToLineString(final WB_PolyLine wbp) {
+        Coordinate[] coords = new Coordinate[wbp.getNumberOfPoints()];
+        for (int i = 0; i < wbp.getNumberOfPoints(); i++) {
+            coords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
+        }
+        return ZFactory.jtsgf.createLineString(coords);
+    }
+
+    /**
+     * WB_Polygon -> LineString (holes supported)
+     *
+     * @param wbp input WB_Polygon
+     * @return wblut.geom.WB_Polygon
+     */
+    public static List<LineString> WB_PolygonToLineString(final WB_Polygon wbp) {
+        List<LineString> result = new ArrayList<>();
+        if (wbp.getNumberOfHoles() > 0) {
+            Coordinate[] shellCoords = new Coordinate[wbp.getNumberOfShellPoints()];
+            for (int i = 0; i < wbp.getNumberOfShellPoints(); i++) {
+                shellCoords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
+            }
+            result.add(ZFactory.jtsgf.createLineString(shellCoords));
+
+            // holes
+            final int[] npc = wbp.getNumberOfPointsPerContour();
+            int index = npc[0];
+            for (int i = 0; i < wbp.getNumberOfHoles(); i++) {
+                Coordinate[] holeCoords = new Coordinate[npc[i + 1]];
+                for (int j = 0; j < npc[i + 1]; j++) {
+                    holeCoords[j] = new Coordinate(wbp.getPoint(index).xd(), wbp.getPoint(index).yd(), wbp.getPoint(index).zd());
+                    index++;
+                }
+                result.add(ZFactory.jtsgf.createLineString(holeCoords));
+            }
+        } else {
+            Coordinate[] shellCoords = new Coordinate[wbp.getNumberOfShellPoints()];
+            for (int i = 0; i < wbp.getNumberOfShellPoints(); i++) {
+                shellCoords[i] = new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd());
+            }
+            result.add(ZFactory.jtsgf.createLineString(shellCoords));
+        }
+        return result;
+    }
+
+    /**
+     * LineString -> WB_Polygon
+     *
+     * @param ls input LineString
+     * @return wblut.geom.WB_Polygon
+     */
+    public static WB_Polygon LineStringToWB_Polygon(final LineString ls) {
+        if (ls.getCoordinateN(0).equals2D(ls.getCoordinateN(ls.getNumPoints() - 1))) {
+            // coincide
+            WB_Coord[] points = new WB_Point[ls.getNumPoints()];
+            for (int i = 0; i < ls.getNumPoints(); i++) {
+                points[i] = new WB_Point(ls.getCoordinates()[i].x, ls.getCoordinates()[i].y, ls.getCoordinates()[i].z);
+            }
+            return new WB_Polygon(points);
+        } else {
+            WB_Coord[] points = new WB_Point[ls.getNumPoints() + 1];
+            for (int i = 0; i < ls.getNumPoints(); i++) {
+                points[i] = new WB_Point(ls.getCoordinates()[i].x, ls.getCoordinates()[i].y, ls.getCoordinates()[i].z);
+            }
+            points[points.length - 1] = points[0];
+            return new WB_Polygon(points);
+        }
+    }
+
+    /**
+     * Polygon -> WB_PolyLine
+     *
+     * @param p input Polygon
+     * @return java.util.List<wblut.geom.WB_PolyLine>
+     */
+    public static List<WB_PolyLine> PolygonToWB_PolyLine(final Polygon p) {
+        List<WB_PolyLine> result = new ArrayList<>();
+        if (p.getNumInteriorRing() > 0) {
+            // exterior
+            WB_Coord[] exteriorPoints = new WB_Point[p.getExteriorRing().getNumPoints()];
+            for (int i = 0; i < p.getExteriorRing().getNumPoints(); i++) {
+                exteriorPoints[i] = new WB_Point(p.getCoordinates()[i].x, p.getCoordinates()[i].y, p.getCoordinates()[i].z);
+            }
+            result.add(new WB_PolyLine(exteriorPoints));
+            // interior
+            int index = p.getExteriorRing().getNumPoints();
+            for (int i = 0; i < p.getNumInteriorRing(); i++) {
+                LineString curr = p.getInteriorRingN(i);
+                result.add(LineStringToWB_PolyLine(curr));
+            }
+        } else {
+            WB_Coord[] points = new WB_Point[p.getNumPoints()];
+            for (int i = 0; i < p.getNumPoints(); i++) {
+                points[i] = new WB_Point(p.getCoordinates()[i].x, p.getCoordinates()[i].y, p.getCoordinates()[i].z);
+            }
+            result.add(new WB_PolyLine(points));
+        }
+        return result;
     }
 
     /*-------- WB <-> WB --------*/
@@ -431,7 +521,7 @@ public class ZTransform {
             } else {
                 List<WB_Coord> points = polygon.getPoints().toList();
                 points.add(polygon.getPoint(0));
-                return wbgf.createSimplePolygon(points);
+                return ZFactory.wbgf.createSimplePolygon(points);
             }
         } else {
             boolean flag = true;
@@ -462,7 +552,7 @@ public class ZTransform {
             if (flag) {
                 return polygon;
             } else {
-                return wbgf.createPolygonWithHoles(exterior.toArray(new WB_Point[0]), interior);
+                return ZFactory.wbgf.createPolygonWithHoles(exterior.toArray(new WB_Point[0]), interior);
             }
         }
     }
@@ -473,12 +563,12 @@ public class ZTransform {
      * @param polygon input WB_Polygon
      * @return wblut.geom.WB_PolyLine
      */
-    public static WB_PolyLine WB_PolygonToPolyLine(final WB_Polygon polygon) {
+    public static WB_PolyLine WB_PolygonToWB_PolyLine(final WB_Polygon polygon) {
         WB_Point[] points = new WB_Point[polygon.getNumberOfPoints()];
         for (int i = 0; i < points.length; i++) {
             points[i] = polygon.getPoint(i);
         }
-        return wbgf.createPolyLine(points);
+        return ZFactory.wbgf.createPolyLine(points);
     }
 
     /**
@@ -488,7 +578,7 @@ public class ZTransform {
      * @param t    offset scale
      * @return wblut.geom.WB_AABB
      */
-    public static WB_AABB offsetAABB(final WB_AABB aabb, final double t) {
+    public static WB_AABB offsetWB_AABB(final WB_AABB aabb, final double t) {
         WB_Point min = aabb.getMin();
         WB_Point max = aabb.getMax();
         WB_Point newMin = min.add(min.sub(aabb.getCenter()).scale(t));
@@ -507,7 +597,7 @@ public class ZTransform {
     public static List<LineString> PolygonToLineString(final Polygon polygon) {
         List<LineString> result = new ArrayList<>();
         if (polygon.getNumInteriorRing() == 0) {
-            result.add(gf.createLineString(polygon.getCoordinates()));
+            result.add(ZFactory.jtsgf.createLineString(polygon.getCoordinates()));
         } else {
             result.add(polygon.getExteriorRing());
             for (int i = 0; i < polygon.getNumInteriorRing(); i++) {

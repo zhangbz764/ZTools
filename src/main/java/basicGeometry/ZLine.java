@@ -1,7 +1,6 @@
 package basicGeometry;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.triangulate.Segment;
 import processing.core.PApplet;
@@ -30,8 +29,6 @@ public class ZLine {
 
     private double k; // y = kx + b
     private double b;
-
-    private static final GeometryFactory gf = new GeometryFactory();
 
     /* ------------- constructor ------------- */
 
@@ -318,7 +315,7 @@ public class ZLine {
     }
 
     public LineString toJtsLineString() {
-        return gf.createLineString(new Coordinate[]{pt0.toJtsCoordinate(), pt1.toJtsCoordinate()});
+        return ZFactory.jtsgf.createLineString(new Coordinate[]{pt0.toJtsCoordinate(), pt1.toJtsCoordinate()});
     }
 
     public Segment toJtsSegment() {

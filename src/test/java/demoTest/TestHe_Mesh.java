@@ -152,9 +152,9 @@ public class TestHe_Mesh extends PApplet {
 
         mesh.remove(f1);
         mesh.remove(f2);
-        Polygon test = ZTransform.WB_PolygonToJtsPolygon(p1);
-        test = (Polygon) test.union(ZTransform.WB_PolygonToJtsPolygon(p2));
-        WB_Polygon testWB = ZTransform.jtsPolygonToWB_Polygon(test);
+        Polygon test = ZTransform.WB_PolygonToPolygon(p1);
+        test = (Polygon) test.union(ZTransform.WB_PolygonToPolygon(p2));
+        WB_Polygon testWB = ZTransform.PolygonToWB_Polygon(test);
 
         List<WB_Polygon> union = wbgf.unionPolygons2D(p1, p2);
         println("union:" + union.size());

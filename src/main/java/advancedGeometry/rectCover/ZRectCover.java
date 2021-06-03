@@ -6,7 +6,6 @@ import math.ZGeoMath;
 import math.ZMath;
 import math.ZPermuCombi;
 import org.locationtech.jts.algorithm.MinimumDiameter;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.TopologyException;
@@ -38,22 +37,18 @@ public class ZRectCover {
     // rectangles and nets
     private int rectNum = 3;
     private List<Polygon> bestRects;
-    private List<List<ZLine>> grid;
-    private int[] threshold = {7, 9};
 
     /* ------------- constructor ------------- */
 
-    public ZRectCover(WB_Polygon boundary, int rectNum, int[] threshold) {
+    public ZRectCover(WB_Polygon boundary, int rectNum) {
         setBoundary(boundary);
         setRectNum(rectNum);
-        setThreshold(threshold);
         init();
     }
 
-    public ZRectCover(WB_Polygon boundary, int rectNum, int[] threshold, int rayDensity) {
+    public ZRectCover(WB_Polygon boundary, int rectNum, int rayDensity) {
         setBoundary(boundary);
         setRectNum(rectNum);
-        setThreshold(threshold);
         setRayDensity(rayDensity);
         init();
     }
@@ -115,7 +110,7 @@ public class ZRectCover {
         int invalidCount = 0;
         for (List<Integer> list : rayGroups) {
             pr = new Polygonizer();
-            Geometry nodedLineStrings = ZTransform.WB_PolyLineToJtsLineString(boundary);
+            Geometry nodedLineStrings = ZTransform.WB_PolyLineToLineString(boundary);
             for (int index : list) {
                 try {
                     nodedLineStrings = nodedLineStrings.union(rayExtends.get(index).extendTwoSidesSlightly(1).toJtsLineString());
@@ -160,31 +155,9 @@ public class ZRectCover {
 
         // generate nets
         this.bestRects = new ArrayList<>();
-        this.grid = new ArrayList<>();
         for (Polygon p : allSplitPolygons.get(validI.get(max))) {
             Polygon obb = (Polygon) MinimumDiameter.getMinimumRectangle(p);
             bestRects.add(obb);
-            Coordinate c0 = obb.getCoordinates()[0];
-            Coordinate c1 = obb.getCoordinates()[1];
-            Coordinate c2 = obb.getCoordinates()[2];
-
-            ZLine line01 = new ZLine(new ZPoint(c0), new ZPoint(c1));
-            ZLine line12 = new ZLine(new ZPoint(c1), new ZPoint(c2));
-
-            ZPoint dir10 = new ZPoint(c0.x - c1.x, c0.y - c1.y);
-            ZPoint dir12 = new ZPoint(c2.x - c1.x, c2.y - c1.y);
-
-            List<ZPoint> dividePoint01 = line01.divideByThreshold(threshold[0], threshold[1]);
-            List<ZPoint> dividePoint12 = line12.divideByThreshold(threshold[0], threshold[1]);
-
-            List<ZLine> divideLines = new ArrayList<>();
-            for (ZPoint pt : dividePoint01) {
-                divideLines.add(new ZLine(pt, pt.add(dir12)));
-            }
-            for (ZPoint pt : dividePoint12) {
-                divideLines.add(new ZLine(pt, pt.add(dir10)));
-            }
-            grid.add(divideLines);
         }
     }
 
@@ -202,10 +175,6 @@ public class ZRectCover {
         this.boundary = boundary;
     }
 
-    public void setThreshold(int[] threshold) {
-        this.threshold = threshold;
-    }
-
     public List<ZLine> getRayExtends() {
         return rayExtends;
     }
@@ -214,13 +183,9 @@ public class ZRectCover {
         return bestRects;
     }
 
-    public List<List<ZLine>> getGrid() {
-        return grid;
-    }
-
-    public int[] getThreshold() {
-        return threshold;
-    }
+//    public List<Polygon> getRectsNonOverlap(){
+//
+//    }
 
     /* ------------- draw ------------- */
 

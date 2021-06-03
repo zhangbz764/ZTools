@@ -50,11 +50,9 @@ inspired by [CatmullRomSpline](https://github.com/jurajstrecha/CatmullRomSpline)
 
 ## **ZLargestRectangle**
 
-粒子群优化算法计算多边形的最大内接矩形
-
+粒子群算法优化计算多边形的最大内接矩形  
+inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "LargestRectangle")
 #### External Dependencies:
-
-[LargestRectangle](https://github.com/dawnwords/LargestRectangle "LargestRectangle")  
 [JSwarm-PSO](http://jswarm-pso.sourceforge.net/ "JSwarm-PSO")
 
 ## **ZRectCover**
@@ -209,7 +207,7 @@ inspired by [CatmullRomSpline](https://github.com/jurajstrecha/CatmullRomSpline)
 ## **ZTransform**
 
 常用库几何数据的相互转换  
-*目前仅涉及简单多边形，部分涉及带洞*
+*大部分仅支持简单多边形，部分支持带洞*
 
 #### IGeo <-> WB
 
@@ -230,11 +228,11 @@ inspired by [CatmullRomSpline](https://github.com/jurajstrecha/CatmullRomSpline)
 
 * WB_Coord <-> Point
 * WB_Coord <-> Coordinate
-* WB_Polygon -> Polygon 如果WB_Polygon第一点与最后一点不重合，就加上最后一点
-* Polygon -> WB_Polygon
-* LineString -> WB_PolyLine
-* WB_PolyLine -> LineString
+* WB_Polygon <-> Polygon (支持带洞)
+* LineString <-> WB_PolyLine
 * WB_Segment -> LineString
+* WB_Polygon <-> LineString (支持带洞)
+* Polygon -> WB_PolyLine (支持带洞)
 
 #### WB <-> WB
 

@@ -63,9 +63,9 @@ public class ZSD_SideStrip extends ZSubdivision {
     private void divideByPolygonizer() {
         // FIXME: 2020/12/11  only support polyline now
         Polygonizer pr = new Polygonizer();
-        Geometry allGeometry = ZTransform.PolygonToLineString(ZTransform.WB_PolygonToJtsPolygon(super.getOriginPolygon())).get(0);
+        Geometry allGeometry = ZTransform.PolygonToLineString(ZTransform.WB_PolygonToPolygon(super.getOriginPolygon())).get(0);
         for (WB_PolyLine pl : finalPolyLines) {
-            allGeometry = allGeometry.union(ZTransform.WB_PolyLineToJtsLineString(pl));
+            allGeometry = allGeometry.union(ZTransform.WB_PolyLineToLineString(pl));
         }
         for (ZLine l : divideLines) {
             allGeometry = allGeometry.union(l.toJtsLineString());
@@ -76,7 +76,7 @@ public class ZSD_SideStrip extends ZSubdivision {
         List<Polygon> allSubPolygonJts = (List<Polygon>) dividedPolys;
         List<WB_Polygon> allSubPolygons = new ArrayList<>();
         for (Polygon p : allSubPolygonJts) {
-            allSubPolygons.add(ZTransform.jtsPolygonToWB_Polygon(p));
+            allSubPolygons.add(ZTransform.PolygonToWB_Polygon(p));
         }
         super.setAllSubPolygons(allSubPolygons);
         super.setRandomColor();

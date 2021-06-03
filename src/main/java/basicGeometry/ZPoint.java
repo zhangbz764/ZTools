@@ -3,7 +3,6 @@ package basicGeometry;
 import igeo.IPoint;
 import math.ZGeoMath;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import processing.core.PApplet;
 import wblut.geom.WB_Coord;

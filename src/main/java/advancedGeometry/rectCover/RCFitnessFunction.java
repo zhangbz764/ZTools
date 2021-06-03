@@ -61,6 +61,6 @@ public class RCFitnessFunction extends FitnessFunction {
             area = area + (position[i * 5 + 2] * position[i * 5 + 3]);
         }
 
-        return union.contains(ZTransform.WB_PolygonToJtsPolygon(boundary)) ? area : 0.0D;
+        return union.contains(ZTransform.WB_PolygonToPolygon(boundary)) ? area : 0.0D;
     }
 }

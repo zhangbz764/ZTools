@@ -42,7 +42,7 @@ public abstract class ZSubdivision {
     }
 
     public ZSubdivision(Polygon originPolygon) {
-        this.originPolygon = ZTransform.jtsPolygonToWB_Polygon(originPolygon);
+        this.originPolygon = ZTransform.PolygonToWB_Polygon(originPolygon);
     }
 
     /**
@@ -72,7 +72,7 @@ public abstract class ZSubdivision {
     public void updateSiteShape() {
         for (int i = 0; i < subdivideMesh.getNumberOfFaces(); i++) {
             HE_Face f = subdivideMesh.getFaceWithIndex(i);
-            Geometry cellOBB = MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToJtsPolygon(f.getPolygon()));
+            Geometry cellOBB = MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToPolygon(f.getPolygon()));
             double ratio = f.getFaceArea() / cellOBB.getArea();
             if (ratio < 0.7) {
                 for (int j = 0; j < f.getFaceVertices().size(); j++) {
@@ -84,7 +84,7 @@ public abstract class ZSubdivision {
                                 v.xd() + allFaceVertexVectors[i][j].xd(),
                                 v.yd() + allFaceVertexVectors[i][j].yd()
                         );
-                        Geometry newCellOBB = MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToJtsPolygon(f.getPolygon()));
+                        Geometry newCellOBB = MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToPolygon(f.getPolygon()));
                         double newRatio = f.getFaceArea() / newCellOBB.getArea();
 
                         if (newRatio <= ratio) {
@@ -121,7 +121,7 @@ public abstract class ZSubdivision {
         private HE_Face face;
 
         private VoronoiFace(HE_Face voronoiCell) {
-            Geometry cellOBB = MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToJtsPolygon(voronoiCell.getPolygon()));
+            Geometry cellOBB = MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToPolygon(voronoiCell.getPolygon()));
             this.ratio = voronoiCell.getFaceArea() / cellOBB.getArea();
         }
 

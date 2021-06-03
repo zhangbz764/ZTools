@@ -73,7 +73,7 @@ public class TestGeoRelation extends PApplet {
         multiPolygon = poly1;
         multiPolygon = multiPolygon.union(poly2);
 
-        println(ZTransform.jtsPolygonToWB_Polygon(poly1).getNormal().zd());
+        println(ZTransform.PolygonToWB_Polygon(poly1).getNormal().zd());
         ls = gf.createLineString(vertices2);
 
         BufferOp bufferOp = new BufferOp(poly1);
@@ -90,7 +90,7 @@ public class TestGeoRelation extends PApplet {
         mousePoly = gf.createPolygon(mousePolyV);
 
         pl = ZFactory.createPolylineFromPolygon(
-                ZTransform.jtsPolygonToWB_Polygon(poly1), new int[]{2, 3, 4, 0}
+                ZTransform.PolygonToWB_Polygon(poly1), new int[]{2, 3, 4, 0}
         );
 
         // line angle

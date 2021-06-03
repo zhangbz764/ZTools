@@ -43,7 +43,7 @@ inspired by [CatmullRomSpline](https://github.com/jurajstrecha/CatmullRomSpline)
 
 ## **ZLargestRectangle**
 
-粒子群算法优化计算多边形的最大内接矩形  
+粒子群优化算法计算多边形的最大内接矩形  
 inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "LargestRectangle")
 #### External Dependencies:  
 [JSwarm-PSO](http://jswarm-pso.sourceforge.net/ "JSwarm-PSO")

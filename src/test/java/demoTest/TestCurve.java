@@ -1,5 +1,6 @@
 package demoTest;
 
+import Guo_Cam.CameraController;
 import advancedGeometry.ZCatmullRom;
 import basicGeometry.ZFactory;
 import basicGeometry.ZPoint;
@@ -43,10 +44,13 @@ public class TestCurve extends PApplet {
 
     private WB_Render render;
     private JtsRender jtsRender;
+    private CameraController gcam;
+
     private LineString ls;
 
     public void setup() {
-        this.render = new WB_Render(this);
+//        gcam = new CameraController(this);
+//        this.render = new WB_Render(this);
         this.jtsRender = new JtsRender(this);
 
         this.controlPoints = new WB_Point[5];
@@ -83,6 +87,7 @@ public class TestCurve extends PApplet {
         }
 //        render.drawCurve(rbSpline, 32);
 
+        strokeWeight(1);
         jtsRender.drawGeometry(ls);
     }
 
@@ -91,13 +96,13 @@ public class TestCurve extends PApplet {
             if (new ZPoint(mouseX, mouseY).distance(pt) < 10) {
                 pt.set(mouseX, mouseY);
                 this.catmullRom = new ZCatmullRom(cps, 10, closed);
-                List<ZPoint> splinePoints = catmullRom.getCurveDividePoints();
-
-                Coordinate[] coordinates = new Coordinate[splinePoints.size()];
-                for (int i = 0; i < coordinates.length; i++) {
-                    coordinates[i] = splinePoints.get(i).toJtsCoordinate();
-                }
-                ls = ZFactory.jtsgf.createLineString(coordinates);
+//                List<ZPoint> splinePoints = catmullRom.getCurveDividePoints();
+//
+//                Coordinate[] coordinates = new Coordinate[splinePoints.size()];
+//                for (int i = 0; i < coordinates.length; i++) {
+//                    coordinates[i] = splinePoints.get(i).toJtsCoordinate();
+//                }
+                ls = catmullRom.getAsLineString();
                 break;
             }
         }

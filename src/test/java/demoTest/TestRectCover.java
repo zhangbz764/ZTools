@@ -120,7 +120,7 @@ public class TestRectCover extends PApplet {
         double[] maxPosition = new double[rectNum * 5];
         double[] minPosition = new double[rectNum * 5];
 
-        WB_AABB aabb = ZTransform.offsetAABB(boundary.getAABB(), 1.2);
+        WB_AABB aabb = ZTransform.offsetWB_AABB(boundary.getAABB(), 1.2);
         for (int i = 0; i < rectNum; i++) {
             maxPosition[i * 5] = aabb.getMaxX();
             maxPosition[i * 5 + 1] = aabb.getMaxY();

@@ -40,7 +40,7 @@ public class ZSD_OBB extends ZSubdivision {
     @Override
     public void performDivide() {
         this.allSubJtsPolygons = new ArrayList<>();
-        Polygon origin = ZTransform.WB_PolygonToJtsPolygon(super.getOriginPolygon());
+        Polygon origin = ZTransform.WB_PolygonToPolygon(super.getOriginPolygon());
         allSubJtsPolygons.add(origin);
 
         // subdivide by times
@@ -51,7 +51,7 @@ public class ZSD_OBB extends ZSubdivision {
         // convert to WB_Polygon
         List<WB_Polygon> allSubPolygons = new ArrayList<>();
         for (Polygon p : allSubJtsPolygons) {
-            allSubPolygons.add(ZTransform.jtsPolygonToWB_Polygon(p));
+            allSubPolygons.add(ZTransform.PolygonToWB_Polygon(p));
         }
         super.setAllSubPolygons(allSubPolygons);
         super.setRandomColor();

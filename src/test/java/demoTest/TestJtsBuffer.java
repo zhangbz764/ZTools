@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * test jts buffer and intersection
+ * test jts buffer, intersection and geometry centroid
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
@@ -33,6 +33,7 @@ public class TestJtsBuffer extends PApplet {
     /* ------------- setup ------------- */
 
     private List<Geometry> geometries;
+    private List<Point> geoCenters;
     private Geometry buffer;
     private Polygon boundary;
     private Geometry inter;
@@ -59,11 +60,13 @@ public class TestJtsBuffer extends PApplet {
         IG.open(path);
 
         this.geometries = new ArrayList<>();
+        this.geoCenters = new ArrayList<>();
 
         ICurve[] polyLines = IG.layer("geometries").curves();
         for (ICurve polyLine : polyLines) {
             Geometry geo = ZTransform.ICurveToJts(polyLine);
             geometries.add(geo);
+            geoCenters.add(geo.getCentroid());
         }
 
         // buffer
@@ -91,6 +94,9 @@ public class TestJtsBuffer extends PApplet {
         strokeWeight(1);
         for (Geometry g : geometries) {
             jtsRender.drawGeometry(g);
+        }
+        for (Point c : geoCenters) {
+            jtsRender.drawGeometry(c);
         }
         stroke(255, 0, 0);
         strokeWeight(3);

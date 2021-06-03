@@ -27,7 +27,7 @@ public class LRFitnessFunction extends FitnessFunction {
     private double r;
 
     public LRFitnessFunction(WB_Polygon boundary) {
-        this.boundary = ZTransform.WB_PolygonToJtsPolygon(boundary);
+        this.boundary = ZTransform.WB_PolygonToPolygon(boundary);
     }
 
     @Override

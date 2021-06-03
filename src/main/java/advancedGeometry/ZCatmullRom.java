@@ -7,6 +7,7 @@ import org.locationtech.jts.geom.LineString;
 import wblut.geom.WB_Coord;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
+import wblut.geom.WB_Polygon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -193,7 +194,7 @@ public class ZCatmullRom {
         Coordinate[] coordinates = new Coordinate[curveDividePoints.size()];
         int length = coordinates.length;
         for (int i = 0; i < length; i++) {
-            coordinates[1] = curveDividePoints.get(i).toJtsCoordinate();
+            coordinates[i] = curveDividePoints.get(i).toJtsCoordinate();
         }
         return ZFactory.jtsgf.createLineString(coordinates);
     }
@@ -205,6 +206,15 @@ public class ZCatmullRom {
             points[i] = curveDividePoints.get(i).toWB_Point();
         }
         return new WB_PolyLine(points);
+    }
+
+    public WB_Polygon getAsWB_Polygon(){
+        WB_Point[] points = new WB_Point[curveDividePoints.size()];
+        int length = points.length;
+        for (int i = 0; i < length; i++) {
+            points[i] = curveDividePoints.get(i).toWB_Point();
+        }
+        return new WB_Polygon(points);
     }
 
     /* ------------- draw ------------- */

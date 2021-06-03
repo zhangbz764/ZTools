@@ -94,10 +94,10 @@ public class ZFactory {
 //            System.out.println("lines:"+lineMerger.getMergedLineStrings().toArray().length);
 
             LineString merged = (LineString) lineMerger.getMergedLineStrings().toArray()[ZMath.getMaxIndex(lineStringLengths)];
-            return ZTransform.jtsLineStringToWB_PolyLine(merged);
+            return ZTransform.LineStringToWB_PolyLine(merged);
         } else if (lineMerger.getMergedLineStrings().size() == 1) {
             LineString merged = (LineString) lineMerger.getMergedLineStrings().toArray()[0];
-            return ZTransform.jtsLineStringToWB_PolyLine(merged);
+            return ZTransform.LineStringToWB_PolyLine(merged);
         } else {
             return null;
         }
@@ -121,7 +121,7 @@ public class ZFactory {
         if (lineMerger.getMergedLineStrings().size() > 0) {
             for (Object ls : lineMerger.getMergedLineStrings()) {
                 if (ls instanceof LineString) {
-                    result.add(ZTransform.jtsLineStringToWB_PolyLine((LineString) ls));
+                    result.add(ZTransform.LineStringToWB_PolyLine((LineString) ls));
                 }
             }
         }

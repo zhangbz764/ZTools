@@ -133,7 +133,7 @@ public final class ZGeoMath {
      * @return java.util.List<geometry.ZPoint>
      */
     public static List<ZPoint> getConcavePoints(final Polygon polygon) {
-        WB_Polygon wbPolygon = ZTransform.jtsPolygonToWB_Polygon(polygon);
+        WB_Polygon wbPolygon = ZTransform.PolygonToWB_Polygon(polygon);
         return getConcavePoints(wbPolygon);
     }
 
@@ -182,7 +182,7 @@ public final class ZGeoMath {
      * @return java.util.List<java.lang.Integer> - indices of input polygon
      */
     public static List<Integer> getConcavePointIndices(final Polygon polygon) {
-        WB_Polygon wbPolygon = ZTransform.jtsPolygonToWB_Polygon(polygon);
+        WB_Polygon wbPolygon = ZTransform.PolygonToWB_Polygon(polygon);
         return getConcavePointIndices(wbPolygon);
     }
 
@@ -1459,7 +1459,7 @@ public final class ZGeoMath {
      * @return geometry.ZPoint
      */
     public static ZPoint miniRectDir(final WB_Polygon polygon) {
-        Polygon rect = (Polygon) MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToJtsPolygon(polygon));
+        Polygon rect = (Polygon) MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToPolygon(polygon));
         Coordinate c0 = rect.getCoordinates()[0];
         Coordinate c1 = rect.getCoordinates()[1];
         Coordinate c2 = rect.getCoordinates()[2];
