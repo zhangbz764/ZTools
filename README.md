@@ -16,23 +16,23 @@
 
 ## **ZNode**
 
-`extends ZPoint` 代表graph中的node
+graph中的node
 
 ## **ZLine**
 
-自定义的线数据类型，可代表直线、射线、线段，也可转化为 `p+td` 的形式
+自定义的线数据类型，可代表直线、射线、线段，也可转化为 *定点p+方向td* 的形式
 
 ## **ZEdge**
 
-`extends ZLine` 代表graph中的edge
+graph中的edge
 
 ## **ZGraph**
 
-（尚未完成）图数据结构，包含若干节点ZNode，连接边ZEdge，记录相互引用关系
+（需完善）图，包含若干节点ZNode，连接边ZEdge，记录相互引用关系
 
 ## **ZSkeleton**
 
-计算直骨架（straight skeleton），可以生成2D或3D结果，支持带洞多边形  
+计算多边形直骨架（straight skeleton），可以生成2D或3D结果，支持带洞  
 #### External Dependencies:
 [campskeleton](https://github.com/twak/campskeleton "campskeleton")
 
@@ -43,14 +43,14 @@ inspired by [CatmullRomSpline](https://github.com/jurajstrecha/CatmullRomSpline)
 
 ## **ZLargestRectangle**
 
-粒子群优化算法计算多边形的最大内接矩形  
+使用粒子群优化算法计算多边形的最大内接矩形  
 inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "LargestRectangle")
 #### External Dependencies:  
 [JSwarm-PSO](http://jswarm-pso.sourceforge.net/ "JSwarm-PSO")
 
 ## **ZRectCover**
 
-使用轮廓点+射线的方法近似找到给定数量的最小矩形覆盖
+（需完善）使用轮廓点+射线的方法近似找到给定数量的最小矩形覆盖
 
 ## **ZGeomath**
 
@@ -70,7 +70,7 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 
 ## **ZSubdivision**
 
-（尚未完成）若干种多边形剖分模式
+（需完善）若干种多边形剖分模式
 
 ## **ZTransform**
 
@@ -79,6 +79,6 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 
 ## **ZFactory**
 
-包含了jts的GeometryFactory和HE_Mesh的WB_GeometryFactory，以及其他创建命令：
+包含了jts的GeometryFactory和HE_Mesh的WB_GeometryFactory，以及其他创建命令
 
-## 增加中...
+## 完善中...

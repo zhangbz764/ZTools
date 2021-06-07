@@ -11,23 +11,23 @@
 
 ## **ZNode**
 
-`extends ZPoint` 代表graph中的node
+graph中的node
 
 ## **ZLine**
 
-自定义的线数据类型，可代表直线、射线、线段，也可转化为 `p+td` 的形式
+自定义的线数据类型，可代表直线、射线、线段，也可转化为 *定点p+方向td* 的形式
 
 ## **ZEdge**
 
-`extends ZLine` 代表graph中的edge
+graph中的edge
 
 ## **ZGraph**
 
-（尚未完成）图数据结构，包含若干节点ZNode，连接边ZEdge，记录相互引用关系
+（需完善）图，包含若干节点ZNode，连接边ZEdge，记录相互引用关系
 
 ## **ZSkeleton**
 
-计算直骨架（straight skeleton），可以生成2D或3Dskeleton结果，支持带洞多边形。
+计算多边形直骨架（straight skeleton），可以生成2D或3Dskeleton结果，支持带洞多边形。
 
 #### External Dependencies:
 
@@ -50,14 +50,14 @@ inspired by [CatmullRomSpline](https://github.com/jurajstrecha/CatmullRomSpline)
 
 ## **ZLargestRectangle**
 
-粒子群算法优化计算多边形的最大内接矩形  
+使用粒子群算法优化计算多边形的最大内接矩形  
 inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "LargestRectangle")
 #### External Dependencies:
 [JSwarm-PSO](http://jswarm-pso.sourceforge.net/ "JSwarm-PSO")
 
 ## **ZRectCover**
 
-使用轮廓点+射线的方法近似找到给定数量的最小矩形覆盖
+（需完善）使用轮廓点+射线的方法近似找到给定数量的最小矩形覆盖
 
 ## **ZGeomath**
 
@@ -115,7 +115,7 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 * 从一组多边形中找到包含输入点的那一个（返回序号）  
   `pointInWhichPolygon`
 
-#### 二维轮廓找点相关
+#### 二维轮廓剖分相关
 
 * 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点  
   `pointsOnEdgeByDist`
@@ -202,7 +202,7 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 
 ## **ZSubdivision**
 
-（尚未完成）若干种多边形剖分模式
+（需完善）若干种多边形剖分模式
 
 ## **ZTransform**
 
@@ -256,7 +256,7 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
   `createWB_PolyLineList`
 * 将WB_PolyLine / Line String在端点处断开，创建一组新折线  
   `breakWB_PolyLine` `breakLineString`
-* 给定线段序号，从WB_Polygon中创建一截WB_PloyLine  
+* 给定线段序号，从WB_Polygon中创建一截WB_PolyLine  
   `createPolylineFromPolygon`
 * 将一条LineString向两端头微微延长一定距离（规避误差）  
   `createExtendedLineString`

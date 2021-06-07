@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * given number of rectangles
  * cover a polygon with tightest rectangles
  *
  * @author ZHANG Bai-zhou zhangbz
@@ -31,8 +32,6 @@ public class ZRectCover {
     // rays
     private int rayDensity = 100;
     private List<ZLine> rayExtends;
-
-    private List<Integer> validI;
 
     // rectangles and nets
     private int rectNum = 3;
@@ -56,8 +55,17 @@ public class ZRectCover {
     /* ------------- member function ------------- */
 
     public void init() {
-        initRays();
-        coverRectangles();
+        if (this.rectNum > 1) {
+            initRays();
+            coverRectangles();
+        } else if (this.rectNum < 1) {
+            throw new IllegalArgumentException("at least 1 covering rectangle");
+        } else {
+            this.rayExtends = new ArrayList<>();
+            Geometry obb = MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToPolygon(boundary));
+            this.bestRects = new ArrayList<>();
+            bestRects.add((Polygon) obb);
+        }
     }
 
     /**
@@ -125,7 +133,7 @@ public class ZRectCover {
         System.out.println("invalid during polygonizer: " + invalidCount);
 
         // filter by rect number
-        this.validI = new ArrayList<>();
+        List<Integer> validI = new ArrayList<>();
         for (int i = 0; i < allSplitPolygons.size(); i++) {
             if (allSplitPolygons.get(i).size() == rectNum) {
                 validI.add(i);
@@ -153,7 +161,7 @@ public class ZRectCover {
         int max = ZMath.getMaxIndex(ratioResult);
         System.out.println("max  " + "[" + max + "]" + "  " + ratioResult[max]);
 
-        // generate nets
+        // generate rectangles
         this.bestRects = new ArrayList<>();
         for (Polygon p : allSplitPolygons.get(validI.get(max))) {
             Polygon obb = (Polygon) MinimumDiameter.getMinimumRectangle(p);
@@ -182,10 +190,6 @@ public class ZRectCover {
     public List<Polygon> getBestRects() {
         return bestRects;
     }
-
-//    public List<Polygon> getRectsNonOverlap(){
-//
-//    }
 
     /* ------------- draw ------------- */
 
