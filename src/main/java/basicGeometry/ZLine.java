@@ -4,6 +4,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.triangulate.Segment;
 import processing.core.PApplet;
+import wblut.geom.WB_Coord;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Ray;
 import wblut.geom.WB_Segment;
@@ -42,7 +43,7 @@ public class ZLine {
         init();
     }
 
-    public ZLine(WB_Point pt0, WB_Point pt1) {
+    public ZLine(WB_Coord pt0, WB_Coord pt1) {
         this.pt0 = new ZPoint(pt0);
         this.pt1 = new ZPoint(pt1);
         init();
@@ -149,6 +150,16 @@ public class ZLine {
      */
     public ZLine reverse() {
         return new ZLine(this.pt1, this.pt0);
+    }
+
+    /**
+     * translate the ZLine by given vector
+     *
+     * @param vec vector to translate
+     * @return basicGeometry.ZLine
+     */
+    public ZLine translate2D(ZPoint vec) {
+        return new ZLine(pt0.add(vec), pt1.add(vec));
     }
 
     /**

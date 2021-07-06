@@ -52,7 +52,9 @@ inspired by [CatmullRomSpline](https://github.com/jurajstrecha/CatmullRomSpline)
 
 使用粒子群算法优化计算多边形的最大内接矩形  
 inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "LargestRectangle")
+
 #### External Dependencies:
+
 [JSwarm-PSO](http://jswarm-pso.sourceforge.net/ "JSwarm-PSO")
 
 ## **ZRectCover**
@@ -83,7 +85,7 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 * 检查两个线型对象是否相交    
   `checkRaySegmentIntersection` `checkLineSegmentIntersection`
 * 检查射线与多段线是否相交    
-  `checkRayPolyLineIntersection`  
+  `checkRayPolyLineIntersection`
 * 求任意两个线型对象交点（需输入类型：line, ray, segment）  
   `simpleLineElementsIntersect2D`
 * 求射线、直线与多边形交点  
@@ -136,7 +138,9 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 
 #### 多边形工具
 
-* 计算多边形最小外接矩形的朝向（与较长边垂直）
+* 通过一系列点计算其围合的多边形面积  
+  `areaFromPoints`
+* 计算多边形最小外接矩形的朝向（与较长边垂直）  
   `miniRectDir`
 * 使WB_Polygon点序反向，支持带洞  
   `reversePolygon`
@@ -190,6 +194,7 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 * 给定范围生成随机数
 * 给定范围生成一组随机数
 * 给定范围生成随机整数
+* 给定长度生成一组随机整数（摇号）
 * 将目标数字从一个范围映射到另一个范围内的对应数字
 
 #### 其他
@@ -217,11 +222,18 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 * ICurve -> WB_Geometry 根据点数和闭合与否返回WB_Polygon / WB_Polyline / WB_Segment，带缩放
 * ICurve <-> WB_PolyLine 带缩放
 * WB_Coord -> IVec
+* IVecI -> WB_Point
+* WB_Segment -> ICurve
+* WB_Circle <-> ICircle
 
 #### IGeo <-> jts
 
-* IPoint -> Coordinate
-* IPoint -> Point
+* IPoint <-> Coordinate
+* IPoint <-> Point
+* IVecI -> Coordinate
+* IVecI -> Point
+* Coordinate -> IVec
+* Point -> IVec
 * ICurve -> Geometry 根据点数和闭合与否返回Polygon / LineString
 
 #### WB <-> jts

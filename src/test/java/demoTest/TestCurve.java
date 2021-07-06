@@ -1,9 +1,9 @@
 package demoTest;
 
-import Guo_Cam.CameraController;
 import advancedGeometry.ZCatmullRom;
 import basicGeometry.ZFactory;
 import basicGeometry.ZPoint;
+import guo_cam.CameraController;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import processing.core.PApplet;
@@ -69,7 +69,7 @@ public class TestCurve extends PApplet {
             cps.add(new ZPoint(p));
         }
         this.catmullRom = new ZCatmullRom(cps, 10, closed);
-        List<ZPoint> splinePoints = catmullRom.getCurveDividePoints();
+        List<ZPoint> splinePoints = catmullRom.getCurveDividePts();
 
         Coordinate[] coordinates = new Coordinate[splinePoints.size()];
         for (int i = 0; i < coordinates.length; i++) {
@@ -115,7 +115,7 @@ public class TestCurve extends PApplet {
                 cps.add(new ZPoint(p));
             }
             this.catmullRom = new ZCatmullRom(cps, 10, closed);
-            List<ZPoint> splinePoints = catmullRom.getCurveDividePoints();
+            List<ZPoint> splinePoints = catmullRom.getCurveDividePts();
 
             Coordinate[] coordinates = new Coordinate[splinePoints.size()];
             for (int i = 0; i < coordinates.length; i++) {

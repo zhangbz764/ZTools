@@ -26,7 +26,7 @@ import java.util.Map;
  * sort a list of vectors by polar coordinates (return vectors or normalized vectors)
  * find all concave points(or indices) in a polygon (WB_Polygon)
  * find the nearest vector in a list of vector
- *
+ * <p>
  * #### intersection 2D
  * check if two WB_Segments are intersecting
  * check a ray and a segment are intersecting
@@ -38,7 +38,7 @@ import java.util.Map;
  * get intersection points of a segment and a polyline ([--) for each edge, [--] for the last one)
  * extend or trim the segment to polygon boundary
  * extend the segment both ends to polygon boundary
- *
+ * <p>
  * #### distance 2D
  * find the closest point in a list of lines
  * find the closest edge index in a polygon / list of segments
@@ -47,7 +47,7 @@ import java.util.Map;
  * check if a point is on polygon boundary
  * find the point is on which segment (return WB_Segment, ZLine, or indices of two points)
  * find the point is within which polygon(-1)
- *
+ * <p>
  * #### boundary methods
  * giving start point and distance, find two points along polygon boundary (0 forward, 1 backward)
  * giving step to split a polygon
@@ -57,8 +57,9 @@ import java.util.Map;
  * giving step threshold to split a WB_PolyLine or WB_Polygon, return a LinkedHashMap of split point and edge index
  * giving step threshold to split each segment of a WB_PolyLine or WB_Polygon
  * giving a split number, split a polygon or a polyline equally
- *
+ * <p>
  * #### polygon tools
+ * calculate area from a series of points, no need to construct a polygon
  * get the direction of a OBB
  * reverse the order of a polygon (holes supported)
  * check if two polygon have same direction
@@ -66,7 +67,7 @@ import java.util.Map;
  * find the longest segment and the shortest segment in a polygon
  * offset one segment of a polygon (input valid, face up polygon)
  * offset several segments of a polygon (input valid, face up polygon), return polyline or polygon
- *
+ * <p>
  * #### other methods
  * set jts precision model (FLOAT, FLOAT_SINGLE, FIXED)
  * halving a OBB
@@ -1451,6 +1452,22 @@ public final class ZGeoMath {
 
 
     /*-------- polygon tools --------*/
+
+    /**
+     * calculate area from a series of points, avoiding construct a polygon
+     *
+     * @param pts a series of points
+     * @return double
+     */
+    public static double areaFromPoints(ZPoint[] pts) {
+        double area = 0;
+        for (int i = 0; i < pts.length; i++) {
+            ZPoint p = pts[i];
+            ZPoint q = pts[(i + 1) % pts.length];
+            area += (q.xd() * p.yd() - p.xd() * q.yd());
+        }
+        return 0.5 * Math.abs(area);
+    }
 
     /**
      * get the direction of a OBB

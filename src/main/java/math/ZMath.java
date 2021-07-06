@@ -21,6 +21,7 @@ import java.util.HashMap;
  * generate random number by given floor and ceiling
  * generate a series of random number by given floor and ceiling
  * generate random integer by given floor and ceiling
+ * generate a series of random integer (start from 0)
  * map a number from old region to a new region
  * <p>
  * #### permutation & combination
@@ -100,7 +101,7 @@ public final class ZMath {
         }
 
         // use Arrays.sort() to sort input array (ascending order)
-        double[] sorted_arr = arr;
+        double[] sorted_arr = Arrays.copyOf(arr, arr.length);
         Arrays.sort(sorted_arr);
 
         // find orginal index of each value in sorted array
@@ -152,6 +153,20 @@ public final class ZMath {
      */
     public static int randomInt(final double min, final double max) {
         return (int) (Math.random() * (max - min) + min);
+    }
+
+    /**
+     * generate a series of random integer (start from 0)
+     *
+     * @param length length of random integer series
+     * @return int[]
+     */
+    public static int[] randomSeries(final int length) {
+        double[] random = new double[length];
+        for (int i = 0; i < length; i++) {
+            random[i] = Math.random();
+        }
+        return getArraySortedIndices(random);
     }
 
     /**

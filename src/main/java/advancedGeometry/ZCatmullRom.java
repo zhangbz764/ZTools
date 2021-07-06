@@ -25,26 +25,39 @@ public class ZCatmullRom {
     private int dividePerSpan = 10;
     private boolean closed = false;
 
-    private List<ZPoint> curveDividePoints;
+    private final List<ZPoint> curveControlPts;
+    private final List<ZPoint> curveDividePts;
 
     /* ------------- constructor ------------- */
 
-    public ZCatmullRom(List<? extends ZPoint> controlPoints, int samplesPerSpan, boolean closed) {
+    public ZCatmullRom(List<ZPoint> controlPoints, int samplesPerSpan, boolean closed) {
         setDividePerSpan(samplesPerSpan);
         setClosed(closed);
 
-        this.curveDividePoints = calculateSpline(controlPoints);
+        this.curveControlPts = controlPoints;
+        this.curveDividePts = calculateCatmull(curveControlPts);
     }
 
     public ZCatmullRom(WB_Coord[] controlPoints, int samplesPerSpan, boolean closed) {
         setDividePerSpan(samplesPerSpan);
         setClosed(closed);
 
-        List<ZPoint> pts = new ArrayList<>();
+        this.curveControlPts = new ArrayList<>();
         for (WB_Coord c : controlPoints) {
-            pts.add(new ZPoint(c));
+            curveControlPts.add(new ZPoint(c));
         }
-        this.curveDividePoints = calculateSpline(pts);
+        this.curveDividePts = calculateCatmull(curveControlPts);
+    }
+
+    public ZCatmullRom(Coordinate[] controlPoints, int samplesPerSpan, boolean closed) {
+        setDividePerSpan(samplesPerSpan);
+        setClosed(closed);
+
+        this.curveControlPts = new ArrayList<>();
+        for (Coordinate c : controlPoints) {
+            curveControlPts.add(new ZPoint(c));
+        }
+        this.curveDividePts = calculateCatmull(curveControlPts);
     }
 
     /* ------------- member function ------------- */
@@ -53,10 +66,10 @@ public class ZCatmullRom {
      * Enumerates interpolation spline points using a set of control points,
      * samples per span count and Catmull-Rom polynom equations.
      *
-     * @param controlPoints Set of control points that will be interpolated by the spline
-     * @return Resulting set of spline points
+     * @param controlPoints a set of control points that will be interpolated by the curve
+     * @return Resulting set of curve points
      */
-    public List<ZPoint> calculateSpline(List<? extends ZPoint> controlPoints) {
+    public List<ZPoint> calculateCatmull(List<ZPoint> controlPoints) {
         if (controlPoints != null && controlPoints.size() > 1) {
             if (!closed) {
                 List<ZPoint> dividePoints = new ArrayList<>();
@@ -169,8 +182,12 @@ public class ZCatmullRom {
         this.closed = closed;
     }
 
-    public List<ZPoint> getCurveDividePoints() {
-        return curveDividePoints;
+    public List<ZPoint> getCurveControlPts() {
+        return curveControlPts;
+    }
+
+    public List<ZPoint> getCurveDividePts() {
+        return curveDividePts;
     }
 
     public double getCurveLength(List<ZPoint> spline) {
@@ -191,28 +208,28 @@ public class ZCatmullRom {
     }
 
     public LineString getAsLineString() {
-        Coordinate[] coordinates = new Coordinate[curveDividePoints.size()];
+        Coordinate[] coordinates = new Coordinate[curveDividePts.size()];
         int length = coordinates.length;
         for (int i = 0; i < length; i++) {
-            coordinates[i] = curveDividePoints.get(i).toJtsCoordinate();
+            coordinates[i] = curveDividePts.get(i).toJtsCoordinate();
         }
         return ZFactory.jtsgf.createLineString(coordinates);
     }
 
     public WB_PolyLine getAsWB_PolyLine() {
-        WB_Point[] points = new WB_Point[curveDividePoints.size()];
+        WB_Point[] points = new WB_Point[curveDividePts.size()];
         int length = points.length;
         for (int i = 0; i < length; i++) {
-            points[i] = curveDividePoints.get(i).toWB_Point();
+            points[i] = curveDividePts.get(i).toWB_Point();
         }
         return new WB_PolyLine(points);
     }
 
-    public WB_Polygon getAsWB_Polygon(){
-        WB_Point[] points = new WB_Point[curveDividePoints.size()];
+    public WB_Polygon getAsWB_Polygon() {
+        WB_Point[] points = new WB_Point[curveDividePts.size()];
         int length = points.length;
         for (int i = 0; i < length; i++) {
-            points[i] = curveDividePoints.get(i).toWB_Point();
+            points[i] = curveDividePts.get(i).toWB_Point();
         }
         return new WB_Polygon(points);
     }

@@ -23,7 +23,6 @@ import java.util.List;
 public class ZPoint {
     private double x = 0, y = 0, z = 0;
     private final float r = 5;
-    private final float vecCap = 3;
 
     /* ------------- constructor ------------- */
 
@@ -77,6 +76,18 @@ public class ZPoint {
     public void set(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public void setZ(double z) {
+        this.z = z;
     }
 
     public void set(WB_Coord c) {
@@ -203,7 +214,6 @@ public class ZPoint {
     /**
      * length of a vector
      *
-     * @param
      * @return double
      */
     public double getLength() {
@@ -233,7 +243,6 @@ public class ZPoint {
     /**
      * get the normalized vector
      *
-     * @param
      * @return geometry.ZPoint
      */
     public ZPoint normalize() {
@@ -242,9 +251,18 @@ public class ZPoint {
     }
 
     /**
+    * normalize vector itself
+    *
+    */
+    public void normalizeSelf() {
+        double length = this.getLength();
+        this.scaleSelf(1.0 / length);
+    }
+
+    /**
      * rotate the vector (2D)
      *
-     * @param angle
+     * @param angle angle to rotate
      * @return geometry.ZPoint
      */
     public ZPoint rotate2D(double angle) {
@@ -395,7 +413,7 @@ public class ZPoint {
      * @param base base point of a vector
      * @return void
      */
-    public void displayAsVector(PApplet app, ZPoint base) {
+    public void displayAsVector(PApplet app, ZPoint base, float vecCap) {
         ZPoint dest = base.add(this);
         app.pushStyle();
         app.noFill();
@@ -413,7 +431,7 @@ public class ZPoint {
      * @param scale scale
      * @return void
      */
-    public void displayAsVector(PApplet app, ZPoint base, double scale) {
+    public void displayAsVector(PApplet app, ZPoint base, double scale, float vecCap) {
         ZPoint dest = base.add(this.scaleTo(scale));
         app.pushStyle();
         app.noFill();

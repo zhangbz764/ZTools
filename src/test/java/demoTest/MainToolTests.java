@@ -13,8 +13,15 @@ import processing.core.PApplet;
 public class MainToolTests {
     public static void main(String[] args) {
 
+        /* test blob cell simulation */
+//        PApplet.main("demoTest.TestBlob");
+
+//        PApplet.main("demoTest.TestBlob2");
+
+//        PApplet.main("demoTest.TestBlob3");
+
         /* test ZSkeleton with holes */
-//        PApplet.main("demoTest.TestCampSkeleton");
+        PApplet.main("demoTest.TestCampSkeleton");
 
         /* test jts convexhull、concave points、line polygon intersection，largest rectangle */
 //        PApplet.main("demoTest.TestConvexHull");
@@ -38,7 +45,7 @@ public class MainToolTests {
 //        PApplet.main("demoTest.TestHolesHE_Mesh");
 
         /* test jts buffer, intersection and geometry centroid */
-        PApplet.main("demoTest.TestJtsBuffer");
+//        PApplet.main("demoTest.TestJtsBuffer");
 
         /* test jts LineMerger */
 //        PApplet.main("demoTest.TestJtsLineMerger");

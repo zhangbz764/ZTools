@@ -1,9 +1,7 @@
 package transform;
 
 import basicGeometry.ZFactory;
-import igeo.ICurve;
-import igeo.IPoint;
-import igeo.IVec;
+import igeo.*;
 import org.locationtech.jts.geom.*;
 import wblut.geom.*;
 
@@ -18,6 +16,7 @@ import java.util.List;
  * @date 2020/10/9
  * @time 17:27
  * most only support simple polygon
+ * <p>
  * ** IGeo <-> WB **
  * IPoint <-> WB_Point
  * IPoint -> WB_Point (scale)
@@ -25,11 +24,20 @@ import java.util.List;
  * ICurve -> WB_Geometry WB_Polygon / WB_Polyline / WB_Segment, (scale)
  * ICurve -> WB_PolyLine (scale)
  * WB_Coord -> IVec
+ * IVecI -> WB_Point
  * WB_PolyLine -> ICurve
+ * WB_Segment -> ICurve
+ * WB_Circle <-> ICircle
+ * <p>
  * ** IGeo <-> jts **
- * IPoint -> Coordinate
- * IPoint -> Point
+ * IPoint <-> Coordinate
+ * IPoint <-> Point
+ * IVecI -> Coordinate
+ * IVecI -> Point
+ * Coordinate -> IVec
+ * Point -> IVec
  * ICurve -> Geometry Polygon / LineString
+ * <p>
  * ** WB <-> jts **
  * WB_Coord <-> Point
  * WB_Coord <-> Coordinate
@@ -38,10 +46,12 @@ import java.util.List;
  * LineString -> WB_PolyLine
  * WB_PolyLine -> LineString
  * WB_Segment -> LineString
+ * <p>
  * ** WB <-> WB **
  * WB_Polygon -> WB_Polygon (validate)
  * WB_Polygon -> WB_PolyLine
  * WB_AABB -> WB_AABB offset WB_AABB
+ * <p>
  * ** jts <-> jts **
  * Polygon -> LineString
  * <p>
@@ -50,6 +60,26 @@ public class ZTransform {
     private static final double epsilon = 0.00000001;
 
     /*-------- IGeo <-> WB --------*/
+
+    /**
+     * WB_Coord -> IVec
+     *
+     * @param point input WB_Point
+     * @return igeo.IVec
+     */
+    public static IVec WB_CoordToIVec(final WB_Coord point) {
+        return new IVec(point.xd(), point.yd(), point.zd());
+    }
+
+    /**
+     * IVecI -> WB_Point
+     *
+     * @param vec input IVecI
+     * @return wblut.geom.WB_Point
+     */
+    public static WB_Point IVecIToWB_Point(final IVecI vec) {
+        return new WB_Point(vec.x(), vec.y(), vec.z());
+    }
 
     /**
      * IPoint -> WB_Point
@@ -73,23 +103,13 @@ public class ZTransform {
     }
 
     /**
-     * 将WB_Coord转换为IPoint
+     * WB_Coord -> IPoint
      *
      * @param point input WB_Point
      * @return igeo.IPoint
      */
     public static IPoint WB_CoordToIPoint(final WB_Coord point) {
         return new IPoint(point.xd(), point.yd(), point.zd());
-    }
-
-    /**
-     * WB_Coord -> IVec
-     *
-     * @param point input WB_Point
-     * @return igeo.IVec
-     */
-    public static IVec WB_CoordToIVec(final WB_Coord point) {
-        return new IVec(point.xd(), point.yd(), point.zd());
     }
 
     /**
@@ -185,7 +205,63 @@ public class ZTransform {
         return new ICurve(vecs);
     }
 
+    /**
+     * WB_Segment -> ICurve
+     *
+     * @param segment input WB_Segment
+     * @return igeo.ICurve
+     */
+    public static ICurve WB_SegmentToICurve(final WB_Segment segment) {
+        WB_Coord s = segment.getOrigin();
+        WB_Coord e = segment.getEndpoint();
+        return new ICurve(WB_CoordToIVec(s), WB_CoordToIVec(e));
+    }
+
+    /**
+     * WB_Circle -> ICircle
+     *
+     * @param circle input WB_Circle
+     * @return igeo.ICircle
+     */
+    public static ICircle WB_CircleToICircle(final WB_Circle circle) {
+        WB_Coord center = circle.getCenter();
+        double r = circle.getRadius();
+        return new ICircle(WB_CoordToIVec(center), r);
+    }
+
+    /**
+     * ICircle -> WB_Circle
+     *
+     * @param circle input ICircle
+     * @return wblut.geom.WB_Circle
+     */
+    public static WB_Circle ICircleToWB_Circle(final ICircle circle) {
+        IVec v = circle.center();
+        double r = circle.radius();
+        return new WB_Circle(IVecIToWB_Point(v), r);
+    }
+
     /*-------- IGeo <-> Jts --------*/
+
+    /**
+     * IVecI => Coordinate
+     *
+     * @param vec input IVecI
+     * @return org.locationtech.jts.geom.Coordinate
+     */
+    public static Coordinate IVecIToCoordinate(final IVecI vec) {
+        return new Coordinate(vec.x(), vec.y(), vec.z());
+    }
+
+    /**
+     * IVecI => Point
+     *
+     * @param vec input IVecI
+     * @return org.locationtech.jts.geom.Point
+     */
+    public static Point IVecIToPoint(final IVecI vec) {
+        return ZFactory.jtsgf.createPoint(IVecIToCoordinate(vec));
+    }
 
     /**
      * IPoint -> Coordinate
@@ -205,6 +281,56 @@ public class ZTransform {
      */
     public static Point IPointToPoint(final IPoint point) {
         return ZFactory.jtsgf.createPoint(IPointToCoordinate(point));
+    }
+
+    /**
+     * Coordinate -> IPoint
+     *
+     * @param c input Coordinate
+     * @return igeo.IPoint
+     */
+    public static IPoint CoordinateToIPoint(final Coordinate c) {
+        double z = c.z;
+        if (Double.isNaN(z)) {
+            return new IPoint(c.x, c.y, 0);
+        } else {
+            return new IPoint(c.x, c.y, z);
+        }
+    }
+
+    /**
+     * Point -> IPoint
+     *
+     * @param p input Point
+     * @return igeo.IPoint
+     */
+    public static IPoint PointToIPoint(final Point p) {
+        return new IPoint(p.getX(), p.getY(), 0);
+    }
+
+    /**
+     * Coordinate -> IVec
+     *
+     * @param c input Coordinate
+     * @return igeo.IVec
+     */
+    public static IVec CoordinateToIVec(final Coordinate c) {
+        double z = c.z;
+        if (Double.isNaN(z)) {
+            return new IVec(c.x, c.y, 0);
+        } else {
+            return new IVec(c.x, c.y, z);
+        }
+    }
+
+    /**
+     * Point -> IVec
+     *
+     * @param p input Point
+     * @return igeo.IVec
+     */
+    public static IVec PointToIVec(final Point p) {
+        return new IVec(p.getX(), p.getY(), 0);
     }
 
     /**
@@ -251,12 +377,12 @@ public class ZTransform {
     }
 
     /**
-     * Point ->WB_Point
+     * Point -> WB_Point
      *
      * @param p input Point
      * @return wblut.geom.WB_Point
      */
-    public static WB_Point PointToWB_Point(final Point p) {
+    public static WB_Point CoordinateToWB_Point(final Point p) {
         return new WB_Point(p.getX(), p.getY(), 0);
     }
 
@@ -276,7 +402,7 @@ public class ZTransform {
      * @param c input Coordinate
      * @return wblut.geom.WB_Point
      */
-    public static WB_Point PointToWB_Point(final Coordinate c) {
+    public static WB_Point CoordinateToWB_Point(final Coordinate c) {
         double z = c.z;
         if (Double.isNaN(z)) {
             return new WB_Point(c.x, c.y, 0);

@@ -12,6 +12,7 @@ import transform.ZTransform;
 import wblut.geom.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -57,15 +58,18 @@ public class ZFactory {
             lineStrings.add(line.toJtsLineString());
         }
         lineMerger.add(lineStrings);
-        if (lineMerger.getMergedLineStrings().size() > 1) {
-            double[] lineStringLengths = new double[lineMerger.getMergedLineStrings().toArray().length];
-            for (int i = 0; i < lineMerger.getMergedLineStrings().toArray().length; i++) {
-                LineString l = (LineString) lineMerger.getMergedLineStrings().toArray()[i];
+
+        Collection mergeResult = lineMerger.getMergedLineStrings();
+        Object[] result = mergeResult.toArray();
+        if (mergeResult.size() > 1) {
+            double[] lineStringLengths = new double[result.length];
+            for (int i = 0; i < result.length; i++) {
+                LineString l = (LineString) result[i];
                 lineStringLengths[i] = l.getLength();
             }
-            return (LineString) lineMerger.getMergedLineStrings().toArray()[ZMath.getMaxIndex(lineStringLengths)];
+            return (LineString) result[ZMath.getMaxIndex(lineStringLengths)];
         } else if (lineMerger.getMergedLineStrings().size() == 1) {
-            return (LineString) lineMerger.getMergedLineStrings().toArray()[0];
+            return (LineString) result[0];
         } else {
             return null;
         }

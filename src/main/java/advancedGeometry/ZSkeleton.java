@@ -348,22 +348,23 @@ public class ZSkeleton {
         // find ridge in skeleton
         List<HE_Vertex> curr_vertices = new ArrayList<>();
         for (int i = 0; i < skeletonMesh.getNumberOfVertices(); i++) {
-            if (!skeletonMesh.getVertexWithIndex(i).isBoundary()) {
-                curr_vertices.add(skeletonMesh.getVertexWithIndex(i));
-                ridgePoints.add(new ZPoint(skeletonMesh.getVertexWithIndex(i)));
+            HE_Vertex v = skeletonMesh.getVertexWithIndex(i);
+            if (!v.isBoundary()) {
+                curr_vertices.add(v);
+                ridgePoints.add(new ZPoint(v));
 
                 List<ZPoint> verticesFromRidgeEnd = new ArrayList<>();
-                for (HE_Vertex vertex : skeletonMesh.getVertexWithIndex(i).getNeighborVertices()) {
+                for (HE_Vertex vertex : v.getNeighborVertices()) {
                     if (!vertex.isBoundary() && !curr_vertices.contains(vertex)) {
-                        ridges.add(new ZLine(new ZPoint(skeletonMesh.getVertexWithIndex(i)), new ZPoint(vertex)));
+                        ridges.add(new ZLine(new ZPoint(v), new ZPoint(vertex)));
                     }
                     if (vertex.isBoundary()) {
                         verticesFromRidgeEnd.add(new ZPoint(vertex));
                     }
                 }
-                if (verticesFromRidgeEnd.size() == 2) {
+                if (verticesFromRidgeEnd.size() == 2 && v.getNeighborVertices().size() == 3) {
                     ZPoint center = verticesFromRidgeEnd.get(0).centerWith(verticesFromRidgeEnd.get(1));
-                    extendedRidges.add(new ZLine(new ZPoint(skeletonMesh.getVertexWithIndex(i)), center));
+                    extendedRidges.add(new ZLine(new ZPoint(v), center));
                 }
             }
         }
