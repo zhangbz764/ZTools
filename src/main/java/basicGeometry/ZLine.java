@@ -162,6 +162,8 @@ public class ZLine {
         return new ZLine(pt0.add(vec), pt1.add(vec));
     }
 
+
+
     /**
      * divide ZLine by giving step length
      *

@@ -6,6 +6,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import processing.core.PApplet;
 import wblut.geom.WB_Coord;
+import wblut.geom.WB_GeometryOp;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Vector;
 
@@ -251,9 +252,8 @@ public class ZPoint {
     }
 
     /**
-    * normalize vector itself
-    *
-    */
+     * normalize vector itself
+     */
     public void normalizeSelf() {
         double length = this.getLength();
         this.scaleSelf(1.0 / length);
@@ -280,6 +280,39 @@ public class ZPoint {
     }
 
     /**
+     * get the mirror point with a center point
+     *
+     * @param center center point
+     * @return basicGeometry.ZPoint
+     */
+    public ZPoint mirrorPoint(ZPoint center) {
+        return new ZPoint(center.xd() * 2 - x, center.yd() * 2 - y);
+    }
+
+    /**
+     * get the mirror point with a line
+     *
+     * @param l ZLine
+     * @return basicGeometry.ZPoint
+     */
+    public ZPoint mirrorPoint(ZLine l) {
+        double x1 = l.getPt0().xd();
+        double x2 = l.getPt1().xd();
+        double y1 = l.getPt0().yd();
+        double y2 = l.getPt1().yd();
+        if (x1 - x2 == 0) {
+            return this.mirrorPoint(new ZPoint(x1, y));
+        } else if (y1 - y2 == 0) {
+            return this.mirrorPoint(new ZPoint(x, y1));
+        } else {
+            double p = (x1 - x2) / (y1 - y2);
+            double m = (p * p * x + x2 - p * y2) / (p * p + 1);
+            double n = (m - x2) / p + y2;
+            return this.mirrorPoint(new ZPoint(m, n));
+        }
+    }
+
+    /**
      * dot product (2D)
      *
      * @param v
@@ -290,7 +323,7 @@ public class ZPoint {
     }
 
     /**
-     * cross product (2D)
+     * product (2D)
      *
      * @param v
      * @return double

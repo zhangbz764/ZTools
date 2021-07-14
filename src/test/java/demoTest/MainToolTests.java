@@ -20,8 +20,10 @@ public class MainToolTests {
 
 //        PApplet.main("demoTest.TestBlob3");
 
+//        PApplet.main("demoTest.TestCampSkeleton");
+
         /* test ZSkeleton with holes */
-        PApplet.main("demoTest.TestCampSkeleton");
+        PApplet.main("demoTest2.BallBounce");
 
         /* test jts convexhull、concave points、line polygon intersection，largest rectangle */
 //        PApplet.main("demoTest.TestConvexHull");
