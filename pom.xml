@@ -25,6 +25,7 @@
                 </excludes>
             </resource>
         </resources>
+
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <testResources>
             <testResource>
@@ -100,6 +101,26 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.twak.utils</groupId>
+                    <artifactId>utils</artifactId>
+                    <version>0.0.1-SNAPSHOT</version>
+                </dependency>
+
+                <!-- https://mvnrepository.com/artifact/org.locationtech.jts/jts-core -->
+                <dependency>
+                    <groupId>org.locationtech.jts</groupId>
+                    <artifactId>jts-core</artifactId>
+                    <version>1.16.1</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
