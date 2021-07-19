@@ -20,10 +20,10 @@ public class MainToolTests {
 
 //        PApplet.main("demoTest.TestBlob3");
 
-//        PApplet.main("demoTest.TestCampSkeleton");
+//        PApplet.main("demoTest2.BallBounce");
 
         /* test ZSkeleton with holes */
-        PApplet.main("demoTest2.BallBounce");
+//        PApplet.main("demoTest.TestCampSkeleton");
 
         /* test jts convexhull、concave points、line polygon intersection，largest rectangle */
 //        PApplet.main("demoTest.TestConvexHull");
@@ -41,7 +41,7 @@ public class MainToolTests {
 //        PApplet.main("demoTest.TestGurobi2");
 
         /* test hemesh mesh and union，buffer */
-//        PApplet.main("demoTest.TestHe_Mesh");
+        PApplet.main("demoTest.TestHe_Mesh");
 
         /* test holes in hemesh*/
 //        PApplet.main("demoTest.TestHolesHE_Mesh");

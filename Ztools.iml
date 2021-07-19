@@ -12,11 +12,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="guo_cam_new" level="application" />
-    <orderEntry type="library" name="gurobi903" level="application" />
-    <orderEntry type="library" name="hemesh201907" level="application" />
-    <orderEntry type="library" name="igeo" level="application" />
-    <orderEntry type="library" name="jswarm-pso_2_08" level="application" />
     <orderEntry type="library" name="Maven: org.processing:core:3.3.7" level="project" />
     <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt-main:2.3.2" level="project" />
     <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:2.3.2" level="project" />
@@ -76,5 +71,95 @@
     <orderEntry type="library" name="Maven: org.apache.xmlgraphics:batik-script:1.10" level="project" />
     <orderEntry type="library" name="Maven: org.apache.xmlgraphics:batik-transcoder:1.10" level="project" />
     <orderEntry type="library" name="Maven: org.apache.xmlgraphics:batik-anim:1.10" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: sghr:igeo:0.9.3.0">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/igeo.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: guo:guo-cam:0.1">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/guo_cam_new.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: gurobi:gurobi:0.1">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/gurobi.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: net.sourceforge:jswarm-pso:2.08">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/jswarm-pso_2_08.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: wblut:hemesh:201907">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/hemesh.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: wblut:hemesh-lab:201907">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/hemesh-lab.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: wblut:hemesh-external:201907">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/hemesh-external-6_0_0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: wblut:hemesh-data:201907">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/hemesh-data-3_0_0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: wblut:eclipse-collections:201907">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/eclipse-collections-9.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: wblut:eclipse-collections-api:201907">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/eclipse-collections-api-9.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
