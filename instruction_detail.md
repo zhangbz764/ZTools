@@ -159,6 +159,8 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 
 * 输入Geometry，设置Jts的Precision Model  
   `applyJtsPrecisionModel`
+* 找到一组点的中心点
+  `centerFromPoints`
 * 将OBB对半切分   
   `halvingOBB`
 * 得到基本OBBTree  

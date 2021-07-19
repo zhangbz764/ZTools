@@ -1,8 +1,12 @@
 package demoTest2;
 
+import basicGeometry.ZFactory;
 import basicGeometry.ZLine;
 import basicGeometry.ZPoint;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
+import render.JtsRender;
 
 /**
  * description
@@ -29,13 +33,26 @@ public class BallBounce extends PApplet {
     private ZPoint p = new ZPoint(200, 0);
     private ZPoint q;
 
-    public void setup() {
+    private Polygon test;
+    private JtsRender jtsRender;
+
+    public void setup() {jtsRender = new JtsRender(this);
         this.ball = new float[]{random(width), random(height)};
         this.segment = new float[]{250, 250, 250, 400};
 
         ZLine l = new ZLine(250, 250, 250, 400);
         q = p.mirrorPoint(l);
         System.out.println(q);
+
+        Coordinate[] coords = new Coordinate[5];
+        coords[0] = new Coordinate(100, 100);
+        coords[1] = new Coordinate(400, 100);
+        coords[2] = new Coordinate(400, 400);
+        coords[3] = new Coordinate(100, 400);
+        coords[4] = new Coordinate(100, 100);
+        this.test = ZFactory.jtsgf.createPolygon(coords);
+
+
     }
 
     /* ------------- draw ------------- */
@@ -64,12 +81,19 @@ public class BallBounce extends PApplet {
             deltaX = random(2, 4);
             deltaY = random(2, 4);
         }
+
+        jtsRender.drawGeometry(test);
     }
 
     public void keyPressed() {
         if (key == 's') {
             ball[0] += deltaX;
             ball[1] += deltaY;
+        }
+        if (key == 'e') {
+            Coordinate c = new Coordinate(test.getCoordinates()[0].x + 10, test.getCoordinates()[0].y);
+            test.getCoordinates()[0].setCoordinate(c);
+            System.out.println(test.toString());
         }
     }
 

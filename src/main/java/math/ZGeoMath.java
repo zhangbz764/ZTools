@@ -70,6 +70,7 @@ import java.util.Map;
  * <p>
  * #### other methods
  * set jts precision model (FLOAT, FLOAT_SINGLE, FIXED)
+ * get the center of a series of points
  * halving a OBB
  * get a simple OBB tree of a geometry
  * <p>
@@ -805,7 +806,7 @@ public final class ZGeoMath {
      * find the closest edge index in a list of segments
      *
      * @param p    target point
-     * @param segs input list ofsegments
+     * @param segs input list of segments
      * @return int
      */
     public static int closestSegment(final ZPoint p, final List<? extends ZLine> segs) {
@@ -1676,6 +1677,23 @@ public final class ZGeoMath {
 
 
     /*-------- other methods --------*/
+
+    /**
+     * get the center of a series of points
+     *
+     * @param pts pointes
+     * @return wblut.geom.WB_Point
+     */
+    public static WB_Point centerFromPoints(WB_Point[] pts) {
+        int length = pts.length;
+        double x = 0, y = 0, z = 0;
+        for (int i = 0; i < length; i++) {
+            x += pts[i].xd();
+            y += pts[i].yd();
+            z += pts[i].zd();
+        }
+        return new WB_Point(x / length, y / length, z / length);
+    }
 
     /**
      * set jts precision model (FLOAT, FLOAT_SINGLE, FIXED)

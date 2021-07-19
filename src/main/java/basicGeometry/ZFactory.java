@@ -133,6 +133,20 @@ public class ZFactory {
     }
 
     /**
+     * break a polyline to a list of ZLine
+     *
+     * @param polyLine polyline to break
+     * @return java.util.List<basicGeometry.ZLine>
+     */
+    public static List<ZLine> breakWB_PolyLine(final WB_PolyLine polyLine) {
+        List<ZLine> result = new ArrayList<>();
+        for (int i = 0; i < polyLine.getNumberSegments(); i++) {
+            result.add(new ZLine(polyLine.getSegment(i)));
+        }
+        return result;
+    }
+
+    /**
      * break WB_PolyLine by giving point indices to break
      *
      * @param polyLine   polyLine to be break
