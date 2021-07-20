@@ -110,7 +110,7 @@
     <orderEntry type="module-library">
       <library name="Maven: wblut:hemesh:201907">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/hemesh.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/hemesh2019/hemesh.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -119,7 +119,7 @@
     <orderEntry type="module-library">
       <library name="Maven: wblut:hemesh-lab:201907">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/hemesh-lab.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/hemesh2019/hemesh-lab.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -128,7 +128,7 @@
     <orderEntry type="module-library">
       <library name="Maven: wblut:hemesh-external:201907">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/hemesh-external-6_0_0.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/hemesh2019/hemesh-external-6_0_0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -137,7 +137,7 @@
     <orderEntry type="module-library">
       <library name="Maven: wblut:hemesh-data:201907">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/hemesh-data-3_0_0.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/hemesh2019/hemesh-data-3_0_0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -146,7 +146,7 @@
     <orderEntry type="module-library">
       <library name="Maven: wblut:eclipse-collections:201907">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/eclipse-collections-9.0.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/hemesh2019/eclipse-collections-9.0.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -155,7 +155,7 @@
     <orderEntry type="module-library">
       <library name="Maven: wblut:eclipse-collections-api:201907">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/eclipse-collections-api-9.0.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/hemesh2019/eclipse-collections-api-9.0.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
