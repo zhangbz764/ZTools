@@ -6,11 +6,14 @@
 
     <groupId>org.github.Agent14zbz</groupId>
     <artifactId>Ztools</artifactId>
-    <version>0.0.1</version>
+    <version>0.1</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <build>
@@ -39,10 +42,11 @@
 
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <includeSystemScope>true</includeSystemScope>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
 
@@ -82,16 +86,7 @@
                             <classpathPrefix>lib/</classpathPrefix>
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>./lib/igeo.jar</Class-Path>
-                            <Class-Path>./lib/guo_cam_new.jar</Class-Path>
                             <Class-Path>./lib/gurobi.jar</Class-Path>
-                            <Class-Path>./lib/jswarm-pso_2_08.jar</Class-Path>
-                            <Class-Path>./lib/hemesh2019/hemesh.jar</Class-Path>
-                            <Class-Path>./lib/hemesh2019/hemesh-lab.jar</Class-Path>
-                            <Class-Path>./lib/hemesh2019/hemesh-external-6_0_0.jar</Class-Path>
-                            <Class-Path>./lib/hemesh2019/hemesh-data-3_0_0.jar</Class-Path>
-                            <Class-Path>./lib/hemesh2019/eclipse-collections-9.0.0.jar</Class-Path>
-                            <Class-Path>./lib/hemesh2019/eclipse-collections-api-9.0.0.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                     <outputDirectory>
@@ -150,87 +145,45 @@
             <artifactId>campskeleton</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.gurobi/gurobi-jar -->
+        <dependency>
+            <groupId>com.gurobi</groupId>
+            <artifactId>gurobi-jar</artifactId>
+            <version>9.1.1</version>
+        </dependency>
 
-        <!-- system jars: igeo -->
+        <!-- archialgo -->
         <dependency>
-            <groupId>sghr</groupId>
-            <artifactId>igeo</artifactId>
-            <version>0.9.3.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/igeo.jar</systemPath>
+            <groupId>com.github.archialgo</groupId>
+            <artifactId>camera</artifactId>
+            <version>1.1</version>
         </dependency>
-        <!-- system jars: guo_cam -->
         <dependency>
-            <groupId>guo</groupId>
-            <artifactId>guo-cam</artifactId>
-            <version>0.1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/guo_cam_new.jar</systemPath>
+            <groupId>com.github.archialgo</groupId>
+            <artifactId>HE_Mesh-maven-lib</artifactId>
+            <version>2019.0.2</version>
         </dependency>
-        <!-- system jars: gurobi -->
         <dependency>
-            <groupId>gurobi</groupId>
-            <artifactId>gurobi</artifactId>
-            <version>0.1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/gurobi.jar</systemPath>
+            <groupId>com.github.archialgo</groupId>
+            <artifactId>iGeo-maven-lib</artifactId>
+            <version>0.9.4.1</version>
         </dependency>
-        <!-- system jars: jswarm -->
+
         <dependency>
-            <groupId>net.sourceforge</groupId>
-            <artifactId>jswarm-pso</artifactId>
+            <groupId>com.github.Agent14zbz</groupId>
+            <artifactId>JSwarm-PSO-maven-lib</artifactId>
             <version>2.08</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/jswarm-pso_2_08.jar</systemPath>
         </dependency>
-        <!-- system jars: hemesh -->
-        <dependency>
-            <groupId>wblut</groupId>
-            <artifactId>hemesh</artifactId>
-            <version>201907</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/hemesh2019/hemesh.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>wblut</groupId>
-            <artifactId>hemesh-lab</artifactId>
-            <version>201907</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/hemesh2019/hemesh-lab.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>wblut</groupId>
-            <artifactId>hemesh-external</artifactId>
-            <version>201907</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/hemesh2019/hemesh-external-6_0_0.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>wblut</groupId>
-            <artifactId>hemesh-data</artifactId>
-            <version>201907</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/hemesh2019/hemesh-data-3_0_0.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>wblut</groupId>
-            <artifactId>eclipse-collections</artifactId>
-            <version>201907</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/hemesh2019/eclipse-collections-9.0.0.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>wblut</groupId>
-            <artifactId>eclipse-collections-api</artifactId>
-            <version>201907</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/hemesh2019/eclipse-collections-api-9.0.0.jar</systemPath>
-        </dependency>
+
     </dependencies>
 
     <repositories>
         <repository>
             <id>jitpack.io</id>
+            <url>https://bio.informatik.uni-jena.de/repository/libs-release-oss/</url>
+        </repository>
+        <repository>
+            <id>Jena Bio</id>
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
