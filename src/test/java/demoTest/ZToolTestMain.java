@@ -10,8 +10,10 @@ import processing.core.PApplet;
  * @date 2020/12/9
  * @time 16:22
  */
-public class MainToolTests {
+public class ZToolTestMain {
     public static void main(String[] args) {
+
+        // demoTest1
 
         /* test blob cell simulation */
 //        PApplet.main("demoTest.TestBlob");
@@ -19,8 +21,6 @@ public class MainToolTests {
 //        PApplet.main("demoTest.TestBlob2");
 
 //        PApplet.main("demoTest.TestBlob3");
-
-//        PApplet.main("demoTest2.BallBounce");
 
         /* test ZSkeleton with holes */
 //        PApplet.main("demoTest.TestCampSkeleton");
@@ -41,7 +41,7 @@ public class MainToolTests {
 //        PApplet.main("demoTest.TestGurobi2");
 
         /* test hemesh mesh and union，buffer */
-        PApplet.main("demoTest.TestHe_Mesh");
+//        PApplet.main("demoTest.TestHe_Mesh");
 
         /* test holes in hemesh*/
 //        PApplet.main("demoTest.TestHolesHE_Mesh");
@@ -57,6 +57,9 @@ public class MainToolTests {
 
         /* test polygon decomposition */
 //        PApplet.main("demoTest.TestPolyDecomp");
+
+        /* test ZGeoMath: polygon tools */
+        PApplet.main("demoTest.TestPolygonTools");
 
         /* test polygon split and offset methods */
 //        PApplet.main("demoTest.TestPolySplit");
@@ -75,5 +78,11 @@ public class MainToolTests {
 
         /* test Catmull-Rom curve and WB_BSpline */
 //        PApplet.main("demoTest.TestCurve");
+
+
+        // demoTest2
+
+        /* test bouncing ball */
+//        PApplet.main("demoTest2.BallBounce");
     }
 }

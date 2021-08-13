@@ -11,6 +11,7 @@ import processing.core.PVector;
  * @date 2021/6/18
  * @time 10:35
  */
+@Deprecated
 public class TestBlob2 extends PApplet {
     float radius = 16;
     int nodesPerBlob = 12;

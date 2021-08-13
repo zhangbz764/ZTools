@@ -1,9 +1,11 @@
 package basicGeometry;
 
+import math.ZGeoMath;
 import math.ZMath;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.linemerge.LineMergeGraph;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.planargraph.Edge;
@@ -25,13 +27,16 @@ import java.util.List;
  * @time 22:04
  * <p>
  * #### create geometries
+ * create a LineString / Polygon from a Coordinate list
  * create a LineString from a list of segments, if the result is MultiLineString, choose the longest one
  * create a list of WB_PolyLine from a list of segments
  * create a WB_PolyLine from a list of segments, if the result is MultiLineString, choose the longest one
  * break WB_PolyLine by giving point indices to break
  * break LineString by giving point indices to break
+ * cut LineString with two point on it
  * cut out a WB_PolyLine from a WB_Polygon by giving indices
  * extend both ends of a LineString
+ * create an arc by giving center, start and end
  * <p>
  * #### create graphs
  * create a ZGraph from a list of segments
@@ -43,6 +48,34 @@ public class ZFactory {
     private static final double epsilon = 0.0001;
 
     /*-------- create geometries --------*/
+
+    /**
+     * create a LineString from a Coordinate list
+     *
+     * @param list Coordinate list
+     * @return org.locationtech.jts.geom.LineString
+     */
+    public static LineString createLineStringFromList(List<Coordinate> list) {
+        Coordinate[] array = new Coordinate[list.size()];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = list.get(i);
+        }
+        return jtsgf.createLineString(array);
+    }
+
+    /**
+     * create a Polygon from a Coordinate list
+     *
+     * @param list Coordinate list
+     * @return org.locationtech.jts.geom.Polygon
+     */
+    public static Polygon createPolygonFromList(List<Coordinate> list) {
+        Coordinate[] array = new Coordinate[list.size()];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = list.get(i);
+        }
+        return jtsgf.createPolygon(array);
+    }
 
     /**
      * create a LineString from a list of segments
@@ -191,7 +224,7 @@ public class ZFactory {
     /**
      * break LineString by giving point indices to break
      *
-     * @param lineString lineString to be break
+     * @param lineString lineString to break
      * @param breakPoint indices of break point
      * @return java.util.List<org.locationtech.jts.geom.LineString>
      */
@@ -214,6 +247,52 @@ public class ZFactory {
         }
         result.add(jtsgf.createLineString(coords));
         return result;
+    }
+
+    /**
+     * cut LineString with two point on it
+     *
+     * @param lineString lineString to cut
+     * @param p1         point 1
+     * @param p2         point 2
+     * @return org.locationtech.jts.geom.LineString
+     */
+    public static LineString cutLineString2Points(final LineString lineString, final ZPoint p1, final ZPoint p2) {
+        int[] p1Edge = ZGeoMath.pointOnWhichEdgeIndices(p1, lineString);
+        int[] p2Edge = ZGeoMath.pointOnWhichEdgeIndices(p2, lineString);
+        if (p1Edge[0] > -1 && p1Edge[1] > -1 && p2Edge[0] > -1 && p2Edge[1] > -1) {
+            List<Coordinate> coords = new ArrayList<>();
+            if (p1Edge[0] < p2Edge[0]) {
+                // p1 is in front of p2
+                coords.add(p1.toJtsCoordinate());
+                for (int i = p1Edge[1]; i < p2Edge[1]; i++) {
+                    coords.add(lineString.getCoordinateN(i));
+                }
+                coords.add(p2.toJtsCoordinate());
+            } else if (p1Edge[0] > p2Edge[0]) {
+                // p2 is in front of p1
+                coords.add(p2.toJtsCoordinate());
+                for (int i = p2Edge[1]; i < p1Edge[1]; i++) {
+                    coords.add(lineString.getCoordinateN(i));
+                }
+                coords.add(p1.toJtsCoordinate());
+            } else {
+                // on same edge
+                ZPoint p0 = new ZPoint(lineString.getCoordinateN(p1Edge[0]));
+                if (p0.distanceSq(p1) <= p0.distanceSq(p2)) {
+                    // p1 is in front of p2
+                    coords.add(p1.toJtsCoordinate());
+                    coords.add(p2.toJtsCoordinate());
+                } else {
+                    // p2 is in front of p1
+                    coords.add(p2.toJtsCoordinate());
+                    coords.add(p1.toJtsCoordinate());
+                }
+            }
+            return createLineStringFromList(coords);
+        } else {
+            return lineString;
+        }
     }
 
     /**
@@ -277,6 +356,85 @@ public class ZFactory {
         } else {
             return ls;
         }
+    }
+
+    /**
+     * create an arc by giving center, start, end
+     *
+     * @param center center of the arc
+     * @param start  start of the arc
+     * @param end    start of the arc
+     * @param segNum number of segments to divide
+     * @param ccw    counter-clockwise or clockwise
+     * @return basicGeometry.ZPoint[]
+     */
+    public static ZPoint[] createArc(final ZPoint center, final ZPoint start, final ZPoint end, final int segNum, final boolean ccw) {
+        double radius = start.distance(center);
+        ZPoint v2 = end.sub(center).normalize();
+        ZPoint newEnd = center.add(v2.scaleTo(radius));
+        ZPoint v1 = start.sub(center).normalize();
+
+        ZPoint[] arcPoints = new ZPoint[segNum + 1];
+        double cross = v1.cross2D(v2);
+        double dot = v1.dot2D(v2);
+        if (ccw) {
+            // generate the arc counter-clockwise
+            if (cross > 0) {
+                // inferior angle
+                double angle = Math.acos(dot);
+                double step = angle / segNum;
+                for (int i = 0; i < segNum + 1; i++) {
+                    arcPoints[i] = v1.rotate2D(step * i).scaleTo(radius).add(center);
+                }
+            } else if (cross < 0) {
+                // reflex angle
+                double angle = Math.PI * 2 - Math.acos(dot);
+                double step = angle / segNum;
+                for (int i = 0; i < segNum + 1; i++) {
+                    arcPoints[i] = v1.rotate2D(step * i).scaleTo(radius).add(center);
+                }
+            } else {
+                if (dot >= 0) {
+                    // collinear
+                    arcPoints = new ZPoint[]{start};
+                } else {
+                    // 180 degrees
+                    double step = Math.PI / segNum;
+                    for (int i = 0; i < segNum + 1; i++) {
+                        arcPoints[i] = v1.rotate2D(step * i).scaleTo(radius).add(center);
+                    }
+                }
+            }
+        } else {
+            // generate the arc clockwise
+            if (cross > 0) {
+                // inferior angle
+                double angle = Math.PI * 2 - Math.acos(dot);
+                double step = angle / segNum;
+                for (int i = 0; i < segNum + 1; i++) {
+                    arcPoints[i] = v1.rotate2D(-step * i).scaleTo(radius).add(center);
+                }
+            } else if (cross < 0) {
+                // reflex angle
+                double angle = Math.acos(dot);
+                double step = angle / segNum;
+                for (int i = 0; i < segNum + 1; i++) {
+                    arcPoints[i] = v1.rotate2D(-step * i).scaleTo(radius).add(center);
+                }
+            } else {
+                if (dot >= 0) {
+                    // collinear
+                    arcPoints = new ZPoint[]{start};
+                } else {
+                    // 180 degrees
+                    double step = Math.PI / segNum;
+                    for (int i = 0; i < segNum + 1; i++) {
+                        arcPoints[i] = v1.rotate2D(-step * i).scaleTo(radius).add(center);
+                    }
+                }
+            }
+        }
+        return arcPoints;
     }
 
     /*-------- create graphs --------*/

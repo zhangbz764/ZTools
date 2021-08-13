@@ -15,6 +15,7 @@ import wblut.processing.WB_Render;
  * @date 2021/6/18
  * @time 14:32
  */
+@Deprecated
 public class TestBlob3 extends PApplet {
 
     /* ------------- settings ------------- */

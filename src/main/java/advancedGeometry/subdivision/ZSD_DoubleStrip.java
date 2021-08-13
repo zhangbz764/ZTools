@@ -52,7 +52,7 @@ public class ZSD_DoubleStrip extends ZSubdivision {
         this.skeleton = new ZSkeleton(super.getOriginPolygon());
         this.skeletonMesh = skeleton.getSkeletonMesh();
 
-        List<WB_Polygon> allFacePolys = skeleton.getAllFacePolys(); // origin skeleton faces
+        List<WB_Polygon> allFacePolys = skeleton.getAllFacePolysWB(); // origin skeleton faces
 
         // union polygons by logical streets
         this.unionByStreet = new ArrayList<>();
@@ -99,9 +99,9 @@ public class ZSD_DoubleStrip extends ZSubdivision {
         app.textSize(15);
         for (int j = 0; j < skeleton.getAllFacePolys().size(); j++) {
             app.text(j,
-                    skeleton.getAllFacePolys().get(j).getCenter().xf(),
-                    skeleton.getAllFacePolys().get(j).getCenter().yf(),
-                    skeleton.getAllFacePolys().get(j).getCenter().zf()
+                    skeleton.getAllFacePolysWB().get(j).getCenter().xf(),
+                    skeleton.getAllFacePolysWB().get(j).getCenter().yf(),
+                    skeleton.getAllFacePolysWB().get(j).getCenter().zf()
             );
         }
 

@@ -27,7 +27,7 @@ import java.util.List;
  * @time 13:09
  */
 public class ZRectCover {
-    private WB_Polygon boundary;
+    private Polygon boundary;
 
     // rays
     private int rayDensity = 100;
@@ -40,13 +40,19 @@ public class ZRectCover {
     /* ------------- constructor ------------- */
 
     public ZRectCover(WB_Polygon boundary, int rectNum) {
+        setBoundary(ZTransform.WB_PolygonToPolygon(boundary));
+        setRectNum(rectNum);
+        init();
+    }
+
+    public ZRectCover(Polygon boundary, int rectNum) {
         setBoundary(boundary);
         setRectNum(rectNum);
         init();
     }
 
     public ZRectCover(WB_Polygon boundary, int rectNum, int rayDensity) {
-        setBoundary(boundary);
+        setBoundary(ZTransform.WB_PolygonToPolygon(boundary));
         setRectNum(rectNum);
         setRayDensity(rayDensity);
         init();
@@ -62,7 +68,7 @@ public class ZRectCover {
             throw new IllegalArgumentException("at least 1 covering rectangle");
         } else {
             this.rayExtends = new ArrayList<>();
-            Geometry obb = MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToPolygon(boundary));
+            Geometry obb = MinimumDiameter.getMinimumRectangle(boundary);
             this.bestRects = new ArrayList<>();
             bestRects.add((Polygon) obb);
         }
@@ -90,13 +96,13 @@ public class ZRectCover {
         for (ZPoint c : concave) {
             for (ZPoint dir : dirs) {
                 ZPoint[] ray = new ZPoint[]{c, dir};
-                ZLine extendRay = ZGeoMath.extendSegmentToPolygon(ray, boundary);
+                ZLine extendRay = ZGeoMath.extendSegmentToPolygon(ray, ZTransform.PolygonToWB_Polygon(boundary));
                 if (extendRay != null) {
                     rayExtends.add(new ZLine(c, extendRay.getPt1()));
                 }
             }
         }
-        System.out.println("total rays num : " + rayExtends.size());
+//        System.out.println("total rays num : " + rayExtends.size());
     }
 
     /**
@@ -110,7 +116,7 @@ public class ZRectCover {
         int[] indices = ZMath.createIntegerSeries(0, rayExtends.size());
         pc.combination(indices, rectNum - 1, 0, 0);
         List<List<Integer>> rayGroups = pc.getCombinationResults();
-        System.out.println("total ray (group) num : " + rayGroups.size());
+//        System.out.println("total ray (group) num : " + rayGroups.size());
 
         // polygonizer by rays
         List<Collection<Polygon>> allSplitPolygons = new ArrayList<>();
@@ -118,7 +124,7 @@ public class ZRectCover {
         int invalidCount = 0;
         for (List<Integer> list : rayGroups) {
             pr = new Polygonizer();
-            Geometry nodedLineStrings = ZTransform.WB_PolyLineToLineString(boundary);
+            Geometry nodedLineStrings = ZTransform.PolygonToLineString(boundary).get(0);
             for (int index : list) {
                 try {
                     nodedLineStrings = nodedLineStrings.union(rayExtends.get(index).extendTwoSidesSlightly(1).toJtsLineString());
@@ -130,7 +136,7 @@ public class ZRectCover {
             Collection<Polygon> allPolys = pr.getPolygons();
             allSplitPolygons.add(allPolys);
         }
-        System.out.println("invalid during polygonizer: " + invalidCount);
+//        System.out.println("invalid during polygonizer: " + invalidCount);
 
         // filter by rect number
         List<Integer> validI = new ArrayList<>();
@@ -139,7 +145,7 @@ public class ZRectCover {
                 validI.add(i);
             }
         }
-        System.out.println("valid ray (group) num: " + validI.size());
+//        System.out.println("valid ray (group) num: " + validI.size());
 
         // keep the most rectangular results
         double[] ratioResult = new double[validI.size()];
@@ -159,7 +165,7 @@ public class ZRectCover {
             ratioResult[i] = ratioSum;
         }
         int max = ZMath.getMaxIndex(ratioResult);
-        System.out.println("max  " + "[" + max + "]" + "  " + ratioResult[max]);
+//        System.out.println("max  " + "[" + max + "]" + "  " + ratioResult[max]);
 
         // generate rectangles
         this.bestRects = new ArrayList<>();
@@ -179,7 +185,7 @@ public class ZRectCover {
         this.rayDensity = rayDensity;
     }
 
-    public void setBoundary(WB_Polygon boundary) {
+    public void setBoundary(Polygon boundary) {
         this.boundary = boundary;
     }
 

@@ -270,6 +270,15 @@ public class ZPoint {
     }
 
     /**
+     * get the perpendicular vector (not specified)
+     *
+     * @return basicGeometry.ZPoint
+     */
+    public ZPoint perpVec() {
+        return new ZPoint(-y, x);
+    }
+
+    /**
      * calculate the center point with the other ZPoint
      *
      * @param other other point

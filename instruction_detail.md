@@ -2,8 +2,8 @@
 
 [Processing 3.3.7](https://processing.org/)  
 [jts 1.16.1](https://github.com/locationtech/jts)  
-[HE_Mesh 2019](https://github.com/wblut/HE_Mesh)  
-[igeo 0.9.3.0](http://igeo.jp/)
+[HE_Mesh 2019.0.2](https://github.com/wblut/HE_Mesh)  
+[igeo 0.9.4.1](http://igeo.jp/)
 
 ## **ZPoint**
 
@@ -154,12 +154,14 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
   `offsetWB_PolygonSegment`
 * 偏移多边形的若干条边线（默认输入为正向首尾相接多边形），返回多段线或多边形  
   `offsetWB_PolygonSegments`
+* 多边形倒圆角  
+  `roundPolygon`
 
 #### 其他
 
 * 输入Geometry，设置Jts的Precision Model  
   `applyJtsPrecisionModel`
-* 找到一组点的中心点
+* 找到一组点的中心点  
   `centerFromPoints`
 * 将OBB对半切分   
   `halvingOBB`
@@ -181,9 +183,17 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 * 找到一个无环图上的最长链  
   `longestChain`
 
+## **ZFileOP**
+
+本地文件读取与写入方法
+
 ## **ZMath**
 
 一些数学工具
+
+#### 角度相关
+
+* 半角公式、二倍角公式
 
 #### 数组相关
 
@@ -256,7 +266,7 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 
 #### jts <-> jts
 
-* Polygon -> LineString
+* Polygon <-> LineString
 
 ## **ZFactory**
 
@@ -264,16 +274,22 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 
 #### 创建几何图形
 
+* 通过List创建LingString和Polygon  
+  `createLineStringFromList` `createPolygonFromList`
 * 从一组首尾相接的线段创建Line String / WB_PolyLine, 若有多条，则取最长  
   `createLineString` `createWB_PolyLine`
 * 将一系列首尾相接线段合成一组WB_PolyLine list  
   `createWB_PolyLineList`
 * 将WB_PolyLine / Line String在端点处断开，创建一组新折线  
   `breakWB_PolyLine` `breakLineString`
+* 通过两个折线上的点来截取LingString  
+  `cutLineString2Points`
 * 给定线段序号，从WB_Polygon中创建一截WB_PolyLine  
   `createPolylineFromPolygon`
 * 将一条LineString向两端头微微延长一定距离（规避误差）  
   `createExtendedLineString`
+* 通过圆心、起点、终点创建圆弧（需指定顺逆时针）  
+  `createArc` 
 
 #### 创建图
 

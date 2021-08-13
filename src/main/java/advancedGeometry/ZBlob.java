@@ -8,6 +8,7 @@ package advancedGeometry;
  * @date 2021/6/17
  * @time 16:09
  */
+@Deprecated
 public class ZBlob {
 //    private int blobNum;
 //

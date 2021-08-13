@@ -11,7 +11,7 @@ import processing.core.PApplet;
  * @date 2021/4/9
  * @time 2:22
  */
-public class TestGurobi2 extends PApplet {
+public class   TestGurobi2 extends PApplet {
 
     @Override
     public void setup() {

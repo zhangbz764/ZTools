@@ -11,6 +11,7 @@ import processing.core.PApplet;
  * @date 2021/6/17
  * @time 17:51
  */
+@Deprecated
 public class TestBlob extends PApplet {
 
     private int blobNum = 64;

@@ -11,6 +11,9 @@ import java.util.HashMap;
  * @date 2020/10/19
  * @time 22:40
  * <p>
+ * #### angle-related
+ * sin, cos, tan of half-angle or double-angle
+ * <p>
  * #### array-related
  * create a series of ascending integer
  * find the index of maximum value in an array of double
@@ -29,6 +32,82 @@ import java.util.HashMap;
  * <p>
  */
 public final class ZMath {
+
+    /*-------- angle-related --------*/
+
+    /**
+     * sine value of half-angle
+     *
+     * @param cos cosine value of original angle
+     * @return double
+     */
+    public static double halfSin(double cos) {
+        return Math.sqrt((1 - cos) * 0.5);
+    }
+
+    /**
+     * cosine value of half-angle
+     *
+     * @param cos          cosine value of original angle
+     * @param largerThanPI 0-PI or PI-TWOPI
+     * @return double
+     */
+    public static double halfCos(double cos, boolean largerThanPI) {
+        double halfCos = Math.sqrt((1 + cos) * 0.5);
+        if (!largerThanPI) {
+            return halfCos;
+        } else {
+            return -halfCos;
+        }
+    }
+
+    /**
+     * tangent value of half-angle
+     *
+     * @param cos          cosine value of original angle
+     * @param largerThanPI 0-PI or PI-TWOPI
+     * @return double
+     */
+    public static double halfTan(double cos, boolean largerThanPI) {
+        double tan = Math.sqrt((1 - cos) / (1 + cos));
+        if (!largerThanPI) {
+            return tan;
+        } else {
+            return -tan;
+        }
+    }
+
+    /**
+     * sine value of double-angle
+     *
+     * @param sin sine value of original angle
+     * @param cos cosine value of original angle
+     * @return double
+     */
+    public static double doubleSin(double sin, double cos) {
+        return 2 * sin * cos;
+    }
+
+    /**
+     * cosine value of double-angle
+     *
+     * @param cos cosine value of original angle
+     * @return double
+     */
+    public static double doubleCos(double cos) {
+        return cos * cos * 2 - 1;
+    }
+
+    /**
+     * tangent value of double-angle
+     *
+     * @param sin sine value of original angle
+     * @param cos cosine value of original angle
+     * @return double
+     */
+    public static double doubleTan(double sin, double cos) {
+        return doubleSin(sin, cos) / doubleCos(cos);
+    }
 
     /*-------- array-related --------*/
 

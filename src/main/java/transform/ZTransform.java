@@ -53,7 +53,7 @@ import java.util.List;
  * WB_AABB -> WB_AABB offset WB_AABB
  * <p>
  * ** jts <-> jts **
- * Polygon -> LineString
+ * Polygon <-> LineString
  * <p>
  */
 public class ZTransform {
@@ -508,7 +508,12 @@ public class ZTransform {
     public static WB_PolyLine LineStringToWB_PolyLine(final LineString ls) {
         WB_Coord[] points = new WB_Point[ls.getNumPoints()];
         for (int i = 0; i < ls.getNumPoints(); i++) {
-            points[i] = new WB_Point(ls.getCoordinates()[i].x, ls.getCoordinates()[i].y, ls.getCoordinates()[i].z);
+            double z = ls.getCoordinates()[i].getZ();
+            if (Double.isNaN(z)) {
+                points[i] = new WB_Point(ls.getCoordinates()[i].x, ls.getCoordinates()[i].y, 0);
+            } else {
+                points[i] = new WB_Point(ls.getCoordinates()[i].x, ls.getCoordinates()[i].y, z);
+            }
         }
         return new WB_PolyLine(points);
     }
@@ -689,12 +694,35 @@ public class ZTransform {
      * @param polygon input WB_Polygon
      * @return wblut.geom.WB_PolyLine
      */
-    public static WB_PolyLine WB_PolygonToWB_PolyLine(final WB_Polygon polygon) {
-        WB_Point[] points = new WB_Point[polygon.getNumberOfPoints()];
-        for (int i = 0; i < points.length; i++) {
-            points[i] = polygon.getPoint(i);
+    public static List<WB_PolyLine> WB_PolygonToWB_PolyLine(final WB_Polygon polygon) {
+        List<WB_PolyLine> result = new ArrayList<>();
+        if (polygon.getNumberOfHoles() > 0) {
+            // shell
+            WB_Point[] shellPoints = new WB_Point[polygon.getNumberOfShellPoints()];
+            for (int i = 0; i < polygon.getNumberOfShellPoints(); i++) {
+                shellPoints[i] = polygon.getPoint(i);
+            }
+            result.add(ZFactory.wbgf.createPolyLine(shellPoints));
+
+            // holes
+            final int[] npc = polygon.getNumberOfPointsPerContour();
+            int index = npc[0];
+            for (int i = 0; i < polygon.getNumberOfHoles(); i++) {
+                WB_Point[] holePoints = new WB_Point[npc[i + 1]];
+                for (int j = 0; j < npc[i + 1]; j++) {
+                    holePoints[j] = polygon.getPoint(index);
+                    index++;
+                }
+                result.add(ZFactory.wbgf.createPolyLine(holePoints));
+            }
+        } else {
+            WB_Point[] points = new WB_Point[polygon.getNumberOfPoints()];
+            for (int i = 0; i < points.length; i++) {
+                points[i] = polygon.getPoint(i);
+            }
+            result.add(ZFactory.wbgf.createPolyLine(points));
         }
-        return ZFactory.wbgf.createPolyLine(points);
+        return result;
     }
 
     /**
@@ -731,5 +759,24 @@ public class ZTransform {
             }
         }
         return result;
+    }
+
+    /**
+     * LineString -> Polygon
+     *
+     * @param ls input LineString
+     * @return org.locationtech.jts.geom.Polygon
+     */
+    public static Polygon LineStringToPolygon(final LineString ls) {
+        if (ls.isClosed()) {
+            return ZFactory.jtsgf.createPolygon(ls.getCoordinates());
+        } else {
+            Coordinate[] polyCoords = new Coordinate[ls.getNumPoints() + 1];
+            for (int i = 0; i < ls.getNumPoints(); i++) {
+                polyCoords[i] = ls.getCoordinateN(i);
+            }
+            polyCoords[polyCoords.length - 1] = polyCoords[0];
+            return ZFactory.jtsgf.createPolygon(polyCoords);
+        }
     }
 }
