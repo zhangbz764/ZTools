@@ -2,10 +2,7 @@ package basicGeometry;
 
 import math.ZGeoMath;
 import math.ZMath;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.operation.linemerge.LineMergeGraph;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.planargraph.Edge;
@@ -55,7 +52,7 @@ public class ZFactory {
      * @param list Coordinate list
      * @return org.locationtech.jts.geom.LineString
      */
-    public static LineString createLineStringFromList(List<Coordinate> list) {
+    public static LineString createLineStringFromList(final List<Coordinate> list) {
         Coordinate[] array = new Coordinate[list.size()];
         for (int i = 0; i < array.length; i++) {
             array[i] = list.get(i);
@@ -64,12 +61,26 @@ public class ZFactory {
     }
 
     /**
+     * create a LinearRing from a Coordinate list    *
+     *
+     * @param list Coordinate list
+     * @return org.locationtech.jts.geom.LinearRing
+     */
+    public static LinearRing createLinearRingFromList(final List<Coordinate> list) {
+        Coordinate[] array = new Coordinate[list.size()];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = list.get(i);
+        }
+        return jtsgf.createLinearRing(array);
+    }
+
+    /**
      * create a Polygon from a Coordinate list
      *
      * @param list Coordinate list
      * @return org.locationtech.jts.geom.Polygon
      */
-    public static Polygon createPolygonFromList(List<Coordinate> list) {
+    public static Polygon createPolygonFromList(final List<Coordinate> list) {
         Coordinate[] array = new Coordinate[list.size()];
         for (int i = 0; i < array.length; i++) {
             array[i] = list.get(i);

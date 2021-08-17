@@ -167,6 +167,8 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
   `halvingOBB`
 * 得到基本OBBTree  
   `performOBBTree`
+* 将Coordinate的z坐标从NaN改为0  
+  `filterNaN`
 
 ## **ZGraphMath**
 

@@ -332,7 +332,7 @@ public class ZPoint {
     }
 
     /**
-     * product (2D)
+     * cross product (2D)
      *
      * @param v
      * @return double

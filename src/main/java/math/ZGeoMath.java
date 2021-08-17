@@ -74,6 +74,7 @@ import java.util.*;
  * get the center of a series of points
  * halving a OBB
  * get a simple OBB tree of a geometry
+ * make z ordinate to 0 if NaN
  * <p>
  */
 public final class ZGeoMath {
@@ -253,7 +254,6 @@ public final class ZGeoMath {
         int maxIndex = ZMath.getMaxIndex(dotValue);
         return other.get(maxIndex);
     }
-
 
     /*-------- intersection 2D --------*/
 
@@ -2021,8 +2021,6 @@ public final class ZGeoMath {
         }
     }
 
-    // TODO: 2021/8/11 holes
-
     /**
      * make polygon corner round
      *
@@ -2034,12 +2032,44 @@ public final class ZGeoMath {
     public static Polygon roundPolygon(final Polygon polygon, double r, int segNum) {
         WB_Polygon p = ZTransform.PolygonToWB_Polygon(polygon);
         boolean ccw = p.getNormal().zd() > 0;
-        List<Coordinate> newCoords = new ArrayList<>();
-        for (int i = 0; i < polygon.getNumPoints() - 1; i++) {
-            Coordinate base = polygon.getCoordinates()[i];
+
+        // exterior
+        LineString exterior = polygon.getExteriorRing();
+        List<Coordinate> newCoordsE = roundPolygonCore(r, segNum, exterior);
+        newCoordsE.add(newCoordsE.get(0));
+
+        // hole or not
+        if (polygon.getNumInteriorRing() > 0) {
+            LinearRing shell = ZFactory.createLinearRingFromList(newCoordsE);
+            // interior
+            LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
+            for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+                LineString hole = polygon.getInteriorRingN(i);
+                List<Coordinate> newCoordsI = roundPolygonCore(r, segNum, hole);
+                newCoordsI.add(newCoordsI.get(0));
+                holes[i] = ZFactory.createLinearRingFromList(newCoordsI);
+            }
+            return ZFactory.jtsgf.createPolygon(shell, holes);
+        } else {
+            return ZFactory.createPolygonFromList(newCoordsE);
+        }
+    }
+
+    /**
+     * core function to round a polygon
+     *
+     * @param r      radius
+     * @param segNum number of subdivision
+     * @param oriLs  original LineString
+     * @return void
+     */
+    private static List<Coordinate> roundPolygonCore(double r, int segNum, LineString oriLs) {
+        List<Coordinate> coords = new ArrayList<>();
+        for (int j = 0; j < oriLs.getNumPoints() - 1; j++) {
+            Coordinate base = oriLs.getCoordinates()[j];
             ZPoint p0 = new ZPoint(base);
-            ZPoint p1 = new ZPoint(polygon.getCoordinates()[(i + polygon.getNumPoints() - 1 - 1) % (polygon.getNumPoints() - 1)]);
-            ZPoint p2 = new ZPoint(polygon.getCoordinates()[(i + 1) % (polygon.getNumPoints() - 1)]);
+            ZPoint p1 = new ZPoint(oriLs.getCoordinates()[(j + oriLs.getNumPoints() - 1 - 1) % (oriLs.getNumPoints() - 1)]);
+            ZPoint p2 = new ZPoint(oriLs.getCoordinates()[(j + 1) % (oriLs.getNumPoints() - 1)]);
 
             ZPoint v1 = p1.sub(p0).normalize();
             ZPoint v2 = p2.sub(p0).normalize();
@@ -2049,7 +2079,7 @@ public final class ZGeoMath {
             double cross = v1.cross2D(v2);
             if (cross == 0) {
                 // 0 or 180
-                newCoords.add(base);
+                coords.add(base);
             } else {
                 if (p0.distance(p1) > d * 2 && p0.distance(p2) > d * 2) {
                     // edge length should be enough to round
@@ -2067,15 +2097,14 @@ public final class ZGeoMath {
                         arc = ZFactory.createArc(arcCenter, arcStart, arcEnd, segNum, false);
                     }
                     for (ZPoint zPoint : arc) {
-                        newCoords.add(zPoint.toJtsCoordinate());
+                        coords.add(zPoint.toJtsCoordinate());
                     }
                 } else {
-                    newCoords.add(base);
+                    coords.add(base);
                 }
             }
         }
-        newCoords.add(newCoords.get(0));
-        return ZFactory.createPolygonFromList(newCoords);
+        return coords;
     }
 
     /*-------- other methods --------*/
@@ -2206,6 +2235,21 @@ public final class ZGeoMath {
             }
         }
 
+        return result;
+    }
+
+    /**
+     * make z ordinate to 0 if NaN
+     *
+     * @param coords original Coordinates
+     * @return org.locationtech.jts.geom.Coordinate[]
+     */
+    public static Coordinate[] filterNaN(Coordinate... coords) {
+        Coordinate[] result = new Coordinate[coords.length];
+        for (int i = 0; i < coords.length; i++) {
+            double z = coords[i].getZ();
+            result[i] = new Coordinate(coords[i].getX(), coords[i].getY(), Double.isNaN(z) ? 0 : z);
+        }
         return result;
     }
 

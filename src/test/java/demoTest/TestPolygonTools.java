@@ -82,11 +82,23 @@ public class TestPolygonTools extends PApplet {
         polyEx[4] = new Coordinate(850, 950);
         polyEx[5] = new Coordinate(750, 950);
         polyEx[6] = polyEx[0];
-
-        this.poly2 = (Polygon) ZFactory.jtsgf.createPolygon(polyEx);
+        LinearRing shell = ZFactory.jtsgf.createLinearRing(polyEx);
+        Coordinate[] polyIn1 = new Coordinate[4];
+        polyIn1[0] = new Coordinate(800, 800);
+        polyIn1[1] = new Coordinate(800, 850);
+        polyIn1[2] = new Coordinate(840, 850);
+        polyIn1[3] = polyIn1[0];
+        Coordinate[] polyIn2 = new Coordinate[5];
+        polyIn2[0] = new Coordinate(800, 870);
+        polyIn2[1] = new Coordinate(800, 930);
+        polyIn2[2] = new Coordinate(850, 930);
+        polyIn2[3] = new Coordinate(850, 870);
+        polyIn2[4] = polyIn2[0];
+        LinearRing[] holes = new LinearRing[]{ZFactory.jtsgf.createLinearRing(polyIn1), ZFactory.jtsgf.createLinearRing(polyIn2)};
+        this.poly2 = (Polygon) ZFactory.jtsgf.createPolygon(shell,holes);
         this.roundPoly = ZGeoMath.roundPolygon(
                 poly2,
-                20,
+                10,
                 10
         );
     }
