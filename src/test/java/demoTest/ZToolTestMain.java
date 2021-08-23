@@ -59,7 +59,7 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.TestPolyDecomp");
 
         /* test ZGeoMath: polygon tools */
-        PApplet.main("demoTest.TestPolygonTools");
+//        PApplet.main("demoTest.TestPolygonTools");
 
         /* test polygon split and offset methods */
 //        PApplet.main("demoTest.TestPolySplit");
@@ -77,7 +77,7 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.TestZGraph");
 
         /* test Catmull-Rom curve and WB_BSpline */
-//        PApplet.main("demoTest.TestCurve");
+        PApplet.main("demoTest.TestCurve");
 
 
         // demoTest2

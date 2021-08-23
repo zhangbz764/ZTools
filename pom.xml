@@ -44,6 +44,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <configuration>
                     <source>8</source>
                     <target>8</target>
@@ -189,11 +190,11 @@
 
     <repositories>
         <repository>
-            <id>jitpack.io</id>
+            <id>Jena Bio</id>
             <url>https://bio.informatik.uni-jena.de/repository/libs-release-oss/</url>
         </repository>
         <repository>
-            <id>Jena Bio</id>
+            <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
     </repositories>

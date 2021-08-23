@@ -243,6 +243,4 @@ public class ZCatmullRom {
         }
         return ZFactory.jtsgf.createPolygon(coordinates);
     }
-
-    /* ------------- draw ------------- */
 }
