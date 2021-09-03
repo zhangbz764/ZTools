@@ -80,6 +80,10 @@ public class TestCurve extends PApplet {
         this.zbSpline = new ZBSpline(Arrays.asList(controlPoints), 3, 100, 2);
         spPts2 = zbSpline.getCurvePts();
         System.out.println("spPts2.size(): " + spPts2.size() + " " + spPts2);
+
+        ZPoint v1 = new ZPoint(10, 0);
+        ZPoint v2 = new ZPoint(-1, -1);
+        System.out.println(v1.angleWith(v2));
     }
 
     private void setControlPoints() {

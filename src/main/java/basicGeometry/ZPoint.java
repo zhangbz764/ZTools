@@ -260,6 +260,33 @@ public class ZPoint {
     }
 
     /**
+     * angle with the other vector (return degrees)
+     *
+     * @param other the other vector
+     * @return double
+     */
+    public double angleWith(ZPoint other) {
+        double l1 = this.getLength();
+        double l2 = other.getLength();
+        double nor = l1 * l2;
+        double cross = this.cross2D(other);
+        double dot = this.dot2D(other);
+        double rho = Math.asin(cross / nor);
+        double theta = Math.acos(dot / nor);
+
+        if (Double.isNaN(theta)) {
+            // floating point error
+            return 0;
+        } else {
+            if (rho < 0) {
+                return -360 * (theta / (2 * Math.PI));
+            } else {
+                return 360 * (theta / (2 * Math.PI));
+            }
+        }
+    }
+
+    /**
      * rotate the vector (2D)
      *
      * @param angle angle to rotate

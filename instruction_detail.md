@@ -117,10 +117,14 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 * 从一组多边形中找到包含输入点的那一个（返回序号）  
   `pointInWhichPolygon`
 
-#### 二维轮廓剖分相关
+#### 二维轮廓相关
 
-* 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓走一定距离后的两个点  
+* 计算多边形或多段线上一点距离形状起点的沿线距离  
+  `distFromStart`
+* 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓移动一定距离后的两个点  
   `pointsOnEdgeByDist`
+* 找到多段线上曲率最大的点/顶点序号  
+  `maxCurvaturePt` `maxCurvatureC`
 * 输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）   
   `splitPolygonEdgeByStep` `splitPolyLineByStep`
 * 输入步长与抖动范围，剖分多段线或多边形的边，得到所有点（最后一段步长必然不足长）  
@@ -140,6 +144,10 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 
 * 通过一系列点计算其围合的多边形面积  
   `areaFromPoints`
+* 计算多边形/多段线的总长（替代HE_Mesh方法）    
+  `getPolyLength`
+* 给定距离，得到多边形/多段线从起点出发沿线的点（替代HE_Mesh方法）    
+  `getPointOnPolyEdge`
 * 计算多边形最小外接矩形的朝向（与较长边垂直）  
   `miniRectDir`
 * 使WB_Polygon点序反向，支持带洞  
@@ -291,7 +299,7 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 * 将一条LineString向两端头微微延长一定距离（规避误差）  
   `createExtendedLineString`
 * 通过圆心、起点、终点创建圆弧（需指定顺逆时针）  
-  `createArc` 
+  `createArc`
 
 #### 创建图
 

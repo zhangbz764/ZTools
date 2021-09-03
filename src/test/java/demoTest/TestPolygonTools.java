@@ -39,6 +39,10 @@ public class TestPolygonTools extends PApplet {
     private WB_Render render;
     private JtsRender jtsRender;
 
+    // getPointOnPolyEdge()
+    private WB_PolyLine pl;
+    private WB_Point onLine;
+
     // jts Polygon reverse & norm
     private Polygon poly1;
 
@@ -56,8 +60,14 @@ public class TestPolygonTools extends PApplet {
         this.jtsRender = new JtsRender(this);
         this.render = new WB_Render(this);
 
-        // jts Polygon reverse
         createPolygon();
+
+        // getPointOnPolyEdge()
+        System.out.println(ZGeoMath.getPolyLength(pl));
+        this.onLine = ZGeoMath.getPointOnPolyEdge(pl, 1500);
+        System.out.println(onLine);
+
+        // jts Polygon reverse
         System.out.println("original " + poly1);
         Geometry reverse = poly1.reverse();
         System.out.println("reversed " + reverse);
@@ -95,7 +105,7 @@ public class TestPolygonTools extends PApplet {
         polyIn2[3] = new Coordinate(850, 870);
         polyIn2[4] = polyIn2[0];
         LinearRing[] holes = new LinearRing[]{ZFactory.jtsgf.createLinearRing(polyIn1), ZFactory.jtsgf.createLinearRing(polyIn2)};
-        this.poly2 = (Polygon) ZFactory.jtsgf.createPolygon(shell,holes);
+        this.poly2 = (Polygon) ZFactory.jtsgf.createPolygon(shell, holes);
         this.roundPoly = ZGeoMath.roundPolygon(
                 poly2,
                 10,
@@ -104,6 +114,14 @@ public class TestPolygonTools extends PApplet {
     }
 
     private void createPolygon() {
+        WB_Point[] plPts = new WB_Point[5];
+        plPts[0] = new WB_Point(100, 100);
+        plPts[1] = new WB_Point(700, 100);
+        plPts[2] = new WB_Point(800, 400);
+        plPts[3] = new WB_Point(500, 800);
+        plPts[4] = new WB_Point(100, 600);
+        this.pl = new WB_PolyLine(plPts);
+
         Coordinate[] polyEx = new Coordinate[6];
         polyEx[0] = new Coordinate(100, 100);
         polyEx[1] = new Coordinate(700, 100);
@@ -146,6 +164,8 @@ public class TestPolygonTools extends PApplet {
         for (Coordinate c : poly2.getCoordinates()) {
             ellipse((float) c.getX(), (float) c.getY(), 5, 5);
         }
+
+        render.drawPoint2D(onLine, 10);
     }
 
 }
