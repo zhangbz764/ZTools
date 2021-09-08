@@ -25,6 +25,7 @@ import java.util.List;
  * <p>
  * #### create geometries
  * create a LineString / Polygon from a Coordinate list
+ * create a Polygon with hole from other alternative data
  * create a LineString from a list of segments, if the result is MultiLineString, choose the longest one
  * create a list of WB_PolyLine from a list of segments
  * create a WB_PolyLine from a list of segments, if the result is MultiLineString, choose the longest one
@@ -86,6 +87,38 @@ public class ZFactory {
             array[i] = list.get(i);
         }
         return jtsgf.createPolygon(array);
+    }
+
+    /**
+     * create a Polygon with holes from Coordinate[] and Coordinate[][]
+     *
+     * @param exterior exterior Coordinates
+     * @param interior interior Coordinates
+     * @return org.locationtech.jts.geom.Polygon
+     */
+    public static Polygon createPolygonWithHoles(final Coordinate[] exterior, final Coordinate[][] interior) {
+        LinearRing ex = jtsgf.createLinearRing(exterior);
+        LinearRing[] in = new LinearRing[interior.length];
+        for (int i = 0; i < interior.length; i++) {
+            in[i] = jtsgf.createLinearRing(interior[i]);
+        }
+        return jtsgf.createPolygon(ex, in);
+    }
+
+    /**
+     * create a Polygon with holes from LineString and LineString[]
+     *
+     * @param exterior exterior LineString
+     * @param interior interior LineString
+     * @return org.locationtech.jts.geom.Polygon
+     */
+    public static Polygon createPolygonWithHoles(final LineString exterior, final LineString[] interior) {
+        LinearRing ex = ZTransform.LineStringToLinearRing(exterior);
+        LinearRing[] in = new LinearRing[interior.length];
+        for (int i = 0; i < interior.length; i++) {
+            in[i] = ZTransform.LineStringToLinearRing(interior[i]);
+        }
+        return jtsgf.createPolygon(ex, in);
     }
 
     /**

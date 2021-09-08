@@ -21,7 +21,7 @@ import wblut.processing.WB_Render;
  * @date 2020/12/5
  * @time 14:33
  */
-public class TestCampSkeleton extends PApplet {
+public class Test3Skeleton extends PApplet {
 
     /* ------------- settings ------------- */
 
@@ -30,21 +30,29 @@ public class TestCampSkeleton extends PApplet {
     }
 
     /* ------------- setup ------------- */
-    private Polygon boundary;
+
     private Polygon polygon;
     private WB_Polygon wb_polygon;
     private GeometryFactory gf = new GeometryFactory();
 
-    private CameraController gcam;
     private ZSkeleton skeleton;
+
+    // utils
+    private CameraController gcam;
     private JtsRender jtsRender;
     private WB_Render render;
 
     public void setup() {
-        gcam = new CameraController(this);
-        jtsRender = new JtsRender(this);
-        render = new WB_Render(this);
+        this.gcam = new CameraController(this);
+        this.jtsRender = new JtsRender(this);
+        this.render = new WB_Render(this);
 
+        createPolygon();
+
+        this.skeleton = new ZSkeleton(wb_polygon, 0, true);
+    }
+
+    public void createPolygon() {
         Coordinate[] outer = new Coordinate[6]; // counter clockwise
         outer[0] = new Coordinate(100, 100, 0);
         outer[1] = new Coordinate(700, 100, 0);
@@ -70,21 +78,17 @@ public class TestCampSkeleton extends PApplet {
         inner1[4] = new Coordinate(500, 500, 0);
         LinearRing innerL2 = gf.createLinearRing(inner1);
 
-        LinearRing[] inner = new LinearRing[2];
-        inner[0] = innerL1;
-        inner[1] = innerL2;
+        LinearRing[] innerL = new LinearRing[2];
+        innerL[0] = innerL1;
+        innerL[1] = innerL2;
 
-        polygon = gf.createPolygon(outerL, inner);
-        println(polygon.getNumInteriorRing());
-        println(polygon.isSimple());
+        this.polygon = gf.createPolygon(outerL, innerL);
+        println("polygon.getNumInteriorRing() " + polygon.getNumInteriorRing());
+        println("polygon.isSimple() " + polygon.isSimple());
 
-
-        wb_polygon = ZTransform.PolygonToWB_Polygon(polygon);
-        println(wb_polygon.isSimple());
-        println(wb_polygon.getNormal());
-
-        skeleton = new ZSkeleton(wb_polygon, true);
-
+        this.wb_polygon = ZTransform.PolygonToWB_Polygon(polygon);
+        println("wb_polygon.isSimple() " + wb_polygon.isSimple());
+        println("wb_polygon.getNormal() " + wb_polygon.getNormal());
     }
 
     /* ------------- draw ------------- */
@@ -93,9 +97,28 @@ public class TestCampSkeleton extends PApplet {
         background(255);
         fill(128);
         render.drawPolygonEdges2D(wb_polygon);
-        translate(1000, 0, 0);
+        fill(0);
+        textSize(15);
+        for (int i = 0; i < wb_polygon.getNumberOfShellPoints(); i++) {
+            text(i, wb_polygon.getPoint(i).xf(), wb_polygon.getPoint(i).yf());
+        }
+        int[] npc = wb_polygon.getNumberOfPointsPerContour();
+        int index = wb_polygon.getNumberOfShellPoints();
+        for (int i = 0; i < wb_polygon.getNumberOfHoles(); i++) {
+            for (int j = 0; j < npc[i + 1]; j++) {
+                text(j, wb_polygon.getPoint(j + index).xf(), wb_polygon.getPoint(j + index).yf());
+            }
+            index += npc[i + 1];
+        }
+        for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+            LineString curr = polygon.getInteriorRingN(i);
+            for (int j = 0; j < curr.getNumPoints(); j++) {
+                text(j, (float) curr.getCoordinates()[j].x, (float) curr.getCoordinates()[j].y);
+            }
+        }
 
-        fill(128);
+        translate(1000, 0, 0);
+        fill(200);
         jtsRender.drawGeometry(polygon);
         fill(0);
         textSize(15);
@@ -108,7 +131,6 @@ public class TestCampSkeleton extends PApplet {
                 text(j, (float) curr.getCoordinates()[j].x, (float) curr.getCoordinates()[j].y);
             }
         }
-
 
         skeleton.display(this);
     }

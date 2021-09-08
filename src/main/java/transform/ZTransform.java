@@ -439,7 +439,8 @@ public class ZTransform {
             for (int i = 0; i < wbp.getNumberOfShellPoints(); i++) {
                 exteriorCoords.add(new Coordinate(wbp.getPoint(i).xd(), wbp.getPoint(i).yd(), wbp.getPoint(i).zd()));
             }
-            if (exteriorCoords.get(0).equals3D(exteriorCoords.get(exteriorCoords.size() - 1))) {
+            if (!exteriorCoords.get(0).equals3D(exteriorCoords.get(exteriorCoords.size() - 1))) {
+                System.out.println("here");
                 exteriorCoords.add(exteriorCoords.get(0));
             }
             LinearRing exteriorLinearRing = ZFactory.jtsgf.createLinearRing(exteriorCoords.toArray(new Coordinate[0]));
@@ -508,12 +509,7 @@ public class ZTransform {
     public static WB_PolyLine LineStringToWB_PolyLine(final LineString ls) {
         WB_Coord[] points = new WB_Point[ls.getNumPoints()];
         for (int i = 0; i < ls.getNumPoints(); i++) {
-            double z = ls.getCoordinates()[i].getZ();
-            if (Double.isNaN(z)) {
-                points[i] = new WB_Point(ls.getCoordinates()[i].x, ls.getCoordinates()[i].y, 0);
-            } else {
-                points[i] = new WB_Point(ls.getCoordinates()[i].x, ls.getCoordinates()[i].y, z);
-            }
+            points[i] = CoordinateToWB_Point(ls.getCoordinateN(i));
         }
         return new WB_PolyLine(points);
     }
@@ -617,7 +613,7 @@ public class ZTransform {
             // exterior
             WB_Coord[] exteriorPoints = new WB_Point[p.getExteriorRing().getNumPoints()];
             for (int i = 0; i < p.getExteriorRing().getNumPoints(); i++) {
-                exteriorPoints[i] = new WB_Point(p.getCoordinates()[i].x, p.getCoordinates()[i].y, p.getCoordinates()[i].z);
+                exteriorPoints[i] = ZTransform.CoordinateToWB_Point(p.getCoordinates()[i]);
             }
             result.add(new WB_PolyLine(exteriorPoints));
             // interior
@@ -629,7 +625,7 @@ public class ZTransform {
         } else {
             WB_Coord[] points = new WB_Point[p.getNumPoints()];
             for (int i = 0; i < p.getNumPoints(); i++) {
-                points[i] = new WB_Point(p.getCoordinates()[i].x, p.getCoordinates()[i].y, p.getCoordinates()[i].z);
+                points[i] = ZTransform.CoordinateToWB_Point(p.getCoordinates()[i]);
             }
             result.add(new WB_PolyLine(points));
         }
@@ -778,5 +774,16 @@ public class ZTransform {
             polyCoords[polyCoords.length - 1] = polyCoords[0];
             return ZFactory.jtsgf.createPolygon(polyCoords);
         }
+    }
+
+    /**
+     * LineString -> LinearRing
+     *
+     * @param ls input LineString
+     * @return org.locationtech.jts.geom.LinearRing
+     */
+    public static LinearRing LineStringToLinearRing(final LineString ls) {
+        Coordinate[] coordinates = ls.getCoordinates();
+        return ZFactory.jtsgf.createLinearRing(coordinates);
     }
 }

@@ -4,7 +4,6 @@ import basicGeometry.ZFactory;
 import basicGeometry.ZLine;
 import basicGeometry.ZPoint;
 import math.ZGeoMath;
-
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
@@ -13,14 +12,16 @@ import org.twak.utils.collections.Loop;
 import org.twak.utils.collections.LoopL;
 import processing.core.PApplet;
 import transform.ZTransform;
-import wblut.geom.WB_Point;
 import wblut.geom.WB_Polygon;
 import wblut.hemesh.HEC_FromPolygons;
 import wblut.hemesh.HE_Mesh;
 import wblut.hemesh.HE_Vertex;
 
 import javax.vecmath.Point3d;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * compute straight skeleton using campskeleton by twak
@@ -92,31 +93,6 @@ public class ZSkeleton {
         initSkeleton();
         // extract bottom, side, top edges and ridges, ridgePoint
         extractEdges2D();
-    }
-
-    public ZSkeleton(WB_Polygon polygon, double offsetDist) {
-        // input polygon needs to be face up (norm)
-        WB_Polygon validate = ZGeoMath.polygonFaceUp(ZTransform.validateWB_Polygon(polygon));
-        this.polygon = ZTransform.WB_PolygonToPolygon(validate);
-
-        setOffsetDist(offsetDist);
-        initSkeleton();
-        // extract bottom, side, top edges and ridges, ridgePoint
-        extractEdges2D();
-    }
-
-    public ZSkeleton(WB_Polygon polygon, boolean if3d) {
-        // input polygon needs to be face up (norm)
-        WB_Polygon validate = ZGeoMath.polygonFaceUp(ZTransform.validateWB_Polygon(polygon));
-        this.polygon = ZTransform.WB_PolygonToPolygon(validate);
-
-        initSkeleton();
-        // extract bottom, side, top edges and ridges, ridgePoint
-        if (if3d) {
-            extractEdges3D();
-        } else {
-            extractEdges2D();
-        }
     }
 
     public ZSkeleton(WB_Polygon polygon, double offsetDist, boolean if3d) {

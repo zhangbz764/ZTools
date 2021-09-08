@@ -1,14 +1,15 @@
 package math;
 
 import basicGeometry.*;
-import igeo.IArc;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.*;
 import transform.ZTransform;
 import wblut.geom.*;
 
-import java.awt.geom.Arc2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * geometry math tools
@@ -72,6 +73,7 @@ import java.util.*;
  * find the longest segment and the shortest segment in a polygon
  * offset one segment of a polygon (input valid, face up polygon)
  * offset several segments of a polygon (input valid, face up polygon), return polyline or polygon
+ * smooth LineString or Polygon by connecting divided points
  * rounding a polygon
  * <p>
  * #### other methods
@@ -2144,6 +2146,163 @@ public final class ZGeoMath {
             return new WB_Polygon(linePoints);
         } else {
             return new WB_PolyLine(linePoints);
+        }
+    }
+
+    /**
+     * smooth LineString by connecting divided points
+     *
+     * @param ls        input LineString
+     * @param divideNum divide num for each edge
+     * @param times     times to smooth
+     * @return org.locationtech.jts.geom.LineString
+     */
+    public static LineString smoothLineString(final LineString ls, final int divideNum, final int times) {
+        if (divideNum < 2 || times < 1 || ls.getCoordinates().length < 3) {
+            return ls;
+        } else if (divideNum == 2) {
+            // half divide
+            LineString temp = ls;
+            if (ls.isClosed()) {
+                for (int i = 0; i < times; i++) {
+                    List<Coordinate> coords = new ArrayList<>();
+                    for (int j = 0; j < temp.getCoordinates().length - 1; j++) {
+                        Coordinate start = temp.getCoordinateN(j);
+                        Coordinate end = temp.getCoordinateN((j + 1) % (temp.getCoordinates().length - 1));
+                        Coordinate center = new Coordinate(
+                                (start.getX() + end.getX()) / 2,
+                                (start.getY() + end.getY()) / 2
+                        );
+                        coords.add(center);
+                    }
+                    coords.add(coords.get(0));
+                    temp = ZFactory.createLineStringFromList(coords);
+                }
+            } else {
+                for (int i = 0; i < times; i++) {
+                    List<Coordinate> coords = new ArrayList<>();
+                    coords.add(temp.getCoordinateN(0));
+                    for (int j = 0; j < temp.getCoordinates().length - 1; j++) {
+                        Coordinate start = temp.getCoordinateN(j);
+                        Coordinate end = temp.getCoordinateN(j + 1);
+                        Coordinate center = new Coordinate(
+                                (start.getX() + end.getX()) / 2,
+                                (start.getY() + end.getY()) / 2
+                        );
+                        coords.add(center);
+                    }
+                    coords.add(temp.getCoordinateN(temp.getCoordinates().length - 1));
+                    temp = ZFactory.createLineStringFromList(coords);
+                }
+            }
+            return temp;
+        } else {
+            LineString temp = ls;
+            if (ls.isClosed()) {
+                for (int i = 0; i < times; i++) {
+                    List<Coordinate> coords = new ArrayList<>();
+                    for (int j = 0; j < temp.getCoordinates().length - 1; j++) {
+                        ZPoint start = new ZPoint(temp.getCoordinateN(j));
+                        ZPoint end = new ZPoint(temp.getCoordinateN((j + 1) % (temp.getCoordinates().length - 1)));
+                        ZPoint segVec = end.sub(start).normalize();
+                        double step = start.distance(end) / divideNum;
+
+                        coords.add(start.add(segVec.scaleTo(step)).toJtsCoordinate());
+                        coords.add(end.add(segVec.scaleTo(-1 * step)).toJtsCoordinate());
+                    }
+                    coords.add(coords.get(0));
+                    temp = ZFactory.createLineStringFromList(coords);
+                }
+            } else {
+                for (int i = 0; i < times; i++) {
+                    List<Coordinate> coords = new ArrayList<>();
+                    coords.add(temp.getCoordinateN(0));
+
+                    ZPoint startA = new ZPoint(temp.getCoordinateN(0));
+                    ZPoint endA = new ZPoint(temp.getCoordinateN(1));
+                    ZPoint segVecA = endA.sub(startA).normalize();
+                    double stepA = startA.distance(endA) / divideNum;
+                    coords.add(endA.add(segVecA.scaleTo(-1 * stepA)).toJtsCoordinate());
+
+                    for (int j = 1; j < temp.getCoordinates().length - 2; j++) {
+                        ZPoint start = new ZPoint(temp.getCoordinateN(j));
+                        ZPoint end = new ZPoint(temp.getCoordinateN(j + 1));
+                        ZPoint segVec = end.sub(start).normalize();
+                        double step = start.distance(end) / divideNum;
+
+                        coords.add(start.add(segVec.scaleTo(step)).toJtsCoordinate());
+                        coords.add(end.add(segVec.scaleTo(-1 * step)).toJtsCoordinate());
+                    }
+
+                    ZPoint startB = new ZPoint(temp.getCoordinateN(0));
+                    ZPoint endB = new ZPoint(temp.getCoordinateN(1));
+                    ZPoint segVecB = endB.sub(startB).normalize();
+                    double stepB = startB.distance(endB) / divideNum;
+                    coords.add(endB.add(segVecB.scaleTo(-1 * stepB)).toJtsCoordinate());
+
+                    coords.add(temp.getCoordinateN(temp.getCoordinates().length - 1));
+                    temp = ZFactory.createLineStringFromList(coords);
+                }
+            }
+            return temp;
+        }
+    }
+
+    /**
+     * smooth polygon edge by connecting divided points
+     *
+     * @param polygon   input polygon
+     * @param divideNum divide num for each edge
+     * @param times     times to smooth
+     * @return org.locationtech.jts.geom.Polygon
+     */
+    public static Polygon smoothPolygon(final Polygon polygon, final int divideNum, final int times) {
+        if (divideNum < 2 || times < 1) {
+            return polygon;
+        } else {
+            if (polygon.getNumInteriorRing() > 0) {
+                LineString ex = smoothLineString(polygon.getExteriorRing(), divideNum, times);
+                LineString[] in = new LineString[polygon.getNumInteriorRing()];
+                for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+                    in[i] = smoothLineString(polygon.getInteriorRingN(i), divideNum, times);
+                }
+                return ZFactory.createPolygonWithHoles(ex, in);
+            } else {
+                Polygon temp = polygon;
+                if (divideNum == 2) {
+                    // half divide
+                    for (int i = 0; i < times; i++) {
+                        List<Coordinate> coords = new ArrayList<>();
+                        for (int j = 0; j < temp.getCoordinates().length - 1; j++) {
+                            Coordinate start = temp.getCoordinates()[j];
+                            Coordinate end = temp.getCoordinates()[(j + 1) % (temp.getCoordinates().length - 1)];
+                            Coordinate center = new Coordinate(
+                                    (start.getX() + end.getX()) / 2,
+                                    (start.getY() + end.getY()) / 2
+                            );
+                            coords.add(center);
+                        }
+                        coords.add(coords.get(0));
+                        temp = ZFactory.createPolygonFromList(coords);
+                    }
+                } else {
+                    for (int i = 0; i < times; i++) {
+                        List<Coordinate> coords = new ArrayList<>();
+                        for (int j = 0; j < temp.getCoordinates().length - 1; j++) {
+                            ZPoint start = new ZPoint(temp.getCoordinates()[j]);
+                            ZPoint end = new ZPoint(temp.getCoordinates()[(j + 1) % (temp.getCoordinates().length - 1)]);
+                            ZPoint segVec = end.sub(start).normalize();
+                            double step = start.distance(end) / divideNum;
+
+                            coords.add(start.add(segVec.scaleTo(step)).toJtsCoordinate());
+                            coords.add(end.add(segVec.scaleTo(-1 * step)).toJtsCoordinate());
+                        }
+                        coords.add(coords.get(0));
+                        temp = ZFactory.createPolygonFromList(coords);
+                    }
+                }
+                return temp;
+            }
         }
     }
 

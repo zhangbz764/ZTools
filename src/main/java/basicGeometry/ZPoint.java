@@ -6,7 +6,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import processing.core.PApplet;
 import wblut.geom.WB_Coord;
-import wblut.geom.WB_GeometryOp;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Vector;
 

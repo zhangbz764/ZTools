@@ -12,72 +12,58 @@ import processing.core.PApplet;
  */
 public class ZToolTestMain {
     public static void main(String[] args) {
+        /* demoTest1 */
 
-        // demoTest1
+        /* test jts convexhull and ZGeoMath concave points */
+//        PApplet.main("demoTest.Test1ConvexConcave");
 
-        /* test blob cell simulation */
-//        PApplet.main("demoTest.TestBlob");
-
-//        PApplet.main("demoTest.TestBlob2");
-
-//        PApplet.main("demoTest.TestBlob3");
+        /* test extend and trim in ZGeoMath */
+//        PApplet.main("demoTest.Test2ExtendTrim");
 
         /* test ZSkeleton with holes */
-//        PApplet.main("demoTest.TestCampSkeleton");
+//        PApplet.main("demoTest.Test3Skeleton");
 
-        /* test jts convexhull、concave points、line polygon intersection，largest rectangle */
-//        PApplet.main("demoTest.TestConvexHull");
+        /* test ZCatmullRom, ZBSpline and WB_BSpline */
+//        PApplet.main("demoTest.Test4Curve");
 
-        /* test hemesh closest point、extend and trim、segments intersection */
-//        PApplet.main("demoTest.TestDistClosest");
+        /* test ZLargestRectangle */
+//        PApplet.main("demoTest.Test5LargestRect");
 
-        /* test jts geometry relation，cut out WB_PolyLine*/
-//        PApplet.main("demoTest.TestGeoRelation");
+        /* test vector methods in ZGeoMath */
+//        PApplet.main("demoTest.Test6VectorTools");
 
-        /* test gurobi */
-//        PApplet.main("demoTest.TestGurobi");
+        /* test polygon tools in ZGeoMath */
+//        PApplet.main("demoTest.Test7PolygonTools");
 
-        /* test gurobi 2 */
-//        PApplet.main("demoTest.TestGurobi2");
+        /* test ZGraph and graph methods */
+//        PApplet.main("demoTest.Test8ZGraph");
+
+
 
         /* test hemesh mesh and union，buffer */
-//        PApplet.main("demoTest.TestHe_Mesh");
+//        PApplet.main("demoTest.TestHE_Mesh");
 
-        /* test holes in hemesh*/
-//        PApplet.main("demoTest.TestHolesHE_Mesh");
+        /* test function in WB_GeometryFactory */
+//        PApplet.main("demoTest.TestHE_MeshFactory");
 
-        /* test jts buffer, intersection and geometry centroid */
+        /* test jts buffer，cut out WB_PolyLine */
 //        PApplet.main("demoTest.TestJtsBuffer");
 
         /* test jts LineMerger */
 //        PApplet.main("demoTest.TestJtsLineMerger");
 
-        /* test polar angle order and other vector methods */
-//        PApplet.main("demoTest.TestPolarAngle");
-
         /* test polygon decomposition */
 //        PApplet.main("demoTest.TestPolyDecomp");
 
-        /* test ZGeoMath: polygon tools */
-        PApplet.main("demoTest.TestPolygonTools");
 
         /* test polygon split and offset methods */
 //        PApplet.main("demoTest.TestPolySplit");
 
-        /* test polygon rectangle cover using particle (failed) */
-//        PApplet.main("demoTest.TestRectCover");
-
-        /* test ZSkeleton */
-//        PApplet.main("demoTest.TestSkeleton");
-
         /* test advancedGeometry.subdivision methods */
-//        PApplet.main("demoTest.TestSubdivision");
+        PApplet.main("demoTest.TestSubdivision");
 
-        /* test ZGraph and graph methods */
-//        PApplet.main("demoTest.TestZGraph");
 
-        /* test Catmull-Rom curve and WB_BSpline */
-//        PApplet.main("demoTest.TestCurve");
+
 
 
         // demoTest2

@@ -162,6 +162,8 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
   `offsetWB_PolygonSegment`
 * 偏移多边形的若干条边线（默认输入为正向首尾相接多边形），返回多段线或多边形  
   `offsetWB_PolygonSegments`
+* 多边形/多段线连等分点倒角  
+  `smoothLineString` `smoothPolygon`
 * 多边形倒圆角  
   `roundPolygon`
 
@@ -286,6 +288,8 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 
 * 通过List创建LingString和Polygon  
   `createLineStringFromList` `createPolygonFromList`
+* 通过其他数据更方便地创建带洞Polygon  
+  `createPolygonWithHoles`
 * 从一组首尾相接的线段创建Line String / WB_PolyLine, 若有多条，则取最长  
   `createLineString` `createWB_PolyLine`
 * 将一系列首尾相接线段合成一组WB_PolyLine list  

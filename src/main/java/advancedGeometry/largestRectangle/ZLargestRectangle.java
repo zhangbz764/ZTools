@@ -81,7 +81,6 @@ public class ZLargestRectangle {
         double w = best[LRFitnessFunction.W];
         double h = best[LRFitnessFunction.H];
         double a = best[LRFitnessFunction.A];
-        System.out.println("angle " + a);
         ZPoint base = new ZPoint(x, y);
         ZPoint dir1 = new ZPoint(Math.cos(a), Math.sin(a));
         ZPoint dir2 = dir1.rotate2D(Math.PI * 0.5);

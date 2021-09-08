@@ -42,15 +42,10 @@ public class JtsRender {
             case "Polygon":
                 drawPolygon(geo);
                 break;
-            case "MultiPoint":
-            case "MultiLineString":
-            case "MultiPolygon":
+            default:
                 for (int i = 0; i < geo.getNumGeometries(); i++) {
                     drawGeometry(geo.getGeometryN(i));
                 }
-                break;
-            default:
-                PApplet.println("not a basic geo type");
                 break;
         }
     }

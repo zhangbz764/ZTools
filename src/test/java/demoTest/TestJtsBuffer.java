@@ -1,26 +1,23 @@
 package demoTest;
 
 import basicGeometry.ZFactory;
-import igeo.ICurve;
-import igeo.IG;
+import guo_cam.CameraController;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import processing.core.PApplet;
 import render.JtsRender;
 import transform.ZTransform;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import wblut.geom.WB_PolyLine;
 
 /**
- * test jts buffer, intersection and geometry centroid
+ * test jts buffer
+ * cut out WB_PolyLine
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
- * @date 2021/3/11
- * @time 13:41
+ * @date 2020/10/23
+ * @time 11:41
  */
 public class TestJtsBuffer extends PApplet {
 
@@ -32,76 +29,116 @@ public class TestJtsBuffer extends PApplet {
 
     /* ------------- setup ------------- */
 
-    private List<Geometry> geometries;
-    private List<Point> geoCenters;
-    private Geometry buffer;
-    private Polygon boundary;
-    private Geometry inter;
+    private Polygon poly1;
+    private Polygon poly2;
+    private LineString ls;
+    private Point p = ZFactory.jtsgf.createPoint(new Coordinate(900, 100));
+    private Geometry multiGeo;
+    private Geometry buffer1;
+    private Geometry buffer2;
+    private Geometry buffer3;
+    private int endCapStyle = 1;
+    private int joinStyle = 1;
 
+    private WB_PolyLine pl;
+
+    // utils
+    private GeometryFactory gf = new GeometryFactory();
+    private CameraController gcam;
     private JtsRender jtsRender;
 
     public void setup() {
-        jtsRender = new JtsRender(this);
-        Coordinate[] boundaryPts = new Coordinate[5];
-        boundaryPts[0] = new Coordinate(100, 100);
-        boundaryPts[1] = new Coordinate(900, 100);
-        boundaryPts[2] = new Coordinate(900, 900);
-        boundaryPts[3] = new Coordinate(100, 900);
-        boundaryPts[4] = new Coordinate(100, 100);
-        this.boundary = ZFactory.jtsgf.createPolygon(boundaryPts);
+        this.jtsRender = new JtsRender(this);
+//        this.gcam = new CameraController(this);
 
-        System.out.println(this.getClass().getClassLoader().getResource("").getPath());
-        // load
-        String path = Objects.requireNonNull(
-                this.getClass().getClassLoader().getResource("./test_jts_buffer.3dm")
-        ).getPath();
+        // jts buffer mode
+        Coordinate[] polygonV1 = new Coordinate[6];
+        polygonV1[0] = new Coordinate(100, 100, 0);
+        polygonV1[1] = new Coordinate(400, 100, 0);
+        polygonV1[2] = new Coordinate(600, 200, 0);
+        polygonV1[3] = new Coordinate(250, 400, 0);
+        polygonV1[4] = new Coordinate(300, 300, 0);
+        polygonV1[5] = new Coordinate(100, 100, 0);
 
-        IG.init();
-        IG.open(path);
+        Coordinate[] polygonV2 = new Coordinate[6];
+        polygonV2[0] = new Coordinate(500, 500, 0);
+        polygonV2[1] = new Coordinate(700, 700, 0);
+        polygonV2[2] = new Coordinate(700, 900, 0);
+        polygonV2[3] = new Coordinate(500, 850, 0);
+        polygonV2[4] = new Coordinate(400, 600, 0);
+        polygonV2[5] = new Coordinate(500, 500, 0);
 
-        this.geometries = new ArrayList<>();
-        this.geoCenters = new ArrayList<>();
+        Coordinate[] lineStringC = new Coordinate[]{
+                new Coordinate(800, 300),
+                new Coordinate(850, 400),
+                new Coordinate(800, 500),
+                new Coordinate(950, 700)
+        };
 
-        ICurve[] polyLines = IG.layer("geometries").curves();
-        for (ICurve polyLine : polyLines) {
-            Geometry geo = ZTransform.ICurveToJts(polyLine);
-            geometries.add(geo);
-            geoCenters.add(geo.getCentroid());
-        }
+        this.poly1 = gf.createPolygon(polygonV1);
+        this.poly2 = gf.createPolygon(polygonV2);
+        this.ls = gf.createLineString(lineStringC);
+        this.multiGeo = poly1;
+        multiGeo = multiGeo.union(poly2);
 
-        // buffer
-        GeometryFactory gf = new GeometryFactory();
+        BufferParameters parameters = new BufferParameters(0, endCapStyle, joinStyle, 5.0D);
+        this.buffer1 = BufferOp.bufferOp(multiGeo, 20, parameters);
+        this.buffer2 = BufferOp.bufferOp(ls, 20, parameters);
+        this.buffer3 = BufferOp.bufferOp(p, 20, parameters);
+        System.out.println("buffer.getNumPoints(): " + buffer1.getNumPoints());
 
-        Geometry[] geos = geometries.toArray(new Geometry[0]);
-        GeometryCollection collection = gf.createGeometryCollection(geos);
+        pl = ZFactory.createPolylineFromPolygon(
+                ZTransform.PolygonToWB_Polygon(poly1), new int[]{2, 3, 4, 0}
+        );
 
-        BufferOp bop = new BufferOp(collection);
-        bop.setEndCapStyle(BufferParameters.CAP_SQUARE);
-        buffer = bop.getResultGeometry(20);
-
-        LineString bufferLS = ZTransform.PolygonToLineString((Polygon) buffer).get(0);
-
-        inter = bufferLS.intersection(boundary);
-        System.out.println(inter.getGeometryType());
     }
 
     /* ------------- draw ------------- */
 
     public void draw() {
         background(255);
-        noFill();
-        stroke(0);
+
         strokeWeight(1);
-        for (Geometry g : geometries) {
-            jtsRender.drawGeometry(g);
+        jtsRender.drawGeometry(multiGeo);
+        jtsRender.drawGeometry(buffer1);
+        jtsRender.drawGeometry(ls);
+        jtsRender.drawGeometry(buffer2);
+        jtsRender.drawGeometry(p);
+        jtsRender.drawGeometry(buffer3);
+
+        strokeWeight(4);
+        for (int i = 0; i < pl.getNumberOfPoints() - 1; i++) {
+            line(
+                    pl.getPoint(i).xf(),
+                    pl.getPoint(i).yf(),
+                    pl.getPoint(i + 1).xf(),
+                    pl.getPoint(i + 1).yf()
+            );
         }
-        for (Point c : geoCenters) {
-            jtsRender.drawGeometry(c);
-        }
-        stroke(255, 0, 0);
-        strokeWeight(3);
-        jtsRender.drawGeometry(inter);
-//        jtsRender.drawGeometry(buffer);
     }
 
+    public void keyPressed() {
+        if (key == 'q') {
+            // end cap style
+            endCapStyle = (endCapStyle + 1) % 3 + 1;
+            System.out.println("endCapStyle:  " + endCapStyle);
+
+            BufferParameters parameters = new BufferParameters(0, endCapStyle, joinStyle, 5.0D);
+            this.buffer1 = BufferOp.bufferOp(multiGeo, 20, parameters);
+            this.buffer2 = BufferOp.bufferOp(ls, 20, parameters);
+            this.buffer3 = BufferOp.bufferOp(p, 20, parameters);
+            System.out.println("buffer.getNumPoints(): " + buffer1.getNumPoints());
+        }
+        if (key == 'w') {
+            // join style
+            joinStyle = (joinStyle + 1) % 3 + 1;
+            System.out.println("joinStyle:  " + joinStyle);
+
+            BufferParameters parameters = new BufferParameters(0, endCapStyle, joinStyle, 5.0D);
+            this.buffer1 = BufferOp.bufferOp(multiGeo, 20, parameters);
+            this.buffer2 = BufferOp.bufferOp(ls, 20, parameters);
+            this.buffer3 = BufferOp.bufferOp(p, 20, parameters);
+            System.out.println("buffer.getNumPoints(): " + buffer1.getNumPoints());
+        }
+    }
 }

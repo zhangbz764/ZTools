@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * test polar angle order and other vector methods
+ * test vector methods in ZGeoMath
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/10/20
  * @time 14:22
  */
-public class TestPolarAngle extends PApplet {
+public class Test6VectorTools extends PApplet {
     public void settings() {
         size(1000, 1000, P3D);
     }

@@ -25,7 +25,7 @@ import java.util.List;
  * @date 2020/11/7
  * @time 20:00
  */
-public class TestHe_Mesh extends PApplet {
+public class TestHE_Mesh extends PApplet {
 
     /* ------------- settings ------------- */
 
@@ -38,9 +38,7 @@ public class TestHe_Mesh extends PApplet {
     private WB_Polygon poly2;
     private WB_Polygon poly3;
     private WB_Polygon poly4;
-
     private WB_Polygon buffer;
-
     private HE_Mesh mesh;
 
     private WB_Render render;
@@ -49,13 +47,20 @@ public class TestHe_Mesh extends PApplet {
 
     /* ------------- setup ------------- */
 
-    /**
-     * set up 5 polygons
-     *
-     * @param
-     * @return void
-     */
-    private void setPolys() {
+    public void setup() {
+        this.gcam = new CameraController(this);
+        this.render = new WB_Render(this);
+
+        createMesh();
+
+        System.out.println("v: " + mesh.getVertices().size());
+        System.out.println("bv: " + mesh.getAllBoundaryVertices().size());
+        for (HE_Face f : mesh.getFaces()) {
+            System.out.println("area  " + f.getFaceArea());
+        }
+    }
+
+    private void createMesh() {
         WB_Point[] pts0 = new WB_Point[5];
         pts0[0] = new WB_Point(200, 400);
         pts0[1] = new WB_Point(700, 100);
@@ -97,41 +102,23 @@ public class TestHe_Mesh extends PApplet {
         pts4[4] = new WB_Point(1200, 400);
         pts4[5] = new WB_Point(800, 400);
         poly4 = new WB_Polygon(pts4);
-        System.out.println(poly0.getSimplePolygon().getNumberOfPoints());
 
         // after buffer , the polygon is invalid
         // also face down
-        buffer = ZGeoMath.polygonFaceUp(
+        this.buffer = ZGeoMath.polygonFaceUp(
                 ZTransform.validateWB_Polygon(
                         ZFactory.wbgf.createBufferedPolygonsStraight2D(poly1, 50).get(0)
                 )
         );
-    }
 
-    public void setup() {
-        gcam = new CameraController(this);
-        render = new WB_Render(this);
-        setPolys();
-
+        // create mesh
         WB_Polygon[] polys = new WB_Polygon[]{
                 poly1, poly2, poly3, poly4
         };
-//        WB_Polygon[] polys = new WB_Polygon[]{
-//                ZGeoMath.reversePolygon(poly1),
-//                ZGeoMath.reversePolygon(poly2),
-//                ZGeoMath.reversePolygon(poly3),
-//                ZGeoMath.reversePolygon(poly4)
-//        };
         for (WB_Polygon p : polys) {
             System.out.println("origin  " + p.getNormal());
         }
-        mesh = new HEC_FromPolygons(polys).create();
-
-        System.out.println(mesh.getVertices().size());
-        System.out.println(mesh.getAllBoundaryVertices().size());
-        for (HE_Face f : mesh.getFaces()) {
-            System.out.println("area  " + f.getFaceArea());
-        }
+        this.mesh = new HEC_FromPolygons(polys).create();
     }
 
     /**
@@ -177,9 +164,8 @@ public class TestHe_Mesh extends PApplet {
 
     public void draw() {
         background(255);
-        box(20, 20, 20); // origin
         strokeWeight(1);
-
+        stroke(0);
         // draw mesh
         for (int i = 0; i < mesh.getEdges().size(); i++) {
             render.drawEdge(mesh.getEdges().get(i));
@@ -200,11 +186,13 @@ public class TestHe_Mesh extends PApplet {
         }
 
         noFill();
+        stroke(255, 0, 0);
         for (int i = 0; i < mesh.getAllBoundaryVertices().size(); i++) {
             ellipse(mesh.getAllBoundaryVertices().get(i).xf(),
                     mesh.getAllBoundaryVertices().get(i).yf(),
                     10, 10);
         }
+        stroke(0, 0, 255);
         for (HE_Vertex v : mesh.getFaces().get(0).getFaceVertices()) {
             ellipse(v.xf(), v.yf(), 20, 20);
         }
@@ -213,9 +201,9 @@ public class TestHe_Mesh extends PApplet {
     public void keyPressed() {
         if (key == '1') {
             mesh.getFaces().get(0).getFaceVertices().get(0).set(mouseX, mouseY);
-        } else {
+        }
+        if (key == 'o') {
             optimize();
         }
     }
-
 }

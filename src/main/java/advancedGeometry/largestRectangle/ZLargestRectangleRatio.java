@@ -3,17 +3,6 @@ package advancedGeometry.largestRectangle;
 //import core.MyFitnessFunction;
 //import core.MyParticle;
 //import core.MyRectangle;
-import math.ZGeoMath;
-import net.sourceforge.jswarm_pso.Swarm;
-import transform.ZTransform;
-import wblut.geom.WB_Point;
-import wblut.geom.WB_Polygon;
-import wblut.geom.WB_Transform2D;
-
-import java.awt.*;
-import java.awt.geom.Path2D;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * compute largest inner rectangle in a polygon

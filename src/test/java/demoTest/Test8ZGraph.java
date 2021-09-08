@@ -15,7 +15,7 @@ import java.util.List;
  * @date 2021/3/30
  * @time 17:47
  */
-public class TestZGraph extends PApplet {
+public class Test8ZGraph extends PApplet {
 
     /* ------------- settings ------------- */
 

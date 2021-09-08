@@ -49,7 +49,7 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
         if (depth == 0) {
             this.skeleton = new ZSkeleton(super.getOriginPolygon());
         } else {
-            this.skeleton = new ZSkeleton(super.getOriginPolygon(), depth);
+            this.skeleton = new ZSkeleton(super.getOriginPolygon(), depth, false);
         }
 
         List<ZLine> topSegments = skeleton.getRidges();

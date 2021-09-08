@@ -97,13 +97,13 @@ public class ZRender {
         if (polygon.getNumberOfHoles() > 0) {
             int[] npc = polygon.getNumberOfPointsPerContour();
             app.beginShape();
-            for (int i = 0; i < npc[0] - 1; i++) {
+            for (int i = 0; i < npc[0]; i++) {
                 app.vertex(polygon.getPoint(i).xf(), polygon.getPoint(i).yf(), polygon.getPoint(i).zf());
             }
             int index = npc[0];
             for (int i = 0; i < polygon.getNumberOfHoles(); i++) {
                 app.beginContour();
-                for (int j = 0; j < npc[i + 1] - 1; j++) {
+                for (int j = 0; j < npc[i + 1]; j++) {
                     app.vertex(polygon.getPoint(index).xf(), polygon.getPoint(index).yf(), polygon.getPoint(index).zf());
                     index++;
                 }
