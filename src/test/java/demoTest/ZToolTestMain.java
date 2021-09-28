@@ -12,6 +12,7 @@ import processing.core.PApplet;
  */
 public class ZToolTestMain {
     public static void main(String[] args) {
+
         /* demoTest1 */
 
         /* test jts convexhull and ZGeoMath concave points */
@@ -38,7 +39,8 @@ public class ZToolTestMain {
         /* test ZGraph and graph methods */
 //        PApplet.main("demoTest.Test8ZGraph");
 
-
+        /*  */
+//        PApplet.main("demoTest.TestIntersection");
 
         /* test hemesh mesh and union，buffer */
 //        PApplet.main("demoTest.TestHE_Mesh");
@@ -47,7 +49,7 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.TestHE_MeshFactory");
 
         /* test jts buffer，cut out WB_PolyLine */
-//        PApplet.main("demoTest.TestJtsBuffer");
+        PApplet.main("demoTest.TestJtsBuffer");
 
         /* test jts LineMerger */
 //        PApplet.main("demoTest.TestJtsLineMerger");
@@ -60,7 +62,7 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.TestPolySplit");
 
         /* test advancedGeometry.subdivision methods */
-        PApplet.main("demoTest.TestSubdivision");
+//        PApplet.main("demoTest.TestSubdivision");
 
 
 

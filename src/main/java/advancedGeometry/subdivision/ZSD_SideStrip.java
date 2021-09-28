@@ -107,7 +107,7 @@ public class ZSD_SideStrip extends ZSubdivision {
             List<ZLine> divideLinesOnPolyLine = new ArrayList<>();
             for (ZPoint p : splitPoints) {
                 WB_Point closest = WB_GeometryOp.getClosestPoint2D(p.toWB_Point(), boundary);
-                divideLinesOnPolyLine.add(new ZLine(p, new ZPoint(closest)).extendTwoSidesSlightly(0.1));
+                divideLinesOnPolyLine.add(new ZLine(p, new ZPoint(closest)).extendBothSides(0.1));
             }
             divideLinesOnPolyLine.remove(0);
             divideLinesOnPolyLine.remove(divideLinesOnPolyLine.size() - 1);

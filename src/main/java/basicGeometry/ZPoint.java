@@ -53,6 +53,17 @@ public class ZPoint {
         }
     }
 
+    public ZPoint(Point c) {
+        this.x = c.getX();
+        this.y = c.getY();
+        double _z = c.getCoordinate().getZ();
+        if (Double.isNaN(_z)) {
+            this.z = 0;
+        } else {
+            this.z = _z;
+        }
+    }
+
     public ZPoint(WB_Coord c) {
         this.x = c.xd();
         this.y = c.yd();

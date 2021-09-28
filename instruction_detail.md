@@ -101,6 +101,8 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 
 #### 二维距离相关
 
+* 欧几里得距离 / 曼哈顿距离  
+  `distance2D` `distance3D` `distanceEuclidean` `distanceManhattan2D`
 * 从一组线段中找到与目标点距离最近的点  
   `closestPointToLineList`
 * 从一个WB_Polygon，一组线段中找到与目标点距离最近边的序号  
@@ -121,8 +123,10 @@ inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "La
 
 * 计算多边形或多段线上一点距离形状起点的沿线距离  
   `distFromStart`
+* 计算多段线上一两点距沿线距离  
+  `distAlongEdge`
 * 输入一个多边形和一个多边形上的点，输入距离，找到沿多边形轮廓移动一定距离后的两个点  
-  `pointsOnEdgeByDist`
+  `pointsOnEdgeByDist` `pointOnEdgeByDistWithIndex`
 * 找到多段线上曲率最大的点/顶点序号  
   `maxCurvaturePt` `maxCurvatureC`
 * 输入步长，将多边形或多段线轮廓按步长剖分，得到所有点（最后一段步长必然不足长）   

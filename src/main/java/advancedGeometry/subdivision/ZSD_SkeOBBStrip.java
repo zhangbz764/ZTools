@@ -60,7 +60,7 @@ public class ZSD_SkeOBBStrip extends ZSubdivision {
         WB_PolyLine polyLine = ZFactory.createWB_PolyLine(longestChain);
 
         if (polyLine != null) {
-            ZPoint dir = ZGeoMath.miniRectDir(super.getOriginPolygon());
+            ZPoint dir = ZGeoMath.obbDir(super.getOriginPolygon());
 
             // create divide line by extending
             List<ZLine> divideLine = new ArrayList<>();
@@ -74,7 +74,7 @@ public class ZSD_SkeOBBStrip extends ZSubdivision {
                         new ZPoint[]{p, dir}, super.getOriginPolygon()
                 );
                 if (dl != null) {
-                    divideLine.add(dl.extendTwoSidesSlightly(0.01));
+                    divideLine.add(dl.extendBothSides(0.01));
                 }
             }
 

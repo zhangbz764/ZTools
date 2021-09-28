@@ -6,10 +6,7 @@ import org.locationtech.jts.geom.*;
 import transform.ZTransform;
 import wblut.geom.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * geometry math tools
@@ -40,6 +37,7 @@ import java.util.Map;
  * extend the segment both ends to polygon boundary
  * <p>
  * #### distance 2D
+ * euclidean / manhattan distance
  * find the closest point in a list of lines
  * find the closest edge index in a polygon / list of segments
  * <p>
@@ -51,7 +49,9 @@ import java.util.Map;
  * <p>
  * #### boundary methods
  * calculate the distance from start point to given point along the polyline
+ * calculate the distance between two given points along the edge
  * giving start point and distance, find two points along polygon / polyline boundary (0 forward, 1 backward)
+ * giving start point and distance, find two points along LineString (0 forward, 1 backward) with edge indices
  * find the max curvature point among polyline points
  * find the max curvature point on the polyline
  * giving step to split a polygon
@@ -317,6 +317,14 @@ public final class ZGeoMath {
             double t = crossDelta0 / crossBase; // seg
             return t >= 0 && t <= 1;
         }
+    }
+
+    public static boolean checkLineIntersection(final ZPoint[] line1, final ZPoint[] line2) {
+        ZPoint delta = line2[0].sub(line1[0]);
+        double crossBase = line1[1].cross2D(line2[1]);
+        double crossDelta0 = delta.cross2D(line1[1]);
+
+        return !(Math.abs(crossBase) < epsilon);
     }
 
     /**
@@ -777,6 +785,63 @@ public final class ZGeoMath {
     /*-------- distance 2D --------*/
 
     /**
+     * 2d euclidean distance
+     *
+     * @param x1 x1
+     * @param y1 y1
+     * @param x2 x2
+     * @param y2 y2
+     * @return double
+     */
+    public static double distance2D(double x1, double y1, double x2, double y2) {
+        return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+    }
+
+    /**
+     * 3d euclidean distance
+     *
+     * @param x1 x1
+     * @param y1 y1
+     * @param z1 z1
+     * @param x2 x2
+     * @param y2 y2
+     * @param z2 z2
+     * @return double
+     */
+    public static double distance3D(double x1, double y1, double z1, double x2, double y2, double z2) {
+        return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2));
+    }
+
+    /**
+     * euclidean distance in n-dimension
+     *
+     * @param d1 vector 1
+     * @param d2 vector 2
+     * @return double
+     */
+    public static double distanceEuclidean(double[] d1, double[] d2) {
+        assert d1.length == d2.length : "input arrays must be the same dimension";
+        double sum = 0;
+        for (int i = 0; i < d1.length; i++) {
+            sum += (d1[i] - d2[i]) * (d1[i] - d2[i]);
+        }
+        return Math.sqrt(sum);
+    }
+
+    /**
+     * 2d manhattan distance
+     *
+     * @param x1 x1
+     * @param y1 y1
+     * @param x2 x2
+     * @param y2 y2
+     * @return double
+     */
+    public static double distanceManhattan2D(double x1, double y1, double x2, double y2) {
+        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+    }
+
+    /**
      * find the closest point in a list of lines
      *
      * @param p     target point
@@ -1053,6 +1118,52 @@ public final class ZGeoMath {
     }
 
     /**
+     * calculate the distance between two given points along the edge
+     *
+     * @param p1 point 1 on edge
+     * @param p2 point 2 on edge
+     * @param ls LineString
+     * @return double
+     */
+    public static double distAlongEdge(final ZPoint p1, final ZPoint p2, final LineString ls) {
+        int[] onWhich1 = pointOnWhichEdgeIndices(p1, ls);
+        int[] onWhich2 = pointOnWhichEdgeIndices(p2, ls);
+        if (onWhich1[0] >= 0 && onWhich1[1] >= 0 && onWhich2[0] >= 0 && onWhich2[1] >= 0) {
+            if (onWhich1[0] == onWhich2[0] && onWhich1[1] == onWhich2[1]) {
+                // on same edge
+                return p1.distance(p2);
+            } else {
+                // on different edge
+                ZPoint forward, backward;
+                int fi, bi;
+                if (onWhich1[0] > onWhich2[0]) {
+                    forward = p1;
+                    backward = p2;
+                    fi = onWhich1[0];
+                    bi = onWhich2[0];
+                } else {
+                    forward = p2;
+                    backward = p1;
+                    fi = onWhich2[0];
+                    bi = onWhich1[0];
+                }
+                double dist = 0;
+                dist += backward.distance(new ZPoint(ls.getCoordinateN(bi + 1)));
+                for (int i = bi + 1; i < fi; i++) {
+                    dist += ls.getCoordinateN(i).distance(ls.getCoordinateN(i + 1));
+                }
+                dist += new ZPoint(ls.getCoordinateN(fi)).distance(forward);
+                return dist;
+            }
+        } else {
+            System.out.println("point not on edges");
+            System.out.println(p1.toString());
+            System.out.println(p2.toString());
+            return -1;
+        }
+    }
+
+    /**
      * giving start point and distance, find two points along polygon / polyline boundary (0 forward, 1 backward)
      *
      * @param origin input point (should be on the edge of polygon / polyline)
@@ -1243,7 +1354,6 @@ public final class ZGeoMath {
                     backward = b1.add(b2.sub(b1).normalize().scaleTo(cur_spanB));
                 }
             }
-
             return new ZPoint[]{forward, backward};
         } else {
             System.out.println(origin.toString());
@@ -1323,6 +1433,97 @@ public final class ZGeoMath {
         }
 
         return result;
+    }
+
+    /**
+     * giving start point and distance, find two points along LineString (0 forward, 1 backward) with edge indices
+     *
+     * @param origin input point (should be on the edge of LineString)
+     * @param ls     input LineString
+     * @param dist   distance to move
+     * @return java.util.Map<basicGeometry.ZPoint, java.lang.Integer>
+     */
+    public static Map<ZPoint, Integer> pointOnEdgeByDistWithIndex(final ZPoint origin, final LineString ls, double dist) {
+        // find point on which edge
+        int[] onWhich = pointOnWhichEdgeIndices(origin, ls);
+        if (onWhich[0] >= 0 && onWhich[1] >= 0) {
+            ZPoint forward;
+            ZPoint backward;
+            int start = onWhich[0];
+            int end = onWhich[1];
+
+            // start
+            double cur_spanF = dist;
+            double cur_spanB = dist;
+            ZPoint f1 = origin;
+            ZPoint b1 = origin;
+
+            ZPoint f2 = new ZPoint(ls.getCoordinateN(end)); // forward next
+            ZPoint b2 = new ZPoint(ls.getCoordinateN(start)); // backward next
+            double cur_distF = f1.distance(f2); // distance with forward
+            double cur_distB = b1.distance(b2); // distance with backward
+
+            Map<ZPoint, Integer> result = new HashMap<>();
+
+            if (ls.getNumPoints() > 2) {
+                // the LineString is a polyline
+                forward = f1.add(f2.sub(f1).normalize().scaleTo(cur_spanF));
+                if (end == ls.getNumPoints() - 1 && cur_spanF > cur_distF) {
+                    forward = new ZPoint(ls.getCoordinateN(ls.getNumPoints() - 1));
+                } else {
+                    while (cur_spanF > cur_distF && end < ls.getNumPoints() - 1) {
+                        f1 = f2;
+                        end = end + 1;
+                        f2 = new ZPoint(ls.getCoordinateN(end));
+
+                        cur_spanF = cur_spanF - cur_distF;
+                        cur_distF = f1.distance(f2);
+                        forward = f1.add(f2.sub(f1).normalize().scaleTo(cur_spanF));
+                    }
+                    if (cur_spanF > cur_distF) {
+                        forward = new ZPoint(ls.getCoordinateN(ls.getNumPoints() - 1));
+                    }
+                }
+                result.put(forward, end - 1);
+
+                backward = b1.add(b2.sub(b1).normalize().scaleTo(cur_spanB));
+                if (start == 0 && cur_spanB > cur_distB) {
+                    backward = new ZPoint(ls.getCoordinateN(0));
+                } else {
+                    while (cur_spanB > cur_distB && start > 0) {
+                        b1 = b2;
+                        start = start - 1;
+                        b2 = new ZPoint(ls.getCoordinateN(start));
+
+                        cur_spanB = cur_spanB - cur_distB;
+                        cur_distB = b1.distance(b2);
+                        backward = b1.add(b2.sub(b1).normalize().scaleTo(cur_spanB));
+                    }
+                    if (cur_spanB > cur_distB) {
+                        backward = new ZPoint(ls.getCoordinateN(0));
+                    }
+                }
+                result.put(backward, start);
+            } else {
+                // the LineString is a segment
+                if (cur_spanF > cur_distF) {
+                    forward = new ZPoint(ls.getCoordinateN(ls.getNumPoints() - 1));
+                } else {
+                    forward = f1.add(f2.sub(f1).normalize().scaleTo(cur_spanF));
+                }
+                if (cur_spanB > cur_distB) {
+                    backward = new ZPoint(ls.getCoordinateN(0));
+                } else {
+                    backward = b1.add(b2.sub(b1).normalize().scaleTo(cur_spanB));
+                }
+                result.put(forward, 0);
+                result.put(backward, 0);
+            }
+            return result;
+        } else {
+            System.out.println(origin.toString());
+            throw new NullPointerException("point not on linestring edges");
+        }
     }
 
     /**
@@ -1437,7 +1638,7 @@ public final class ZGeoMath {
      * @param type   type of geometry ("LineString""Polygon")
      * @return java.util.Map<basicGeometry.ZPoint, java.lang.Integer>
      */
-    private static Map<ZPoint, Integer> splitJtsWithDir(final Coordinate[] coords, final double step, final String type) {
+    private static Map<ZPoint, Integer> splitJtsWithIndex(final Coordinate[] coords, final double step, final String type) {
         // initialize
         ZPoint p1 = new ZPoint(coords[0]);
         double curr_span = step;
@@ -1562,7 +1763,7 @@ public final class ZGeoMath {
      * @param step step to divide
      * @return java.util.Map<geometry.ZPoint, java.lang.Integer>
      */
-    public static Map<ZPoint, Integer> splitPolyLineByStepWithDir(final WB_PolyLine poly, final double step) {
+    public static Map<ZPoint, Integer> splitPolyLineByStepWithIndex(final WB_PolyLine poly, final double step) {
         WB_Coord[] polyPoints = poly.getPoints().toArray();
 
         // initialize
@@ -1748,7 +1949,7 @@ public final class ZGeoMath {
      * @param minStep min step to divide
      * @return java.util.Map<geometry.ZPoint, java.lang.Integer>
      */
-    public static Map<ZPoint, Integer> splitPolyLineByThresholdWithDir(final WB_PolyLine poly, final double maxStep, final double minStep) {
+    public static Map<ZPoint, Integer> splitPolyLineByThresholdWithIndex(final WB_PolyLine poly, final double maxStep, final double minStep) {
         assert maxStep >= minStep : "please input valid threshold";
         double length = 0;
         for (int i = 0; i < poly.getNumberSegments(); i++) {
@@ -1764,7 +1965,7 @@ public final class ZGeoMath {
                 return new LinkedHashMap<>();
             }
         }
-        return splitPolyLineByStepWithDir(poly, finalStep);
+        return splitPolyLineByStepWithIndex(poly, finalStep);
     }
 
     /**
@@ -1776,7 +1977,7 @@ public final class ZGeoMath {
      * @param minStep min step to divide
      * @return java.util.Map<basicGeometry.ZPoint, java.lang.Integer>
      */
-    public static Map<ZPoint, Integer> splitPolyLineByThresholdWithDir(final LineString ls, final double maxStep, final double minStep) {
+    public static Map<ZPoint, Integer> splitPolyLineByThresholdWithIndex(final LineString ls, final double maxStep, final double minStep) {
         assert maxStep >= minStep : "please input valid threshold";
         double length = ls.getLength();
 
@@ -1790,7 +1991,7 @@ public final class ZGeoMath {
                 return new LinkedHashMap<>();
             }
         }
-        return splitJtsWithDir(ls.getCoordinates(), finalStep, "LineString");
+        return splitJtsWithIndex(ls.getCoordinates(), finalStep, "LineString");
     }
 
     /**
@@ -1950,7 +2151,7 @@ public final class ZGeoMath {
      * @param polygon input polygon
      * @return geometry.ZPoint
      */
-    public static ZPoint miniRectDir(final WB_Polygon polygon) {
+    public static ZPoint obbDir(final WB_Polygon polygon) {
         Polygon rect = (Polygon) MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToPolygon(polygon));
         Coordinate c0 = rect.getCoordinates()[0];
         Coordinate c1 = rect.getCoordinates()[1];
@@ -1968,7 +2169,7 @@ public final class ZGeoMath {
      * @param polygon input polygon
      * @return geometry.ZPoint
      */
-    public static ZPoint miniRectDir(final Polygon polygon) {
+    public static ZPoint obbDir(final Polygon polygon) {
         Polygon rect = (Polygon) MinimumDiameter.getMinimumRectangle(polygon);
         Coordinate c0 = rect.getCoordinates()[0];
         Coordinate c1 = rect.getCoordinates()[1];

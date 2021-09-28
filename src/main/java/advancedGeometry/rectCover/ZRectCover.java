@@ -127,7 +127,7 @@ public class ZRectCover {
             Geometry nodedLineStrings = ZTransform.PolygonToLineString(boundary).get(0);
             for (int index : list) {
                 try {
-                    nodedLineStrings = nodedLineStrings.union(rayExtends.get(index).extendTwoSidesSlightly(1).toJtsLineString());
+                    nodedLineStrings = nodedLineStrings.union(rayExtends.get(index).extendBothSides(1).toJtsLineString());
                 } catch (TopologyException e) {
                     invalidCount++;
                 }

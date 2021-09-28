@@ -38,7 +38,7 @@ public class TestJtsBuffer extends PApplet {
     private Geometry buffer2;
     private Geometry buffer3;
     private int endCapStyle = 1;
-    private int joinStyle = 1;
+    private int joinStyle = 2;
 
     private WB_PolyLine pl;
 
@@ -85,6 +85,8 @@ public class TestJtsBuffer extends PApplet {
         this.buffer1 = BufferOp.bufferOp(multiGeo, 20, parameters);
         this.buffer2 = BufferOp.bufferOp(ls, 20, parameters);
         this.buffer3 = BufferOp.bufferOp(p, 20, parameters);
+        System.out.println("endCapStyle:  " + endCapStyle);
+        System.out.println("joinStyle:  " + joinStyle);
         System.out.println("buffer.getNumPoints(): " + buffer1.getNumPoints());
 
         pl = ZFactory.createPolylineFromPolygon(
@@ -120,7 +122,7 @@ public class TestJtsBuffer extends PApplet {
     public void keyPressed() {
         if (key == 'q') {
             // end cap style
-            endCapStyle = (endCapStyle + 1) % 3 + 1;
+            endCapStyle = endCapStyle % 3 + 1;
             System.out.println("endCapStyle:  " + endCapStyle);
 
             BufferParameters parameters = new BufferParameters(0, endCapStyle, joinStyle, 5.0D);
@@ -131,7 +133,7 @@ public class TestJtsBuffer extends PApplet {
         }
         if (key == 'w') {
             // join style
-            joinStyle = (joinStyle + 1) % 3 + 1;
+            joinStyle = joinStyle % 3 + 1;
             System.out.println("joinStyle:  " + joinStyle);
 
             BufferParameters parameters = new BufferParameters(0, endCapStyle, joinStyle, 5.0D);

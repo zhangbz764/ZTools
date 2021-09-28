@@ -2,12 +2,10 @@ package basicGeometry;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.triangulate.Segment;
 import processing.core.PApplet;
-import wblut.geom.WB_Coord;
-import wblut.geom.WB_Point;
-import wblut.geom.WB_Ray;
-import wblut.geom.WB_Segment;
+import wblut.geom.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,13 +41,13 @@ public class ZLine {
         init();
     }
 
-    public ZLine(WB_Coord pt0, WB_Coord pt1) {
-        this.pt0 = new ZPoint(pt0);
-        this.pt1 = new ZPoint(pt1);
+    public ZLine(double x0, double y0, double x1, double y1) {
+        this.pt0 = new ZPoint(x0, y0);
+        this.pt1 = new ZPoint(x1, y1);
         init();
     }
 
-    public ZLine(Coordinate pt0, Coordinate pt1) {
+    public ZLine(WB_Coord pt0, WB_Coord pt1) {
         this.pt0 = new ZPoint(pt0);
         this.pt1 = new ZPoint(pt1);
         init();
@@ -61,14 +59,26 @@ public class ZLine {
         init();
     }
 
-    public ZLine(double x0, double y0, double x1, double y1) {
-        this.pt0 = new ZPoint(x0, y0);
-        this.pt1 = new ZPoint(x1, y1);
+    public ZLine(Coordinate pt0, Coordinate pt1) {
+        this.pt0 = new ZPoint(pt0);
+        this.pt1 = new ZPoint(pt1);
+        init();
+    }
+
+    public ZLine(Point pt0, Point pt1) {
+        this.pt0 = new ZPoint(pt0);
+        this.pt1 = new ZPoint(pt1);
+        init();
+    }
+
+    public ZLine(Segment segment) {
+        this.pt0 = new ZPoint(segment.getStart());
+        this.pt1 = new ZPoint(segment.getEnd());
         init();
     }
 
     /**
-     * description
+     * initialize properties
      *
      * @return void
      */
@@ -87,7 +97,7 @@ public class ZLine {
      * @param dist extend distance
      * @return geometry.ZLine
      */
-    public ZLine extendTwoSidesSlightly(double dist) {
+    public ZLine extendBothSides(double dist) {
         ZPoint newPt0 = pt0.add(getDirectionNor().scaleTo(-dist));
         ZPoint newPt1 = pt1.add(getDirectionNor().scaleTo(dist));
         return new ZLine(newPt0, newPt1);
@@ -127,23 +137,6 @@ public class ZLine {
     }
 
     /**
-     * scale the length of ZLine both sides
-     *
-     * @param scale scale ratio
-     * @return geometry.ZLine
-     */
-    @Deprecated
-    public ZLine scaleBothSides(double scale) {
-        double scaleDist = getLength() * (scale - 1) * 0.5;
-        pt1.add(direction.scaleTo(scaleDist));
-        pt0.add(direction.scaleTo(scaleDist * -1));
-        return new ZLine(
-                pt0.add(direction.scaleTo(scaleDist * -1)),
-                pt1.add(direction.scaleTo(scaleDist))
-        );
-    }
-
-    /**
      * reverse the direction of ZLine
      *
      * @return geometry.ZLine
@@ -162,7 +155,25 @@ public class ZLine {
         return new ZLine(pt0.add(vec), pt1.add(vec));
     }
 
-
+    /**
+     * get two offset lines
+     *
+     * @param dist offset distance
+     * @return basicGeometry.ZLine[]
+     */
+    public ZLine[] offset2D(double dist) {
+        ZPoint perpendicular = this.direction.normalize().perpVec();
+        return new ZLine[]{
+                new ZLine(
+                        pt0.add(perpendicular.scaleTo(dist)),
+                        pt1.add(perpendicular.scaleTo(dist))
+                ),
+                new ZLine(
+                        pt0.add(perpendicular.scaleTo(-1 * dist)),
+                        pt1.add(perpendicular.scaleTo(-1 * dist))
+                )
+        };
+    }
 
     /**
      * divide ZLine by giving step length
@@ -220,8 +231,6 @@ public class ZLine {
      * @return java.util.List<geometry.ZPoint>
      */
     public List<ZPoint> divideByThreshold(double min, double max) {
-        List<ZPoint> result = new ArrayList<>();
-
         int num = 1;
         for (int i = 1; i < Integer.MAX_VALUE; i++) {
             double currStep = length / i;
@@ -341,6 +350,10 @@ public class ZLine {
 
     public WB_Ray toWB_Ray() {
         return new WB_Ray(pt0.toWB_Point(), direction.toWB_Point());
+    }
+
+    public WB_Line toWB_Line() {
+        return new WB_Line(pt0.toWB_Point(), direction.toWB_Point());
     }
 
     /* ------------- draw -------------*/

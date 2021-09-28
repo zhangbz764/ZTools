@@ -5,6 +5,7 @@ import basicGeometry.ZPoint;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
+import transform.ZTransform;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
@@ -47,24 +48,28 @@ public class ZBSpline {
 
     /* ------------- constructor ------------- */
 
-    public ZBSpline(List<WB_Point> ctrlPts, int degrees, int numU, int type) {
-        this.p = degrees;
-        this.allCtrlPts = new ArrayList<>();
-
-        if (type == 0) {
-            initOpen(ctrlPts, numU);
-        } else if (type == 1) {
-            initClamped(ctrlPts, numU);
-        } else if (type == 2) {
-            initClose(ctrlPts, numU);
-        }
-    }
-
     public ZBSpline(WB_Point[] ctrlPts, int degrees, int numU, int type) {
         this.p = degrees - 1;
         this.allCtrlPts = new ArrayList<>();
 
         List<WB_Point> ctrlPtsList = Arrays.asList(ctrlPts);
+        if (type == 0) {
+            initOpen(ctrlPtsList, numU);
+        } else if (type == 1) {
+            initClamped(ctrlPtsList, numU);
+        } else if (type == 2) {
+            initClose(ctrlPtsList, numU);
+        }
+    }
+
+    public ZBSpline(Coordinate[] ctrlPts, int degrees, int numU, int type) {
+        this.p = degrees - 1;
+        this.allCtrlPts = new ArrayList<>();
+
+        List<WB_Point> ctrlPtsList = new ArrayList<>();
+        for (Coordinate ctrlPt : ctrlPts) {
+            ctrlPtsList.add(ZTransform.CoordinateToWB_Point(ctrlPt));
+        }
         if (type == 0) {
             initOpen(ctrlPtsList, numU);
         } else if (type == 1) {
@@ -275,7 +280,7 @@ public class ZBSpline {
         return new WB_PolyLine(pts);
     }
 
-    public WB_Polygon getAsWB_Polygon(){
+    public WB_Polygon getAsWB_Polygon() {
         WB_Point[] pts = new WB_Point[curvePts.size()];
         for (int i = 0; i < pts.length; i++) {
             pts[i] = curvePts.get(i).toWB_Point();
@@ -283,7 +288,7 @@ public class ZBSpline {
         return new WB_Polygon(pts);
     }
 
-    public LineString getAsLineString(){
+    public LineString getAsLineString() {
         Coordinate[] coordinates = new Coordinate[curvePts.size()];
         for (int i = 0; i < coordinates.length; i++) {
             coordinates[i] = curvePts.get(i).toJtsCoordinate();
@@ -291,7 +296,7 @@ public class ZBSpline {
         return ZFactory.jtsgf.createLineString(coordinates);
     }
 
-    public Polygon getAsPolygon(){
+    public Polygon getAsPolygon() {
         Coordinate[] coordinates = new Coordinate[curvePts.size()];
         for (int i = 0; i < coordinates.length; i++) {
             coordinates[i] = curvePts.get(i).toJtsCoordinate();

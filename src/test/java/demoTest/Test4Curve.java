@@ -11,8 +11,6 @@ import wblut.geom.WB_Point;
 import wblut.nurbs.WB_BSpline;
 import wblut.processing.WB_Render;
 
-import java.util.Arrays;
-
 /**
  * test ZCatmullRom, ZBSpline and WB_BSpline
  *
@@ -69,7 +67,7 @@ public class Test4Curve extends PApplet {
         this.spline = new WB_BSpline(controlPoints, 3);
 
         // ZBSpline
-        this.zbSpline = new ZBSpline(Arrays.asList(controlPoints), 3, 100, type);
+        this.zbSpline = new ZBSpline(controlPoints, 3, 100, type);
         System.out.println(zbSpline.getCurvePts().size());
         this.ls2 = zbSpline.getAsLineString();
     }
@@ -145,7 +143,7 @@ public class Test4Curve extends PApplet {
             this.type = (type + 1) % 3;
 
             // update bspline
-            this.zbSpline = new ZBSpline(Arrays.asList(controlPoints), 3, 100, type);
+            this.zbSpline = new ZBSpline(controlPoints, 3, 100, type);
             this.ls2 = zbSpline.getAsLineString();
         }
     }

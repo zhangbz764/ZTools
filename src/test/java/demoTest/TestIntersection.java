@@ -1,11 +1,14 @@
 package demoTest;
 
+import basicGeometry.ZFactory;
 import basicGeometry.ZLine;
 import basicGeometry.ZPoint;
 import igeo.ICurve;
 import igeo.IG;
 import math.ZGeoMath;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
 import render.JtsRender;
@@ -35,6 +38,12 @@ public class TestIntersection extends PApplet {
 
     /* ------------- setup ------------- */
 
+    // jts intersection
+    private LineString l1;
+    private Geometry p1;
+    private Geometry inter;
+
+    // ZGeoMath
     private List<Geometry> polys;
     private WB_Polygon intersectionPoly;
 
@@ -48,7 +57,21 @@ public class TestIntersection extends PApplet {
         this.render = new WB_Render(this);
 
         loadPolys();
-        this.intersectionPoly = ZTransform.PolygonToWB_Polygon((Polygon) polys.get(0));
+
+        this.p1 = ZTransform.PolygonToLineString((Polygon) polys.get(0)).get(0);
+        this.l1 = ZFactory.jtsgf.createLineString(
+                new Coordinate[]{
+                        new Coordinate(0, 1000),
+                        new Coordinate(30, 950),
+                        new Coordinate(100, 850),
+                        new Coordinate(250, 850),
+                        new Coordinate(400, 700),
+                }
+        );
+        this.inter = l1.intersection(p1);
+        System.out.println(inter.getGeometryType());
+
+        this.intersectionPoly = ZTransform.PolygonToWB_Polygon((Polygon) polys.get(1));
         this.ray = new ZLine(new ZPoint(650, 250), new ZPoint(mouseX, mouseY));
     }
 
@@ -71,8 +94,14 @@ public class TestIntersection extends PApplet {
 
     public void draw() {
         background(255);
+        stroke(0);
+        strokeWeight(1);
 
         // intersection
+        noFill();
+        for (Geometry g : polys) {
+            jtsRender.drawGeometry(g);
+        }
         ray = new ZLine(new ZPoint(650, 250), new ZPoint(mouseX, mouseY));
         ray.display(this);
         List<ZPoint> inters = ZGeoMath.rayPolygonIntersect2D(ray.toLinePD(), intersectionPoly);
@@ -86,6 +115,11 @@ public class TestIntersection extends PApplet {
                 text(i + 1, intersectionPoly.getSegment(interOrder.get(i)).getCenter().xf(), intersectionPoly.getSegment(interOrder.get(i)).getCenter().yf());
             }
         }
+
+        jtsRender.drawGeometry(l1);
+        stroke(255, 0, 0);
+        strokeWeight(3);
+        jtsRender.drawGeometry(inter);
     }
 
 }
