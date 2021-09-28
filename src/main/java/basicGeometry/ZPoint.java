@@ -53,6 +53,7 @@ public class ZPoint {
         }
     }
 
+
     public ZPoint(Point c) {
         this.x = c.getX();
         this.y = c.getY();
