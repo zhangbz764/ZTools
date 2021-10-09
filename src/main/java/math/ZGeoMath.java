@@ -5,6 +5,7 @@ import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.*;
 import transform.ZTransform;
 import wblut.geom.*;
+import wblut.math.WB_Epsilon;
 
 import java.util.*;
 
@@ -33,6 +34,7 @@ import java.util.*;
  * get intersection points of a ray / line and a polygon ([--) for each edge)
  * get intersection points of a ray and a polygon (return indices by distance order)
  * get intersection points of a segment and a polyline ([--) for each edge, [--] for the last one)
+ * get intersection points of a circle and a segment / polygon / polyline
  * extend or trim the segment to polygon boundary
  * extend the segment both ends to polygon boundary
  * <p>
@@ -262,6 +264,7 @@ public final class ZGeoMath {
         return other.get(maxIndex);
     }
 
+
     /*-------- intersection 2D --------*/
 
     // TODO: 2021/1/4 intersection check
@@ -284,7 +287,7 @@ public final class ZGeoMath {
      * @param seg segment {point P, direction d}
      * @return boolean
      */
-    public static boolean checkRaySegmentIntersection(final ZPoint[] ray, final ZPoint[] seg) {
+    public static boolean checkRaySegmentIntersect(final ZPoint[] ray, final ZPoint[] seg) {
         ZPoint delta = seg[0].sub(ray[0]);
         double crossBase = ray[1].cross2D(seg[1]);
         double crossDelta0 = delta.cross2D(ray[1]);
@@ -306,7 +309,7 @@ public final class ZGeoMath {
      * @param seg  segment {point P, direction d}
      * @return boolean
      */
-    public static boolean checkLineSegmentIntersection(final ZPoint[] line, final ZPoint[] seg) {
+    public static boolean checkLineSegmentIntersect(final ZPoint[] line, final ZPoint[] seg) {
         ZPoint delta = seg[0].sub(line[0]);
         double crossBase = line[1].cross2D(seg[1]);
         double crossDelta0 = delta.cross2D(line[1]);
@@ -319,7 +322,14 @@ public final class ZGeoMath {
         }
     }
 
-    public static boolean checkLineIntersection(final ZPoint[] line1, final ZPoint[] line2) {
+    /**
+     * check 2 lines are intersecting
+     *
+     * @param line1 line1 {point P, direction d}
+     * @param line2 line2 {point P, direction d}
+     * @return boolean
+     */
+    public static boolean checkLineIntersect(final ZPoint[] line1, final ZPoint[] line2) {
         ZPoint delta = line2[0].sub(line1[0]);
         double crossBase = line1[1].cross2D(line2[1]);
         double crossDelta0 = delta.cross2D(line1[1]);
@@ -334,9 +344,9 @@ public final class ZGeoMath {
      * @param pl  polyline
      * @return boolean
      */
-    public static boolean checkRayPolyLineIntersection(final ZPoint[] ray, final WB_PolyLine pl) {
+    public static boolean checkRayPolyLineIntersect(final ZPoint[] ray, final WB_PolyLine pl) {
         for (int i = 0; i < pl.getNumberSegments(); i++) {
-            if (checkRaySegmentIntersection(ray, new ZLine(pl.getSegment(i)).toLinePD())) {
+            if (checkRaySegmentIntersect(ray, new ZLine(pl.getSegment(i)).toLinePD())) {
                 return true;
             }
         }
@@ -350,9 +360,9 @@ public final class ZGeoMath {
      * @param ls  polyline
      * @return boolean
      */
-    public static boolean checkRayPolyLineIntersection(final ZPoint[] ray, final LineString ls) {
+    public static boolean checkRayPolyLineIntersect(final ZPoint[] ray, final LineString ls) {
         for (int i = 0; i < ls.getCoordinates().length - 1; i++) {
-            if (checkRaySegmentIntersection(ray, new ZLine(ls.getCoordinateN(i), ls.getCoordinateN(i + 1)).toLinePD())) {
+            if (checkRaySegmentIntersect(ray, new ZLine(ls.getCoordinateN(i), ls.getCoordinateN(i + 1)).toLinePD())) {
                 return true;
             }
         }
@@ -368,8 +378,8 @@ public final class ZGeoMath {
      * @param type1 second type "line" "ray" "segment"
      * @return geometry.ZPoint
      */
-    public static ZPoint simpleLineElementsIntersect2D(final ZLine l0, final String type0, final ZLine l1, final String type1) {
-        return simpleLineElementsIntersect2D(l0.toLinePD(), type0, l1.toLinePD(), type1);
+    public static ZPoint simpleLineElementsIntersection2D(final ZLine l0, final String type0, final ZLine l1, final String type1) {
+        return simpleLineElementsIntersection2D(l0.toLinePD(), type0, l1.toLinePD(), type1);
     }
 
     /**
@@ -381,25 +391,25 @@ public final class ZGeoMath {
      * @param type1 second type "line" "ray" "segment"
      * @return geometry.ZPoint
      */
-    public static ZPoint simpleLineElementsIntersect2D(final ZPoint[] l0, final String type0, final ZPoint[] l1, final String type1) {
+    public static ZPoint simpleLineElementsIntersection2D(final ZPoint[] l0, final String type0, final ZPoint[] l1, final String type1) {
         if (type0.equals("line") && type1.equals("line")) {
-            return lineIntersect2D(l0, l1);
+            return lineIntersection2D(l0, l1);
         } else if (type0.equals("segment") && type1.equals("segment")) {
-            return segmentIntersect2D(l0, l1);
+            return segmentIntersection2D(l0, l1);
         } else if (type0.equals("ray") && type1.equals("ray")) {
-            return rayIntersect2D(l0, l1);
+            return rayIntersection2D(l0, l1);
         } else if (type0.equals("line") && type1.equals("ray")) {
-            return lineRayIntersect2D(l0, l1);
+            return lineRayIntersection2D(l0, l1);
         } else if (type0.equals("ray") && type1.equals("line")) {
-            return lineRayIntersect2D(l1, l0);
+            return lineRayIntersection2D(l1, l0);
         } else if (type0.equals("line") && type1.equals("segment")) {
-            return lineSegmentIntersect2D(l0, l1);
+            return lineSegmentIntersection2D(l0, l1);
         } else if (type0.equals("segment") && type1.equals("line")) {
-            return lineSegmentIntersect2D(l1, l0);
+            return lineSegmentIntersection2D(l1, l0);
         } else if (type0.equals("ray") && type1.equals("segment")) {
-            return raySegmentIntersect2D(l0, l1);
+            return raySegmentIntersection2D(l0, l1);
         } else if (type0.equals("segment") && type1.equals("ray")) {
-            return lineRayIntersect2D(l1, l0);
+            return lineRayIntersection2D(l1, l0);
         } else {
             throw new IllegalArgumentException("input type must be line, ray or segment");
         }
@@ -412,7 +422,7 @@ public final class ZGeoMath {
      * @param line1 second line {point P, direction d}
      * @return geometry.ZPoint
      */
-    public static ZPoint lineIntersect2D(final ZPoint[] line0, final ZPoint[] line1) {
+    public static ZPoint lineIntersection2D(final ZPoint[] line0, final ZPoint[] line1) {
         ZPoint delta = line1[0].sub(line0[0]);
         double crossDelta = delta.cross2D(line0[1]);
         double crossBase = line0[1].cross2D(line1[1]);
@@ -432,7 +442,7 @@ public final class ZGeoMath {
      * @param ray1 second ray {point P, direction d}
      * @return geometry.ZPoint
      */
-    public static ZPoint rayIntersect2D(final ZPoint[] ray0, final ZPoint[] ray1) {
+    public static ZPoint rayIntersection2D(final ZPoint[] ray0, final ZPoint[] ray1) {
         ZPoint delta = ray1[0].sub(ray0[0]);
         double crossBase = ray0[1].cross2D(ray1[1]);
         double crossDelta0 = delta.cross2D(ray0[1]);
@@ -460,7 +470,7 @@ public final class ZGeoMath {
      * @param seg1 first segment {point P, direction d}
      * @return geometry.ZPoint
      */
-    public static ZPoint segmentIntersect2D(final ZPoint[] seg0, final ZPoint[] seg1) {
+    public static ZPoint segmentIntersection2D(final ZPoint[] seg0, final ZPoint[] seg1) {
         ZPoint delta = seg1[0].sub(seg0[0]);
         double crossBase = seg0[1].cross2D(seg1[1]);
         double crossDelta0 = delta.cross2D(seg0[1]);
@@ -488,7 +498,7 @@ public final class ZGeoMath {
      * @param ray  ray {point P, direction d}
      * @return geometry.ZPoint
      */
-    public static ZPoint lineRayIntersect2D(final ZPoint[] line, final ZPoint[] ray) {
+    public static ZPoint lineRayIntersection2D(final ZPoint[] line, final ZPoint[] ray) {
         ZPoint delta = ray[0].sub(line[0]);
         double crossBase = line[1].cross2D(ray[1]);
         double crossDelta0 = delta.cross2D(line[1]);
@@ -516,7 +526,7 @@ public final class ZGeoMath {
      * @param seg  segment {point P, direction d}
      * @return geometry.ZPoint
      */
-    public static ZPoint lineSegmentIntersect2D(final ZPoint[] line, final ZPoint[] seg) {
+    public static ZPoint lineSegmentIntersection2D(final ZPoint[] line, final ZPoint[] seg) {
         ZPoint delta = seg[0].sub(line[0]);
         double crossBase = line[1].cross2D(seg[1]);
         double crossDelta0 = delta.cross2D(line[1]);
@@ -544,7 +554,7 @@ public final class ZGeoMath {
      * @param seg segment {point P, direction d}
      * @return geometry.ZPoint
      */
-    public static ZPoint raySegmentIntersect2D(final ZPoint[] ray, final ZPoint[] seg) {
+    public static ZPoint raySegmentIntersection2D(final ZPoint[] ray, final ZPoint[] seg) {
         ZPoint delta = seg[0].sub(ray[0]);
         double crossBase = ray[1].cross2D(seg[1]);
         double crossDelta0 = delta.cross2D(ray[1]);
@@ -572,7 +582,7 @@ public final class ZGeoMath {
      * @param pl  input polyline
      * @return java.util.List<basicGeometry.ZPoint>
      */
-    public static List<ZPoint> segmentPolyLineIntersect2D(final ZPoint[] seg, final WB_PolyLine pl) {
+    public static List<ZPoint> segmentPolyLineIntersection2D(final ZPoint[] seg, final WB_PolyLine pl) {
         List<ZPoint> result = new ArrayList<>();
         for (int i = 0; i < pl.getNumberSegments() - 1; i++) {
             ZPoint[] polySeg = new ZLine(pl.getSegment(i)).toLinePD();
@@ -625,7 +635,7 @@ public final class ZGeoMath {
      * @param poly input polygon
      * @return java.util.List<geometry.ZPoint>
      */
-    public static List<ZPoint> rayPolygonIntersect2D(final ZPoint[] ray, final WB_Polygon poly) {
+    public static List<ZPoint> rayPolygonIntersection2D(final ZPoint[] ray, final WB_Polygon poly) {
         List<ZPoint> result = new ArrayList<>();
         for (int i = 0; i < poly.getNumberSegments(); i++) {
             ZPoint[] polySeg = new ZLine(poly.getSegment(i)).toLinePD();
@@ -658,7 +668,7 @@ public final class ZGeoMath {
      * @param poly input polygon
      * @return java.util.List<geometry.ZPoint>
      */
-    public static List<ZPoint> linePolygonIntersect2D(final ZPoint[] line, final WB_Polygon poly) {
+    public static List<ZPoint> linePolygonIntersection2D(final ZPoint[] line, final WB_Polygon poly) {
         List<ZPoint> result = new ArrayList<>();
         for (int i = 0; i < poly.getNumberSegments(); i++) {
             ZPoint[] polySeg = new ZLine(poly.getSegment(i)).toLinePD();
@@ -690,7 +700,7 @@ public final class ZGeoMath {
      * @param poly input polygon
      * @return java.util.List<java.lang.Integer> - sorted indices of input polygon
      */
-    public static List<Integer> rayPolygonIntersectIndices2D(final ZPoint[] ray, final WB_Polygon poly) {
+    public static List<Integer> rayPolygonIntersectionIndices2D(final ZPoint[] ray, final WB_Polygon poly) {
         List<Integer> indicesResult = new ArrayList<>();
         List<Double> resultDist = new ArrayList<>();
         for (int i = 0; i < poly.getNumberSegments(); i++) {
@@ -728,6 +738,182 @@ public final class ZGeoMath {
     }
 
     /**
+     * get intersection points of a circle and a segment
+     *
+     * @param S input segment
+     * @param C input circle
+     * @return java.util.List<wblut.geom.WB_Point>
+     */
+    public static List<WB_Point> segmentCircleIntersection2D(final WB_Segment S, final WB_Circle C) {
+        List<WB_Point> result = new ArrayList<>();
+        double a = WB_CoordOp2D.getSqLength2D(
+                S.getEndpoint().xd() - S.getOrigin().xd(),
+                S.getEndpoint().yd() - S.getOrigin().yd()
+        );
+        double b = 2.0D * (
+                (S.getEndpoint().xd() - S.getOrigin().xd()) * (S.getOrigin().xd() - C.getCenter().xd())
+                        + (S.getEndpoint().yd() - S.getOrigin().yd()) * (S.getOrigin().yd() - C.getCenter().yd())
+        );
+        double c = C.getCenter().xd() * C.getCenter().xd() + C.getCenter().yd() * C.getCenter().yd()
+                + S.getOrigin().xd() * S.getOrigin().xd() + S.getOrigin().yd() * S.getOrigin().yd()
+                - 2.0D * (C.getCenter().xd() * S.getOrigin().xd() + C.getCenter().yd() * S.getOrigin().yd())
+                - C.getRadius() * C.getRadius();
+        double delta = b * b - 4.0D * a * c;
+        if (delta < -WB_Epsilon.EPSILON) {
+            // no intersection
+            return result;
+        } else if (WB_Epsilon.isZero(delta)) {
+            // tangent
+            double u = -0.5D * (b / a);
+            if (u >= 0.0D && u <= 1.0D) {
+                double segLength = S.getLength();
+                result.add(S.getPoint(u * segLength));
+            }
+            return result;
+        } else {
+            // may have 2 intersections
+            double deltaSq = Math.sqrt(delta);
+            double u1 = 0.5 * (-b + deltaSq) / a;
+            double u2 = 0.5 * (-b - deltaSq) / a;
+            double segLength = S.getLength();
+            if (u1 >= 0.0D && u1 <= 1.0D) {
+                result.add(S.getPoint(u1 * segLength));
+            }
+            if (u2 >= 0.0D && u2 <= 1.0D) {
+                result.add(S.getPoint(u2 * segLength));
+            }
+            return result;
+        }
+    }
+
+    /**
+     * get intersection points of a circle and a polygon / polyline
+     *
+     * @param poly input polygon / polyline
+     * @param C    input circle
+     * @return java.util.List<wblut.geom.WB_Point>
+     */
+    public static List<WB_Point> polylineCircleIntersection(final WB_PolyLine poly, final WB_Circle C) {
+        List<WB_Point> result = new ArrayList<>();
+        if (poly instanceof WB_Polygon) {
+            for (int i = 0; i < poly.getNumberSegments(); i++) {
+                WB_Segment S = poly.getSegment(i);
+                double a = WB_CoordOp2D.getSqLength2D(
+                        S.getEndpoint().xd() - S.getOrigin().xd(),
+                        S.getEndpoint().yd() - S.getOrigin().yd()
+                );
+                double b = 2.0D * (
+                        (S.getEndpoint().xd() - S.getOrigin().xd()) * (S.getOrigin().xd() - C.getCenter().xd())
+                                + (S.getEndpoint().yd() - S.getOrigin().yd()) * (S.getOrigin().yd() - C.getCenter().yd())
+                );
+                double c = C.getCenter().xd() * C.getCenter().xd() + C.getCenter().yd() * C.getCenter().yd()
+                        + S.getOrigin().xd() * S.getOrigin().xd() + S.getOrigin().yd() * S.getOrigin().yd()
+                        - 2.0D * (C.getCenter().xd() * S.getOrigin().xd() + C.getCenter().yd() * S.getOrigin().yd())
+                        - C.getRadius() * C.getRadius();
+                double delta = b * b - 4.0D * a * c;
+                if (delta < -WB_Epsilon.EPSILON) {
+                    // no intersection
+                } else if (WB_Epsilon.isZero(delta)) {
+                    // tangent
+                    double u = -0.5D * (b / a);
+                    if (u >= 0.0D && u < 1.0D) {
+                        double segLength = S.getLength();
+                        result.add(S.getPoint(u * segLength));
+                    }
+                } else {
+                    // may have 2 intersections
+                    double deltaSq = Math.sqrt(delta);
+                    double u1 = 0.5 * (-b + deltaSq) / a;
+                    double u2 = 0.5 * (-b - deltaSq) / a;
+                    double segLength = S.getLength();
+                    if (u1 >= 0.0D && u1 < 1.0D) {
+                        result.add(S.getPoint(u1 * segLength));
+                    }
+                    if (u2 >= 0.0D && u2 < 1.0D) {
+                        result.add(S.getPoint(u2 * segLength));
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < poly.getNumberSegments() - 1; i++) {
+                WB_Segment S = poly.getSegment(i);
+                double a = WB_CoordOp2D.getSqLength2D(
+                        S.getEndpoint().xd() - S.getOrigin().xd(),
+                        S.getEndpoint().yd() - S.getOrigin().yd()
+                );
+                double b = 2.0D * (
+                        (S.getEndpoint().xd() - S.getOrigin().xd()) * (S.getOrigin().xd() - C.getCenter().xd())
+                                + (S.getEndpoint().yd() - S.getOrigin().yd()) * (S.getOrigin().yd() - C.getCenter().yd())
+                );
+                double c = C.getCenter().xd() * C.getCenter().xd() + C.getCenter().yd() * C.getCenter().yd()
+                        + S.getOrigin().xd() * S.getOrigin().xd() + S.getOrigin().yd() * S.getOrigin().yd()
+                        - 2.0D * (C.getCenter().xd() * S.getOrigin().xd() + C.getCenter().yd() * S.getOrigin().yd())
+                        - C.getRadius() * C.getRadius();
+                double delta = b * b - 4.0D * a * c;
+                if (delta < -WB_Epsilon.EPSILON) {
+                    // no intersection
+                } else if (WB_Epsilon.isZero(delta)) {
+                    // tangent
+                    double u = -0.5D * (b / a);
+                    if (u >= 0.0D && u < 1.0D) {
+                        double segLength = S.getLength();
+                        result.add(S.getPoint(u * segLength));
+                    }
+                } else {
+                    // may have 2 intersections
+                    double deltaSq = Math.sqrt(delta);
+                    double u1 = 0.5 * (-b + deltaSq) / a;
+                    double u2 = 0.5 * (-b - deltaSq) / a;
+                    double segLength = S.getLength();
+                    if (u1 >= 0.0D && u1 < 1.0D) {
+                        result.add(S.getPoint(u1 * segLength));
+                    }
+                    if (u2 >= 0.0D && u2 < 1.0D) {
+                        result.add(S.getPoint(u2 * segLength));
+                    }
+                }
+            }
+            WB_Segment S = poly.getSegment(poly.getNumberSegments() - 1);
+            double a = WB_CoordOp2D.getSqLength2D(
+                    S.getEndpoint().xd() - S.getOrigin().xd(),
+                    S.getEndpoint().yd() - S.getOrigin().yd()
+            );
+            double b = 2.0D * (
+                    (S.getEndpoint().xd() - S.getOrigin().xd()) * (S.getOrigin().xd() - C.getCenter().xd())
+                            + (S.getEndpoint().yd() - S.getOrigin().yd()) * (S.getOrigin().yd() - C.getCenter().yd())
+            );
+            double c = C.getCenter().xd() * C.getCenter().xd() + C.getCenter().yd() * C.getCenter().yd()
+                    + S.getOrigin().xd() * S.getOrigin().xd() + S.getOrigin().yd() * S.getOrigin().yd()
+                    - 2.0D * (C.getCenter().xd() * S.getOrigin().xd() + C.getCenter().yd() * S.getOrigin().yd())
+                    - C.getRadius() * C.getRadius();
+            double delta = b * b - 4.0D * a * c;
+            if (delta < -WB_Epsilon.EPSILON) {
+                // no intersection
+            } else if (WB_Epsilon.isZero(delta)) {
+                // tangent
+                double u = -0.5D * (b / a);
+                if (u >= 0.0D && u <= 1.0D) {
+                    double segLength = S.getLength();
+                    result.add(S.getPoint(u * segLength));
+                }
+            } else {
+                // may have 2 intersections
+                double deltaSq = Math.sqrt(delta);
+                double u1 = 0.5 * (-b + deltaSq) / a;
+                double u2 = 0.5 * (-b - deltaSq) / a;
+                double segLength = S.getLength();
+                if (u1 >= 0.0D && u1 <= 1.0D) {
+                    result.add(S.getPoint(u1 * segLength));
+                }
+                if (u2 >= 0.0D && u2 <= 1.0D) {
+                    result.add(S.getPoint(u2 * segLength));
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * extend or trim the segment to polygon boundary
      *
      * @param segment segment {point P, direction d}
@@ -735,7 +921,7 @@ public final class ZGeoMath {
      * @return geometry.ZLine
      */
     public static ZLine extendSegmentToPolygon(final ZPoint[] segment, final WB_Polygon poly) {
-        List<ZPoint> interResult = rayPolygonIntersect2D(segment, poly);
+        List<ZPoint> interResult = rayPolygonIntersection2D(segment, poly);
         if (interResult.size() > 0) {
             for (int i = 0; i < interResult.size(); i++) {
                 if (interResult.get(i).distance(segment[0]) < epsilon) {
@@ -766,7 +952,7 @@ public final class ZGeoMath {
      */
     public static ZLine extendSegmentToPolygonBothSides(final ZPoint[] segment, final WB_Polygon poly) {
         assert WB_GeometryOp.contains2D(segment[0].toWB_Point(), poly) : "input point must be within the polygon";
-        List<ZPoint> interResult = linePolygonIntersect2D(segment, poly);
+        List<ZPoint> interResult = linePolygonIntersection2D(segment, poly);
         if (interResult.size() == 2) {
             return new ZLine(interResult.get(0), interResult.get(1));
         } else if (interResult.size() > 2) {
@@ -1031,6 +1217,12 @@ public final class ZGeoMath {
             if (pointOnSegment(p, seg)) {
                 result[0] = i;
                 result[1] = (i + 1) % (poly.getNumberOfPoints() - 1);
+                if (i != poly.getNumberSegments() - 1 && p.distance(new ZPoint(poly.getPoint(result[1]))) < epsilon) {
+                    // if it's not the last segment and the point is on the end of the segment
+                    // then move on to next
+                    result[0] = (i + 1) % (poly.getNumberOfPoints() - 1);
+                    result[1] = (i + 2) % (poly.getNumberOfPoints() - 1);
+                }
                 break;
             }
         }
@@ -1463,7 +1655,7 @@ public final class ZGeoMath {
             double cur_distF = f1.distance(f2); // distance with forward
             double cur_distB = b1.distance(b2); // distance with backward
 
-            Map<ZPoint, Integer> result = new HashMap<>();
+            Map<ZPoint, Integer> result = new LinkedHashMap<>();
 
             if (ls.getNumPoints() > 2) {
                 // the LineString is a polyline
@@ -2081,6 +2273,19 @@ public final class ZGeoMath {
         return splitPolygonEdgeByStep(poly, step);
     }
 
+    /**
+     * giving a split number, split equally(Polygon)
+     * return a LinkedHashMap of split point and edge index
+     *
+     * @param poly     input polygon
+     * @param splitNum umber to split
+     * @return java.util.Map<basicGeometry.ZPoint, java.lang.Integer>
+     */
+    public static Map<ZPoint, Integer> splitPolygonWithIndex(final Polygon poly, final int splitNum) {
+        double step = poly.getLength() / splitNum;
+        return splitJtsWithIndex(poly.getCoordinates(), step, "Polygon");
+    }
+
 
     /*-------- polygon tools --------*/
 
@@ -2107,9 +2312,10 @@ public final class ZGeoMath {
      * @return double
      */
     public static double getPolyLength(final WB_PolyLine poly) {
+        // TODO: 2021/10/7 hole
         double plLength = 0;
-        for (int i = 0; i < poly.getNumberSegments(); i++) {
-            plLength += poly.getSegment(i).getLength();
+        for (int i = 0; i < poly.getNumberOfPoints() - 1; i++) {
+            plLength += poly.getPoint(i).getDistance2D(poly.getPoint(i + 1));
         }
         return plLength;
     }

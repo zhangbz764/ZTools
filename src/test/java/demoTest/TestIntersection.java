@@ -104,11 +104,11 @@ public class TestIntersection extends PApplet {
         }
         ray = new ZLine(new ZPoint(650, 250), new ZPoint(mouseX, mouseY));
         ray.display(this);
-        List<ZPoint> inters = ZGeoMath.rayPolygonIntersect2D(ray.toLinePD(), intersectionPoly);
+        List<ZPoint> inters = ZGeoMath.rayPolygonIntersection2D(ray.toLinePD(), intersectionPoly);
         for (ZPoint p : inters) {
             p.displayAsPoint(this, 15);
         }
-        List<Integer> interOrder = ZGeoMath.rayPolygonIntersectIndices2D(ray.toLinePD(), intersectionPoly);
+        List<Integer> interOrder = ZGeoMath.rayPolygonIntersectionIndices2D(ray.toLinePD(), intersectionPoly);
         fill(0);
         if (interOrder.size() != 0) {
             for (int i = 0; i < interOrder.size(); i++) {

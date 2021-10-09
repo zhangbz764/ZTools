@@ -53,7 +53,6 @@ public class ZPoint {
         }
     }
 
-
     public ZPoint(Point c) {
         this.x = c.getX();
         this.y = c.getY();
@@ -300,7 +299,7 @@ public class ZPoint {
     /**
      * rotate the vector (2D)
      *
-     * @param angle angle to rotate
+     * @param angle angle to rotate (radian system)
      * @return geometry.ZPoint
      */
     public ZPoint rotate2D(double angle) {

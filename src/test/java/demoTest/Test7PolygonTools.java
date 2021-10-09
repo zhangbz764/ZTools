@@ -42,13 +42,6 @@ public class Test7PolygonTools extends PApplet {
     // jts Polygon reverse & norm
     private Polygon poly1;
 
-    // create arc
-    // TODO: 2021/9/3 arc test
-    private ZPoint start = new ZPoint(500, 750);
-    private ZPoint end = new ZPoint(500, 250);
-    private ZPoint center = new ZPoint(500, 500);
-    private ZPoint[] arcPts;
-
     // polygon round
     private Polygon poly2;
     private Polygon roundPoly;
@@ -79,9 +72,6 @@ public class Test7PolygonTools extends PApplet {
         System.out.println("normalize reversed " + reverse);
         Geometry norm = reverse.norm();
         System.out.println("norm " + norm);
-
-        // arc
-        this.arcPts = ZFactory.createArc(center, start, end, 10, true);
 
         // round polygon
         this.roundPoly = ZGeoMath.roundPolygon(
@@ -161,14 +151,6 @@ public class Test7PolygonTools extends PApplet {
         stroke(0);
 
         jtsRender.drawGeometry(poly1);
-
-        // arc
-        for (ZPoint p : arcPts) {
-            p.displayAsPoint(this, 5);
-        }
-        for (int i = 0; i < arcPts.length - 1; i++) {
-            line(arcPts[i].xf(), arcPts[i].yf(), arcPts[i + 1].xf(), arcPts[i + 1].yf());
-        }
 
         // round poly
         stroke(0, 0, 255);

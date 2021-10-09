@@ -39,6 +39,9 @@ public class ZToolTestMain {
         /* test ZGraph and graph methods */
 //        PApplet.main("demoTest.Test8ZGraph");
 
+        /* test arc and circle related tools */
+        PApplet.main("demoTest.Test9ArcCircle");
+
         /*  */
 //        PApplet.main("demoTest.TestIntersection");
 
@@ -49,7 +52,7 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.TestHE_MeshFactory");
 
         /* test jts buffer，cut out WB_PolyLine */
-        PApplet.main("demoTest.TestJtsBuffer");
+//        PApplet.main("demoTest.TestJtsBuffer");
 
         /* test jts LineMerger */
 //        PApplet.main("demoTest.TestJtsLineMerger");
