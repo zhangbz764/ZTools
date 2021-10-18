@@ -112,6 +112,31 @@ public final class ZMath {
     /*-------- array-related --------*/
 
     /**
+     * get the sum value of an array
+     *
+     * @param array double array
+     * @return double
+     */
+    public static double sum(final double[] array) {
+        double sum = 0;
+        for (double v : array) {
+            sum += v;
+        }
+        return sum;
+    }
+
+    /**
+     * get the average value of an array
+     *
+     * @param array double array
+     * @return double
+     */
+    public static double average(final double[] array) {
+        double sum = sum(array);
+        return sum / array.length;
+    }
+
+    /**
      * create a series of ascending integer
      *
      * @param start start index
@@ -188,6 +213,43 @@ public final class ZMath {
             sortedIndices[j] = relation.get(sorted_arr[j]);
         }
         return sortedIndices;
+    }
+
+    /*-------- matrix --------*/
+
+    /**
+     * create a covariance matrix for a series of vector samples
+     *
+     * @param sample samples of vector
+     * @return double[][]
+     */
+    public static double[][] covarianceMatrix(final double[][] sample) {
+        // get variable space
+        double[][] variableSpace = new double[sample[0].length][sample.length];
+        for (int i = 0; i < sample.length; i++) {
+            for (int j = 0; j < sample[i].length; j++) {
+                variableSpace[j][i] = sample[i][j];
+            }
+        }
+        // get averages
+        double[] average = new double[sample[0].length];
+        for (int i = 0; i < average.length; i++) {
+            average[i] = average(variableSpace[i]);
+        }
+
+        // get covariance matrix
+        double[][] covarianceMatrix = new double[sample[0].length][sample[0].length];
+        for (int i = 0; i < covarianceMatrix.length; i++) {
+            for (int j = 0; j < covarianceMatrix[i].length; j++) {
+                double sum = 0;
+                for (int k = 0; k < sample.length; k++) {
+                    sum += (variableSpace[i][k] - average[i]) * (variableSpace[j][k] - average[j]);
+                }
+                covarianceMatrix[i][j] = sum / (sample.length - 1);
+            }
+        }
+        System.out.println(Arrays.deepToString(covarianceMatrix));
+        return covarianceMatrix;
     }
 
     /*-------- map & random --------*/

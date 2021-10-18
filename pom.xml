@@ -129,11 +129,11 @@
 <!--    </profiles>-->
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/quil/processing-core -->
         <dependency>
-            <groupId>org.processing</groupId>
-            <artifactId>core</artifactId>
-            <version>3.3.7</version>
-            <scope>compile</scope>
+            <groupId>quil</groupId>
+            <artifactId>processing-core</artifactId>
+            <version>3.5.4</version>
         </dependency>
         <dependency>
             <groupId>org.jogamp.gluegen</groupId>
@@ -192,6 +192,10 @@
         <repository>
             <id>Jena Bio</id>
             <url>https://bio.informatik.uni-jena.de/repository/libs-release-oss/</url>
+        </repository>
+        <repository>
+            <id>clojars.org</id>
+            <url>https://clojars.org/repo/</url>
         </repository>
         <repository>
             <id>jitpack.io</id>

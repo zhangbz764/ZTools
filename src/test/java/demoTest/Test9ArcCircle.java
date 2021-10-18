@@ -4,7 +4,10 @@ import basicGeometry.ZFactory;
 import basicGeometry.ZPoint;
 import math.ZGeoMath;
 import processing.core.PApplet;
-import wblut.geom.*;
+import wblut.geom.WB_Circle;
+import wblut.geom.WB_Point;
+import wblut.geom.WB_Polygon;
+import wblut.geom.WB_Segment;
 import wblut.processing.WB_Render;
 
 import java.util.List;

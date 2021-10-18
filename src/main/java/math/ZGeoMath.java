@@ -7,7 +7,10 @@ import transform.ZTransform;
 import wblut.geom.*;
 import wblut.math.WB_Epsilon;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * geometry math tools
@@ -2109,26 +2112,48 @@ public final class ZGeoMath {
     /**
      * giving step threshold to split a WB_PolyLine or WB_Polygon (WB_PolyLine)
      *
-     * @param ls      input LineString
-     * @param maxStep max step to divide
-     * @param minStep min step to divide
+     * @param ls       input LineString
+     * @param maxStep  max step to divide
+     * @param minStep  min step to divide
+     * @param max1min0 maximum result - 1, minimum result - 0
      * @return java.util.List<basicGeometry.ZPoint>
      */
-    public static List<ZPoint> splitPolyLineByThreshold(final LineString ls, final double maxStep, final double minStep) {
+    public static List<ZPoint> splitPolyLineByThreshold(final LineString ls, final double maxStep, final double minStep, final int max1min0) {
         assert maxStep >= minStep : "please input valid threshold";
         double length = ls.getLength();
 
         double finalStep = 0;
-        for (int i = 1; i < Integer.MAX_VALUE; i++) {
-            double curr_step = length / i;
-            if (curr_step >= minStep && curr_step <= maxStep) {
-                finalStep = curr_step;
-                break;
-            } else if (curr_step < minStep) {
-                System.out.println("cannot generate split point by this step!");
-                return new ArrayList<ZPoint>();
+        if (max1min0 == 1) {
+            // return the maximum result if exists
+            for (int i = 1; i < Integer.MAX_VALUE; i++) {
+                double curr_step = length / i;
+                if (curr_step >= minStep && curr_step <= maxStep) {
+                    finalStep = curr_step;
+                    break;
+                } else if (curr_step < minStep) {
+                    System.out.println("cannot generate split point by this step!");
+                    return new ArrayList<ZPoint>();
+                }
+            }
+        } else {
+            // return the minimum result if exists
+            boolean flag = false;
+            for (int i = 1; i < Integer.MAX_VALUE; i++) {
+                double curr_step = length / i;
+                if (curr_step >= minStep && curr_step <= maxStep) {
+                    finalStep = curr_step;
+                    flag = true;
+                } else if (curr_step < minStep) {
+                    if (flag) {
+                        break;
+                    } else {
+                        System.out.println("cannot generate split point by this step!");
+                        return new ArrayList<ZPoint>();
+                    }
+                }
             }
         }
+
         return splitJts(ls.getCoordinates(), finalStep, "LineString");
     }
 
@@ -2312,10 +2337,33 @@ public final class ZGeoMath {
      * @return double
      */
     public static double getPolyLength(final WB_PolyLine poly) {
-        // TODO: 2021/10/7 hole
         double plLength = 0;
-        for (int i = 0; i < poly.getNumberOfPoints() - 1; i++) {
-            plLength += poly.getPoint(i).getDistance2D(poly.getPoint(i + 1));
+        if (poly instanceof WB_Polygon) {
+            WB_Polygon polygon = (WB_Polygon) poly;
+            if (polygon.getNumberOfHoles() > 0) {
+                // shell
+                for (int i = 0; i < polygon.getNumberOfShellPoints() - 1; i++) {
+                    plLength += poly.getPoint(i).getDistance2D(poly.getPoint(i + 1));
+                }
+                // holes
+                int[] npc = polygon.getNumberOfPointsPerContour();
+                int currNum = npc[0];
+                for (int i = 1; i < npc.length; i++) {
+                    for (int j = 0; j < npc[i] - 1; j++) {
+                        plLength += poly.getPoint(currNum).getDistance2D(poly.getPoint(currNum + 1));
+                        currNum++;
+                    }
+                    currNum++;
+                }
+            } else {
+                for (int i = 0; i < polygon.getNumberOfShellPoints() - 1; i++) {
+                    plLength += poly.getPoint(i).getDistance2D(poly.getPoint(i + 1));
+                }
+            }
+        } else {
+            for (int i = 0; i < poly.getNumberOfPoints() - 1; i++) {
+                plLength += poly.getPoint(i).getDistance2D(poly.getPoint(i + 1));
+            }
         }
         return plLength;
     }

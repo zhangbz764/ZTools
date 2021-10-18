@@ -40,7 +40,9 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.Test8ZGraph");
 
         /* test arc and circle related tools */
-        PApplet.main("demoTest.Test9ArcCircle");
+//        PApplet.main("demoTest.Test9ArcCircle");
+
+        PApplet.main("demoTest.Test10ShapeDescriptor");
 
         /*  */
 //        PApplet.main("demoTest.TestIntersection");

@@ -382,7 +382,7 @@ public class ZTransform {
      * @param p input Point
      * @return wblut.geom.WB_Point
      */
-    public static WB_Point CoordinateToWB_Point(final Point p) {
+    public static WB_Point PointToWB_Point(final Point p) {
         return new WB_Point(p.getX(), p.getY(), 0);
     }
 
