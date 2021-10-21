@@ -90,9 +90,6 @@ import java.util.Map;
  * <p>
  */
 public final class ZGeoMath {
-    private static final GeometryFactory gf = new GeometryFactory();
-    private static final WB_GeometryFactory wbgf = new WB_GeometryFactory();
-
     public static final double epsilon = 0.00000001;
 
     /*-------- vector angle --------*/

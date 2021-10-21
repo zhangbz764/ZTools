@@ -42,7 +42,11 @@ public class ZToolTestMain {
         /* test arc and circle related tools */
 //        PApplet.main("demoTest.Test9ArcCircle");
 
-        PApplet.main("demoTest.Test10ShapeDescriptor");
+        /* test shape descriptors */
+//        PApplet.main("demoTest.Test10ShapeDescriptor");
+
+        /* test transform for jts Geometry */
+        PApplet.main("demoTest.TestJtsTransform");
 
         /*  */
 //        PApplet.main("demoTest.TestIntersection");

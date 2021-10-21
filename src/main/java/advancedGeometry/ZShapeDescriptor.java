@@ -17,17 +17,17 @@ import org.locationtech.jts.geom.Polygon;
  * @time 15:54
  */
 public class ZShapeDescriptor {
-    private double convexity;
-    private double solidity;
-    private double rectangularity;
-    private double elongation;
-    private double compactness;
-    private double circularity;
-    private double sphericity;
-    private double eccentricity;
+    private final double convexity;
+    private final double solidity;
+    private final double rectangularity;
+    private final double elongation;
+    private final double compactness;
+    private final double circularity;
+    private final double sphericity;
+    private final double eccentricity;
 
-    private Geometry convexHull;
-    private Geometry obb;
+    private final Geometry convexHull;
+    private final Geometry obb;
 
     /* ------------- constructor ------------- */
 
@@ -236,5 +236,21 @@ public class ZShapeDescriptor {
 
     public double getEccentricity() {
         return eccentricity;
+    }
+
+    @Override
+    public String toString() {
+        return "ZShapeDescriptor{" +
+                "convexity=" + convexity +
+                ", solidity=" + solidity +
+                ", rectangularity=" + rectangularity +
+                ", elongation=" + elongation +
+                ", compactness=" + compactness +
+                ", circularity=" + circularity +
+                ", sphericity=" + sphericity +
+                ", eccentricity=" + eccentricity +
+                ", convexHull=" + convexHull +
+                ", obb=" + obb +
+                '}';
     }
 }
