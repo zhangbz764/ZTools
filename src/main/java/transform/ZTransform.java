@@ -739,6 +739,19 @@ public class ZTransform {
     /*-------- jts <-> jts --------*/
 
     /**
+    * validate z ordinate of jts Geometry (NaN -> 0)
+    *
+    * @param geo original Geometry
+    * @return void
+    */
+    public static void validateGeometry3D(Geometry geo) {
+        Coordinate[] coords = new Coordinate[geo.getNumPoints()];
+        for (int i = 0; i < geo.getNumPoints(); i++) {
+            geo.getCoordinates()[i].setZ(0);
+        }
+    }
+
+    /**
      * Polygon -> LineString
      *
      * @param polygon input Polygon

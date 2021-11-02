@@ -194,12 +194,8 @@ public class ZShapeDescriptor {
         double delta = Math.sqrt((cxx + cyy) * (cxx + cyy) - 4 * (cxx * cyy - cxy * cxy));
         double lambda1 = 0.5 * (cxx + cyy + delta);
         double lambda2 = 0.5 * (cxx + cyy - delta);
-        System.out.println("lambda1: " + lambda1);
-        System.out.println("lambda2: " + lambda2);
         double vecK1 = -(cxy + cyy - lambda1) / (cxx + cxy - lambda1);
         double vecK2 = -(cxy + cyy - lambda2) / (cxx + cxy - lambda2);
-        System.out.println("vecK1: " + vecK1);
-        System.out.println("vecK2: " + vecK2);
 
         return new double[]{lambda1, lambda2, vecK2, vecK1};
     }

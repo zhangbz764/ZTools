@@ -248,7 +248,7 @@ public final class ZMath {
                 covarianceMatrix[i][j] = sum / (sample.length - 1);
             }
         }
-        System.out.println(Arrays.deepToString(covarianceMatrix));
+//        System.out.println(Arrays.deepToString(covarianceMatrix));
         return covarianceMatrix;
     }
 

@@ -47,7 +47,7 @@ public class TestJtsTransform extends PApplet {
         };
         this.original = ZFactory.jtsgf.createLineString(coords);
         ZJtsTransform trans = new ZJtsTransform();
-        trans.addTranslate2D(new ZPoint(200, 0)).addRotateAboutPoint(Math.PI * 0.5, new ZPoint(200, 200));
+        trans.addTranslate2D(new ZPoint(200, 0)).addRotateAboutPoint2D(Math.PI * 0.5, new ZPoint(200, 200));
         this.transform = (LineString) trans.applyToGeometry2D(original);
 
         System.out.println(original);
