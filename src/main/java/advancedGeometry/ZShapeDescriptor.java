@@ -1,5 +1,8 @@
 package advancedGeometry;
 
+import Jama.EigenvalueDecomposition;
+import Jama.Matrix;
+import basicGeometry.ZPoint;
 import math.ZMath;
 import org.locationtech.jts.algorithm.MinimumBoundingCircle;
 import org.locationtech.jts.algorithm.MinimumDiameter;
@@ -7,6 +10,10 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import transform.ZTransform;
+import wblut.geom.WB_Polygon;
+
+import java.util.Arrays;
 
 /**
  * several shape descriptors for a simple polygon
@@ -26,23 +33,33 @@ public class ZShapeDescriptor {
     private final double sphericity;
     private final double eccentricity;
 
+    private ZPoint[] axes;
+
     private final Geometry convexHull;
     private final Geometry obb;
 
     /* ------------- constructor ------------- */
 
-    public ZShapeDescriptor(final Polygon p) {
+    public ZShapeDescriptor(final Polygon poly) {
+        Polygon p = poly;
         this.convexHull = p.convexHull();
         this.obb = MinimumDiameter.getMinimumRectangle(p);
 
-        this.convexity = _convexity(p, convexHull);
-        this.solidity = _solidity(p, convexHull);
-        this.rectangularity = _rectangularity(p, obb);
-        this.elongation = _elongation(p, obb);
+        this.convexity = convexity(p, convexHull);
+        this.solidity = solidity(p, convexHull);
+        this.rectangularity = rectangularity(p, obb);
+        this.elongation = elongation(p, obb);
         this.compactness = compactness(p);
-        this.circularity = _circularity(p, convexHull);
+        this.circularity = circularity(p, convexHull);
         this.sphericity = sphericity(p);
-        this.eccentricity = eccentricity(p);
+
+        double[] eigen = covarianceMatrixEigen(p);
+        this.eccentricity = eccentricity(eigen);
+        this.axes = mainAxes(eigen);
+    }
+
+    public ZShapeDescriptor(final WB_Polygon poly) {
+        this(ZTransform.WB_PolygonToPolygon(poly));
     }
 
     /* ------------- member function ------------- */
@@ -55,10 +72,10 @@ public class ZShapeDescriptor {
      */
     public static double convexity(final Polygon p) {
         Geometry convexHull = p.convexHull();
-        return _convexity(p, convexHull);
+        return convexity(p, convexHull);
     }
 
-    private static double _convexity(final Polygon p, final Geometry convexHull) {
+    private static double convexity(final Polygon p, final Geometry convexHull) {
         return Math.min(1, convexHull.getLength() / p.getLength());
     }
 
@@ -70,10 +87,10 @@ public class ZShapeDescriptor {
      */
     public static double solidity(final Polygon p) {
         Geometry convexHull = p.convexHull();
-        return _solidity(p, convexHull);
+        return solidity(p, convexHull);
     }
 
-    private static double _solidity(final Polygon p, final Geometry convexHull) {
+    private static double solidity(final Polygon p, final Geometry convexHull) {
         return Math.min(1, p.getArea() / convexHull.getArea());
     }
 
@@ -85,10 +102,10 @@ public class ZShapeDescriptor {
      */
     public static double rectangularity(final Polygon p) {
         Geometry obb = MinimumDiameter.getMinimumRectangle(p);
-        return _rectangularity(p, obb);
+        return rectangularity(p, obb);
     }
 
-    private static double _rectangularity(final Polygon p, final Geometry obb) {
+    private static double rectangularity(final Polygon p, final Geometry obb) {
         return Math.min(1, p.getArea() / obb.getArea());
     }
 
@@ -100,10 +117,10 @@ public class ZShapeDescriptor {
      */
     public static double elongation(final Polygon p) {
         Geometry obb = MinimumDiameter.getMinimumRectangle(p);
-        return _elongation(p, obb);
+        return elongation(p, obb);
     }
 
-    private static double _elongation(final Polygon p, final Geometry obb) {
+    private static double elongation(final Polygon p, final Geometry obb) {
         Polygon rect = (Polygon) obb;
         Coordinate c0 = rect.getCoordinates()[0];
         Coordinate c1 = rect.getCoordinates()[1];
@@ -137,10 +154,10 @@ public class ZShapeDescriptor {
      */
     public static double circularity(final Polygon p) {
         Geometry convexHull = p.convexHull();
-        return _circularity(p, convexHull);
+        return circularity(p, convexHull);
     }
 
-    private static double _circularity(final Polygon p, final Geometry convexHull) {
+    private static double circularity(final Polygon p, final Geometry convexHull) {
         double areaP = p.getArea();
         double length = convexHull.getLength();
         return Math.min(1, (4 * Math.PI * areaP) / (length * length));
@@ -169,8 +186,31 @@ public class ZShapeDescriptor {
      * @return double
      */
     public static double eccentricity(final Polygon p) {
-        double[] axesLengths = covarianceMatrixEigenvalues(p);
-        return axesLengths[1] / axesLengths[0];
+        double[] eigen = covarianceMatrixEigen(p);
+        return eccentricity(eigen);
+    }
+
+    private static double eccentricity(double[] eigen) {
+        return eigen[0] / eigen[1];
+    }
+
+    /**
+     * the principle axes of the polygon (normalized)
+     *
+     * @param p input polygon
+     * @return basicGeometry.ZPoint[]
+     */
+    public static ZPoint[] mainAxes(final Polygon p) {
+        double[] eigen = covarianceMatrixEigen(p);
+        return mainAxes(eigen);
+    }
+
+    private static ZPoint[] mainAxes(double[] eigen) {
+        ZPoint axis1 = new ZPoint(eigen[2], eigen[3]);
+        axis1.normalizeSelf();
+        ZPoint axis2 = new ZPoint(eigen[4], eigen[5]);
+        axis2.normalizeSelf();
+        return new ZPoint[]{axis1, axis2};
     }
 
     /**
@@ -179,7 +219,7 @@ public class ZShapeDescriptor {
      * @param p input polygon
      * @return double[]
      */
-    public static double[] covarianceMatrixEigenvalues(final Polygon p) {
+    private static double[] covarianceMatrixEigen(final Polygon p) {
         double[][] sample = new double[p.getNumPoints() - 1][];
         for (int i = 0; i < p.getNumPoints() - 1; i++) {
             sample[i] = new double[]{
@@ -188,16 +228,28 @@ public class ZShapeDescriptor {
         }
         double[][] matrix = ZMath.covarianceMatrix(sample);
 
-        double cxx = matrix[0][0];
-        double cyy = matrix[1][1];
-        double cxy = matrix[0][1];
-        double delta = Math.sqrt((cxx + cyy) * (cxx + cyy) - 4 * (cxx * cyy - cxy * cxy));
-        double lambda1 = 0.5 * (cxx + cyy + delta);
-        double lambda2 = 0.5 * (cxx + cyy - delta);
-        double vecK1 = -(cxy + cyy - lambda1) / (cxx + cxy - lambda1);
-        double vecK2 = -(cxy + cyy - lambda2) / (cxx + cxy - lambda2);
+        Matrix m = new Matrix(matrix);
+        EigenvalueDecomposition e = m.eig();
+        double[][] valueResult = e.getD().getArray();
+        double[][] vecResult = e.getV().getArray();
 
-        return new double[]{lambda1, lambda2, vecK2, vecK1};
+        double lambda1 = valueResult[0][0];
+        double lambda2 = valueResult[1][1];
+        double vec1x = vecResult[0][0];
+        double vec1y = vecResult[1][0];
+        double vec2x = vecResult[0][1];
+        double vec2y = vecResult[1][1];
+
+//        double cxx = matrix[0][0];
+//        double cyy = matrix[1][1];
+//        double cxy = matrix[0][1];
+//        double delta = Math.sqrt((cxx + cyy) * (cxx + cyy) - 4 * (cxx * cyy - cxy * cxy));
+//        double lambda1 = 0.5 * (cxx + cyy + delta);
+//        double lambda2 = 0.5 * (cxx + cyy - delta);
+//        double vecK1 = -(cxy + cyy - lambda1) / (cxx + cxy - lambda1);
+//        double vecK2 = -(cxy + cyy - lambda2) / (cxx + cxy - lambda2);
+
+        return new double[]{lambda1, lambda2, vec1x, vec1y, vec2x, vec2y};
     }
 
     /* ------------- setter & getter ------------- */
@@ -234,6 +286,10 @@ public class ZShapeDescriptor {
         return eccentricity;
     }
 
+    public ZPoint[] getAxes() {
+        return axes;
+    }
+
     @Override
     public String toString() {
         return "ZShapeDescriptor{" +
@@ -245,6 +301,7 @@ public class ZShapeDescriptor {
                 ", circularity=" + circularity +
                 ", sphericity=" + sphericity +
                 ", eccentricity=" + eccentricity +
+                ", axes=" + Arrays.toString(axes) +
                 ", convexHull=" + convexHull +
                 ", obb=" + obb +
                 '}';

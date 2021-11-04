@@ -42,45 +42,32 @@ public class ZLine {
     }
 
     public ZLine(double x0, double y0, double x1, double y1) {
-        this.pt0 = new ZPoint(x0, y0);
-        this.pt1 = new ZPoint(x1, y1);
-        init();
+        this(new ZPoint(x0, y0), new ZPoint(x1, y1));
     }
 
     public ZLine(WB_Coord pt0, WB_Coord pt1) {
-        this.pt0 = new ZPoint(pt0);
-        this.pt1 = new ZPoint(pt1);
-        init();
+        this(new ZPoint(pt0), new ZPoint(pt1));
     }
 
     public ZLine(WB_Segment segment) {
-        this.pt0 = new ZPoint(segment.getOrigin());
-        this.pt1 = new ZPoint(segment.getEndpoint());
-        init();
+        this(new ZPoint(segment.getOrigin()), new ZPoint(segment.getEndpoint()));
     }
 
-    public ZLine(Coordinate pt0, Coordinate pt1) {
-        this.pt0 = new ZPoint(pt0);
-        this.pt1 = new ZPoint(pt1);
-        init();
+    public ZLine(Coordinate c0, Coordinate c1) {
+        this(new ZPoint(c0), new ZPoint(c1));
     }
 
     public ZLine(Point pt0, Point pt1) {
-        this.pt0 = new ZPoint(pt0);
-        this.pt1 = new ZPoint(pt1);
-        init();
+        this(new ZPoint(pt0), new ZPoint(pt1));
     }
 
     public ZLine(Segment segment) {
-        this.pt0 = new ZPoint(segment.getStart());
-        this.pt1 = new ZPoint(segment.getEnd());
-        init();
+        this(new ZPoint(segment.getStart()), new ZPoint(segment.getEnd()));
     }
 
     /**
      * initialize properties
      *
-     * @return void
      */
     private void init() {
         this.direction = pt1.sub(pt0);

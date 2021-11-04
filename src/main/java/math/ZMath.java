@@ -238,14 +238,16 @@ public final class ZMath {
         }
 
         // get covariance matrix
-        double[][] covarianceMatrix = new double[sample[0].length][sample[0].length];
-        for (int i = 0; i < covarianceMatrix.length; i++) {
-            for (int j = 0; j < covarianceMatrix[i].length; j++) {
+        int n = sample.length; // row
+        int m = sample[0].length; // column
+        double[][] covarianceMatrix = new double[m][m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < m; j++) {
                 double sum = 0;
-                for (int k = 0; k < sample.length; k++) {
+                for (int k = 0; k < n; k++) {
                     sum += (variableSpace[i][k] - average[i]) * (variableSpace[j][k] - average[j]);
                 }
-                covarianceMatrix[i][j] = sum / (sample.length - 1);
+                covarianceMatrix[i][j] = sum / (n - 1);
             }
         }
 //        System.out.println(Arrays.deepToString(covarianceMatrix));

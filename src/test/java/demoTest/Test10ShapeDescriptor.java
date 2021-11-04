@@ -4,6 +4,9 @@ import advancedGeometry.MaximumInscribedCircle;
 import advancedGeometry.ZShapeDescriptor;
 import basicGeometry.ZFactory;
 import basicGeometry.ZPoint;
+import guo_cam.CameraController;
+import igeo.ICurve;
+import igeo.IG;
 import org.locationtech.jts.algorithm.MinimumBoundingCircle;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.Coordinate;
@@ -12,6 +15,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
 import render.JtsRender;
+import transform.ZTransform;
 
 /**
  * description
@@ -22,15 +26,7 @@ import render.JtsRender;
  * @time 13:13
  */
 public class Test10ShapeDescriptor extends PApplet {
-
-    /* ------------- settings ------------- */
-
-    public void settings() {
-        size(1000, 1000, P3D);
-    }
-
-    /* ------------- setup ------------- */
-
+    // test shape descriptors of one polygon
     private Polygon polygon;
 
     private Point centroid;
@@ -43,38 +39,58 @@ public class Test10ShapeDescriptor extends PApplet {
     private double r_I;
     private Point c_I;
 
-    private double[] axes;
     private ZPoint vec1, vec2;
-    private float ea, eb;
-    private float angle;
 
     private ZShapeDescriptor shapeDescriptor;
 
+    // test axes of multiple polygons
+    private Polygon[] polygons;
+    private ZPoint[][] polyAxesVecs;
+
+    // utils
     private JtsRender jtsRender;
+    private CameraController gcam;
+    private boolean draw = true;
+
+    /* ------------- settings ------------- */
+
+    public void settings() {
+        size(1000, 1000, P3D);
+    }
+
+    /* ------------- setup ------------- */
 
     public void setup() {
         this.jtsRender = new JtsRender(this);
+        this.gcam = new CameraController(this);
+        textSize(12);
 
-//        Coordinate[] coords = new Coordinate[]{
-//                new Coordinate(53, 102),
-//                new Coordinate(126, 105),
-//                new Coordinate(207, 76),
-//                new Coordinate(308, 89),
-//                new Coordinate(274, 162),
-//                new Coordinate(194, 154),
-//                new Coordinate(137, 182),
-//                new Coordinate(49, 167),
-//                new Coordinate(53, 102)
-//        };
+        shapeDescriptors();
+        axes();
+    }
+
+    private void shapeDescriptors() {
+        // create polygon and shape descriptor
         Coordinate[] coords = new Coordinate[]{
-                new Coordinate(120, 100),
-                new Coordinate(150, 150),
-                new Coordinate(180, 100),
-                new Coordinate(150, 50),
-                new Coordinate(120, 100)
+                new Coordinate(53, 102),
+                new Coordinate(126, 105),
+                new Coordinate(207, 76),
+                new Coordinate(308, 89),
+                new Coordinate(274, 162),
+                new Coordinate(194, 154),
+                new Coordinate(137, 182),
+                new Coordinate(49, 167),
+                new Coordinate(53, 102)
         };
-
+//        Coordinate[] coords = new Coordinate[]{
+//                new Coordinate(120, 100),
+//                new Coordinate(150, 150),
+//                new Coordinate(180, 100),
+//                new Coordinate(150, 50),
+//                new Coordinate(120, 100)
+//        };
         this.polygon = ZFactory.jtsgf.createPolygon(coords);
+        this.shapeDescriptor = new ZShapeDescriptor(polygon);
 
         this.centroid = polygon.getCentroid();
         this.convexHull = polygon.convexHull();
@@ -87,22 +103,31 @@ public class Test10ShapeDescriptor extends PApplet {
         this.c_I = circle2.getCenter();
         this.r_I = c_I.distance(circle2.getRadiusPoint());
 
-        this.axes = ZShapeDescriptor.covarianceMatrixEigenvalues(polygon);
-        this.vec1 = new ZPoint(1, axes[2]).normalize();
-        this.vec2 = new ZPoint(1, axes[3]).normalize();
-        this.angle = PI * (float) vec1.angleWith(new ZPoint(1, 0)) / 180;
+        this.vec1 = shapeDescriptor.getAxes()[0];
+        this.vec2 = shapeDescriptor.getAxes()[1];
+    }
 
+    private void axes() {
+        String path = ".\\src\\test\\resources\\test_shape_descriptors.3dm";
+        IG.init();
+        IG.open(path);
+        ICurve[] polyLines = IG.layer("blocks").curves();
+        this.polygons = new Polygon[polyLines.length];
+        for (int i = 0; i < polyLines.length; i++) {
+            polygons[i] = (Polygon) ZTransform.ICurveToJts(polyLines[i]);
+        }
 
-        double areaP = polygon.getArea();
-        double areaE = Math.PI * axes[0] * axes[1];
-        System.out.println("areaP " + areaP);
-        this.ea = (float) (Math.sqrt(areaP / areaE) * axes[0]);
-        this.eb = (float) (Math.sqrt(areaP / areaE) * axes[1]);
-        System.out.println("ea eb  " + ea + "  " + eb);
-        System.out.println("areaE " + Math.PI * ea * eb);
-        this.shapeDescriptor = new ZShapeDescriptor(polygon);
+        this.polyAxesVecs = new ZPoint[polygons.length][];
+        for (int i = 0; i < polygons.length; i++) {
+            ZPoint[] vecs = ZShapeDescriptor.mainAxes(polygons[i]);
+            polyAxesVecs[i] = vecs;
+        }
+    }
 
-        textSize(12);
+    public void keyPressed() {
+        if (key == '1') {
+            draw = !draw;
+        }
     }
 
     /* ------------- draw ------------- */
@@ -110,6 +135,18 @@ public class Test10ShapeDescriptor extends PApplet {
     public void draw() {
         background(255);
 
+        if (draw) {
+            pushMatrix();
+            drawDescriptors();
+            popMatrix();
+        } else {
+            drawPolygonAxes();
+        }
+
+    }
+
+    private void drawDescriptors() {
+        // convexity
         pushStyle();
         noFill();
         strokeWeight(3);
@@ -122,6 +159,7 @@ public class Test10ShapeDescriptor extends PApplet {
         text("convexity = " + String.format("%.2f", shapeDescriptor.getConvexity()), (float) centroid.getX(), (float) centroid.getY() + 120);
         popStyle();
 
+        // solidity
         translate(333, 0);
         pushStyle();
         noStroke();
@@ -133,6 +171,7 @@ public class Test10ShapeDescriptor extends PApplet {
         text("solidity = " + String.format("%.2f", shapeDescriptor.getSolidity()), (float) centroid.getX(), (float) centroid.getY() + 120);
         popStyle();
 
+        // compactness
         translate(333, 0);
         pushStyle();
         noStroke();
@@ -144,6 +183,7 @@ public class Test10ShapeDescriptor extends PApplet {
         text("compactness = " + String.format("%.2f", shapeDescriptor.getCompactness()), (float) centroid.getX(), (float) centroid.getY() + 120);
         popStyle();
 
+        // rectangularity
         translate(-666, 333);
         pushStyle();
         noStroke();
@@ -155,6 +195,7 @@ public class Test10ShapeDescriptor extends PApplet {
         text("rectangularity = " + String.format("%.2f", shapeDescriptor.getRectangularity()), (float) centroid.getX(), (float) centroid.getY() + 120);
         popStyle();
 
+        // elongation
         translate(333, 0);
         pushStyle();
         stroke(0);
@@ -180,6 +221,7 @@ public class Test10ShapeDescriptor extends PApplet {
         text("elongation = " + String.format("%.2f", shapeDescriptor.getElongation()), (float) centroid.getX(), (float) centroid.getY() + 120);
         popStyle();
 
+        // sphericity
         translate(333, 0);
         pushStyle();
         stroke(0);
@@ -202,31 +244,25 @@ public class Test10ShapeDescriptor extends PApplet {
         text("sphericity = " + String.format("%.2f", shapeDescriptor.getSphericity()), (float) centroid.getX(), (float) centroid.getY() + 120);
         popStyle();
 
+        // eccentricity
         translate(-666, 333);
         pushStyle();
         noFill();
         strokeWeight(3);
         stroke(255, 0, 0);
         line(
-                (float) centroid.getX() - vec1.xf() * ea,
-                (float) centroid.getY() - vec1.yf() * ea,
-                (float) centroid.getX() + vec1.xf() * ea,
-                (float) centroid.getY() + vec1.yf() * ea
+                (float) centroid.getX() - vec1.xf() * 100,
+                (float) centroid.getY() - vec1.yf() * 100,
+                (float) centroid.getX() + vec1.xf() * 100,
+                (float) centroid.getY() + vec1.yf() * 100
         );
         stroke(0, 0, 255);
         line(
-                (float) centroid.getX() - vec2.xf() * eb,
-                (float) centroid.getY() - vec2.yf() * eb,
-                (float) centroid.getX() + vec2.xf() * eb,
-                (float) centroid.getY() + vec2.yf() * eb
+                (float) (centroid.getX() - vec2.xf() * 100 * shapeDescriptor.getEccentricity()),
+                (float) (centroid.getY() - vec2.yf() * 100 * shapeDescriptor.getEccentricity()),
+                (float) (centroid.getX() + vec2.xf() * 100 * shapeDescriptor.getEccentricity()),
+                (float) (centroid.getY() + vec2.yf() * 100 * shapeDescriptor.getEccentricity())
         );
-        pushMatrix();
-        strokeWeight(1);
-        stroke(0);
-        translate((float) centroid.getX(), (float) centroid.getY());
-        rotate(-angle);
-        ellipse(0, 0, ea * 2, eb * 2);
-        popMatrix();
         noStroke();
         fill(150, 100);
         jtsRender.drawGeometry(polygon);
@@ -235,4 +271,39 @@ public class Test10ShapeDescriptor extends PApplet {
         popStyle();
     }
 
+    private void drawPolygonAxes() {
+        for (int i = 0; i < polygons.length; i++) {
+            pushStyle();
+            jtsRender.drawGeometry(polygons[i]);
+            stroke(255, 0, 0);
+            polyAxesVecs[i][0].displayAsVector(
+                    this,
+                    new ZPoint(polygons[i].getCentroid()),
+                    50,
+                    5
+            );
+            polyAxesVecs[i][0].displayAsVector(
+                    this,
+                    new ZPoint(polygons[i].getCentroid()),
+                    -50,
+                    5
+            );
+
+            stroke(0, 255, 0);
+            polyAxesVecs[i][1].displayAsVector(
+                    this,
+                    new ZPoint(polygons[i].getCentroid()),
+                    50,
+                    5
+            );
+            polyAxesVecs[i][1].displayAsVector(
+                    this,
+                    new ZPoint(polygons[i].getCentroid()),
+                    -50,
+                    5
+            );
+
+            popStyle();
+        }
+    }
 }

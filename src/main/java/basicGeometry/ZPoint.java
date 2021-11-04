@@ -44,36 +44,24 @@ public class ZPoint {
     }
 
     public ZPoint(Coordinate c) {
-        this.x = c.x;
-        this.y = c.y;
-        if (Double.isNaN(c.z)) {
+        this(c.getX(), c.getY());
+        if (Double.isNaN(c.getZ())) {
             this.z = 0;
         } else {
-            this.z = c.z;
+            this.z = c.getZ();
         }
     }
 
     public ZPoint(Point c) {
-        this.x = c.getX();
-        this.y = c.getY();
-        double _z = c.getCoordinate().getZ();
-        if (Double.isNaN(_z)) {
-            this.z = 0;
-        } else {
-            this.z = _z;
-        }
+        this(c.getCoordinate());
     }
 
     public ZPoint(WB_Coord c) {
-        this.x = c.xd();
-        this.y = c.yd();
-        this.z = c.zd();
+        this(c.xd(), c.yd(), c.zd());
     }
 
     public ZPoint(IPoint p) {
-        this.x = p.x();
-        this.y = p.y();
-        this.z = p.z();
+        this(p.x(), p.y(), p.z());
     }
 
     /* ------------- set & get ------------- */
@@ -512,11 +500,7 @@ public class ZPoint {
      */
     public void displayAsVector(PApplet app, ZPoint base, double scale, float vecCap) {
         ZPoint dest = base.add(this.scaleTo(scale));
-        app.pushStyle();
-        app.noFill();
-        app.stroke(255, 0, 0);
         app.line(base.xf(), base.yf(), base.zf(), dest.xf(), dest.yf(), dest.zf());
         app.ellipse(dest.xf(), dest.yf(), vecCap, vecCap);
-        app.popStyle();
     }
 }
