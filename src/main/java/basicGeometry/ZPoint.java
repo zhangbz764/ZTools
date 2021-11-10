@@ -258,7 +258,7 @@ public class ZPoint {
     }
 
     /**
-     * angle with the other vector (return degrees)
+     * angle with the other vector (from this to other, return degrees, -180 ~ 180)
      *
      * @param other the other vector
      * @return double

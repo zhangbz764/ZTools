@@ -481,6 +481,56 @@ public class ZFactory {
         return arcPoints;
     }
 
+    /**
+     * create an AABB for jts Geometry
+     * return 2 ordinates of bottom-left coordinate and 2 ordinates of top-right coordinate
+     *
+     * @param g input Geometry
+     * @return double[]
+     */
+    public static double[] createJtsAABB2D(final Geometry g) {
+        // minX, minY, maxX, maxY
+        double[] result = new double[]{
+                Double.MAX_VALUE,
+                Double.MAX_VALUE,
+                -Double.MAX_VALUE,
+                -Double.MAX_VALUE
+        };
+        Coordinate[] coordinates = g.getCoordinates();
+        if (coordinates == null) {
+            throw new NullPointerException("Array not initialized.");
+        } else if (coordinates.length == 0) {
+            throw new IllegalArgumentException("Array has zero size.");
+        } else {
+            Coordinate c = coordinates[0];
+            for (Coordinate coordinate : coordinates) {
+                c = coordinate;
+                if (c == null) {
+                    throw new NullPointerException("Array point not initialized.");
+                }
+
+                // min x
+                if (result[0] > c.getOrdinate(0)) {
+                    result[0] = c.getOrdinate(0);
+                }
+                // min y
+                if (result[1] > c.getOrdinate(1)) {
+                    result[1] = c.getOrdinate(1);
+                }
+
+                // max x
+                if (result[2] < c.getOrdinate(0)) {
+                    result[2] = c.getOrdinate(0);
+                }
+                // max y
+                if (result[3] < c.getOrdinate(1)) {
+                    result[3] = c.getOrdinate(1);
+                }
+            }
+        }
+        return result;
+    }
+
     /*-------- create graphs --------*/
 
     /**

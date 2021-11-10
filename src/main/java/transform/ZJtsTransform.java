@@ -99,7 +99,7 @@ public class ZJtsTransform {
     }
 
     /**
-     * rotate about origin
+     * rotate 2D about origin
      *
      * @param angle angle to rotate
      * @return transform.ZJtsTransform
@@ -114,7 +114,7 @@ public class ZJtsTransform {
     }
 
     /**
-     * rotate about a given point
+     * rotate 2D about a given point
      *
      * @param angle angle to rotate
      * @param p     rotate base
@@ -124,6 +124,80 @@ public class ZJtsTransform {
         this.addTranslate2D(-1.0D, p);
         this.addRotateAboutOrigin2D(angle);
         this.addTranslate2D(p);
+        return this;
+    }
+
+    /**
+     * reflect 2D about X axis
+     *
+     * @return transform.ZJtsTransform
+     */
+    public ZJtsTransform addReflectX2D() {
+        this.addScale2D(1.0D, -1.0D);
+        return this;
+    }
+
+    /**
+     * reflect 2D about Y axis
+     *
+     * @return transform.ZJtsTransform
+     */
+    public ZJtsTransform addReflectY2D() {
+        this.addScale2D(-1.0D, 1.0D);
+        return this;
+    }
+
+    /**
+     * reflect 2D about a line parallel with X axis
+     *
+     * @param p point
+     * @return transform.ZJtsTransform
+     */
+    public ZJtsTransform addReflectXAboutPoint2D(ZPoint p) {
+        this.addTranslate2D(-1.0D, p);
+        this.addScale2D(1.0D, -1.0D);
+        this.addTranslate2D(p);
+        return this;
+    }
+
+    /**
+     * reflect 2D about a line parallel with Y axis
+     *
+     * @param p point
+     * @return transform.ZJtsTransform
+     */
+    public ZJtsTransform addReflectYAboutPoint2D(ZPoint p) {
+        this.addTranslate2D(-1.0D, p);
+        this.addScale2D(-1.0D, 1.0D);
+        this.addTranslate2D(p);
+        return this;
+    }
+
+    /**
+     * reflect 2D about a line by 2 points
+     *
+     * @param p1 first point on the line
+     * @param p2 second point on the line
+     * @return transform.ZJtsTransform
+     */
+    public ZJtsTransform addReflect2D(ZPoint p1, ZPoint p2) {
+        ZPoint v = p2.sub(p1).normalize();
+        ZPoint newP2 = p1.add(v);
+        double a = p1.yd() - newP2.yd();
+        double b = newP2.xd() - p1.xd();
+        double c = p1.xd() * newP2.yd() - newP2.xd() * p1.yd();
+        WB_M33 tmp = new WB_M33(
+                b * b - a * a,
+                -2 * a * b,
+                -2 * a * c,
+                -2 * a * b,
+                a * a - b * b,
+                -2 * b * c,
+                0.0D, 0.0D, 1.0D
+        );
+        tmp.mul(1 / (a * a + b * b));
+        this.T3 = tmp.mul(this.T3);
+        this.invT3 = this.invT3.mul(tmp.getTranspose());
         return this;
     }
 
@@ -171,7 +245,7 @@ public class ZJtsTransform {
      * @param s scale vector
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addScale(final ZPoint s) {
+    public ZJtsTransform addScale3D(final ZPoint s) {
         this.T4 = (new WB_M44(s.xd(), 0.0D, 0.0D, 0.0D, 0.0D, s.yd(), 0.0D, 0.0D, 0.0D, 0.0D, s.zd(), 0.0D, 0.0D, 0.0D, 0.0D, 1.0D)).mult(this.T4);
         this.invT4 = this.invT4.mult(new WB_M44(1.0D / s.xd(), 0.0D, 0.0D, 0.0D, 0.0D, 1.0D / s.yd(), 0.0D, 0.0D, 0.0D, 0.0D, 1.0D / s.zd(), 0.0D, 0.0D, 0.0D, 0.0D, 1.0D));
         return this;
@@ -185,7 +259,7 @@ public class ZJtsTransform {
      * @param sz scale vector z
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addScale(final double sx, final double sy, final double sz) {
+    public ZJtsTransform addScale3D(final double sx, final double sy, final double sz) {
         this.T4 = (new WB_M44(sx, 0.0D, 0.0D, 0.0D, 0.0D, sy, 0.0D, 0.0D, 0.0D, 0.0D, sz, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D)).mult(this.T4);
         this.invT4 = this.invT4.mult(new WB_M44(1.0D / sx, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D / sy, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D / sz, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D));
         return this;
@@ -197,7 +271,7 @@ public class ZJtsTransform {
      * @param s ratio
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addScale(final double s) {
+    public ZJtsTransform addScale3D(final double s) {
         this.T4 = (new WB_M44(s, 0.0D, 0.0D, 0.0D, 0.0D, s, 0.0D, 0.0D, 0.0D, 0.0D, s, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D)).mult(this.T4);
         this.invT4 = this.invT4.mult(new WB_M44(1.0D / s, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D / s, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D / s, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D));
         return this;
@@ -292,6 +366,54 @@ public class ZJtsTransform {
         this.addTranslate3D(-1.0D, p0);
         this.addRotateAboutOrigin3D(angle, p1.sub(p0));
         this.addTranslate3D(p0);
+        return this;
+    }
+
+    /**
+     * reflect 2D about XY plane
+     *
+     * @return transform.ZJtsTransform
+     */
+    public ZJtsTransform addReflectXY3D() {
+        this.addScale3D(1.0D, 1.0D, -1.0D);
+        return this;
+    }
+
+    /**
+     * reflect 2D about YZ plane
+     *
+     * @return transform.ZJtsTransform
+     */
+    public ZJtsTransform addReflectYZ3D() {
+        this.addScale3D(-1.0D, 1.0D, 1.0D);
+        return this;
+    }
+
+    /**
+     * reflect 2D about XZ plane
+     *
+     * @return transform.ZJtsTransform
+     */
+    public ZJtsTransform addReflectXZ3D() {
+        this.addScale3D(1.0D, -1.0D, 1.0D);
+        return this;
+    }
+
+    /**
+     * duplicate 2D transform to 3D matrix for applying to 3D Geometry
+     *
+     * @return transform.ZJtsTransform
+     */
+    public ZJtsTransform duplicate2DTo3D() {
+        this.T4.m11 = this.T3.m11;
+        this.T4.m12 = this.T3.m12;
+        this.T4.m14 = this.T3.m13;
+        this.T4.m21 = this.T3.m21;
+        this.T4.m22 = this.T3.m22;
+        this.T4.m24 = this.T3.m23;
+        this.T4.m31 = this.T3.m31;
+        this.T4.m32 = this.T3.m32;
+        this.T4.m34 = this.T3.m33;
         return this;
     }
 

@@ -971,63 +971,6 @@ public final class ZGeoMath {
     /*-------- distance 2D --------*/
 
     /**
-     * 2d euclidean distance
-     *
-     * @param x1 x1
-     * @param y1 y1
-     * @param x2 x2
-     * @param y2 y2
-     * @return double
-     */
-    public static double distance2D(double x1, double y1, double x2, double y2) {
-        return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-    }
-
-    /**
-     * 3d euclidean distance
-     *
-     * @param x1 x1
-     * @param y1 y1
-     * @param z1 z1
-     * @param x2 x2
-     * @param y2 y2
-     * @param z2 z2
-     * @return double
-     */
-    public static double distance3D(double x1, double y1, double z1, double x2, double y2, double z2) {
-        return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2));
-    }
-
-    /**
-     * euclidean distance in n-dimension
-     *
-     * @param d1 vector 1
-     * @param d2 vector 2
-     * @return double
-     */
-    public static double distanceEuclidean(double[] d1, double[] d2) {
-        assert d1.length == d2.length : "input arrays must be the same dimension";
-        double sum = 0;
-        for (int i = 0; i < d1.length; i++) {
-            sum += (d1[i] - d2[i]) * (d1[i] - d2[i]);
-        }
-        return Math.sqrt(sum);
-    }
-
-    /**
-     * 2d manhattan distance
-     *
-     * @param x1 x1
-     * @param y1 y1
-     * @param x2 x2
-     * @param y2 y2
-     * @return double
-     */
-    public static double distanceManhattan2D(double x1, double y1, double x2, double y2) {
-        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
-    }
-
-    /**
      * find the closest point in a list of lines
      *
      * @param p     target point
@@ -2868,7 +2811,6 @@ public final class ZGeoMath {
      *
      * @param geometry geometry to be applied
      * @param pm       precision model
-     * @return void
      */
     public static void applyJtsPrecisionModel(final Geometry geometry, final PrecisionModel pm) {
         Coordinate[] coordinates = geometry.getCoordinates();

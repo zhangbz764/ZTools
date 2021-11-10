@@ -17,6 +17,10 @@ import processing.core.PApplet;
 import render.JtsRender;
 import transform.ZTransform;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * description
  *
@@ -28,6 +32,7 @@ import transform.ZTransform;
 public class Test10ShapeDescriptor extends PApplet {
     // test shape descriptors of one polygon
     private Polygon polygon;
+    private List<ZPoint> randomPts;
 
     private Point centroid;
     private Geometry convexHull;
@@ -67,6 +72,16 @@ public class Test10ShapeDescriptor extends PApplet {
 
         shapeDescriptors();
         axes();
+
+        ZPoint p0 = new ZPoint(100, 0);
+        ZPoint p1 = new ZPoint(0, 100);
+        ZPoint p2 = new ZPoint(-100, 100);
+        ZPoint p3 = new ZPoint(-100, -100);
+        ZPoint p4 = new ZPoint(0, -100);
+        System.out.println(p0.angleWith(p1));
+        System.out.println(p0.angleWith(p2));
+        System.out.println(p0.angleWith(p3));
+        System.out.println(p0.angleWith(p4));
     }
 
     private void shapeDescriptors() {
@@ -91,7 +106,18 @@ public class Test10ShapeDescriptor extends PApplet {
 //        };
         this.polygon = ZFactory.jtsgf.createPolygon(coords);
         this.shapeDescriptor = new ZShapeDescriptor(polygon);
-
+        this.randomPts = new ArrayList<>();
+        double[] aabb = ZFactory.createJtsAABB2D(polygon);
+        for (int i = 0; i < 100; i++) {
+            ZPoint p = new ZPoint(
+                    random((float) aabb[0], (float) aabb[2]),
+                    random((float) aabb[1], (float) aabb[3])
+            );
+            if (polygon.contains(p.toJtsPoint())) {
+                randomPts.add(p);
+            }
+        }
+        System.out.println(randomPts.size());
         this.centroid = polygon.getCentroid();
         this.convexHull = polygon.convexHull();
         this.obb = MinimumDiameter.getMinimumRectangle(polygon);
@@ -103,8 +129,8 @@ public class Test10ShapeDescriptor extends PApplet {
         this.c_I = circle2.getCenter();
         this.r_I = c_I.distance(circle2.getRadiusPoint());
 
-        this.vec1 = shapeDescriptor.getAxes()[0];
-        this.vec2 = shapeDescriptor.getAxes()[1];
+        this.vec1 = shapeDescriptor.getAxes()[0]; // sub
+        this.vec2 = shapeDescriptor.getAxes()[1]; // main
     }
 
     private void axes() {
@@ -134,6 +160,7 @@ public class Test10ShapeDescriptor extends PApplet {
 
     public void draw() {
         background(255);
+        gcam.drawSystem(100);
 
         if (draw) {
             pushMatrix();
@@ -152,6 +179,10 @@ public class Test10ShapeDescriptor extends PApplet {
         strokeWeight(3);
         stroke(255, 0, 0);
         jtsRender.drawGeometry(convexHull);
+        stroke(0, 255, 0);
+        for (ZPoint p : randomPts) {
+            p.displayAsPoint(this, 1);
+        }
         strokeWeight(1);
         stroke(0);
         jtsRender.drawGeometry(polygon);
@@ -282,12 +313,12 @@ public class Test10ShapeDescriptor extends PApplet {
                     50,
                     5
             );
-            polyAxesVecs[i][0].displayAsVector(
-                    this,
-                    new ZPoint(polygons[i].getCentroid()),
-                    -50,
-                    5
-            );
+//            polyAxesVecs[i][0].displayAsVector(
+//                    this,
+//                    new ZPoint(polygons[i].getCentroid()),
+//                    -50,
+//                    5
+//            );
 
             stroke(0, 255, 0);
             polyAxesVecs[i][1].displayAsVector(
@@ -296,12 +327,12 @@ public class Test10ShapeDescriptor extends PApplet {
                     50,
                     5
             );
-            polyAxesVecs[i][1].displayAsVector(
-                    this,
-                    new ZPoint(polygons[i].getCentroid()),
-                    -50,
-                    5
-            );
+//            polyAxesVecs[i][1].displayAsVector(
+//                    this,
+//                    new ZPoint(polygons[i].getCentroid()),
+//                    -50,
+//                    5
+//            );
 
             popStyle();
         }

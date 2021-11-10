@@ -2,7 +2,9 @@ package advancedGeometry;
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
+import basicGeometry.ZFactory;
 import basicGeometry.ZPoint;
+import math.ZGeoMath;
 import math.ZMath;
 import org.locationtech.jts.algorithm.MinimumBoundingCircle;
 import org.locationtech.jts.algorithm.MinimumDiameter;
@@ -13,7 +15,9 @@ import org.locationtech.jts.geom.Polygon;
 import transform.ZTransform;
 import wblut.geom.WB_Polygon;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * several shape descriptors for a simple polygon
@@ -191,7 +195,7 @@ public class ZShapeDescriptor {
     }
 
     private static double eccentricity(double[] eigen) {
-        return eigen[0] / eigen[1];
+        return eigen[0] / eigen[1]; // sub / main
     }
 
     /**
@@ -210,7 +214,7 @@ public class ZShapeDescriptor {
         axis1.normalizeSelf();
         ZPoint axis2 = new ZPoint(eigen[4], eigen[5]);
         axis2.normalizeSelf();
-        return new ZPoint[]{axis1, axis2};
+        return new ZPoint[]{axis2, axis1}; // main, sub
     }
 
     /**
@@ -220,11 +224,40 @@ public class ZShapeDescriptor {
      * @return double[]
      */
     private static double[] covarianceMatrixEigen(final Polygon p) {
-        double[][] sample = new double[p.getNumPoints() - 1][];
+        List<Coordinate> sampleCoords = new ArrayList<>();
         for (int i = 0; i < p.getNumPoints() - 1; i++) {
-            sample[i] = new double[]{
-                    p.getCoordinates()[i].getX(), p.getCoordinates()[i].getY()
-            };
+            sampleCoords.add(p.getCoordinates()[i]);
+        }
+//        double[] aabb = ZFactory.createJtsAABB2D(p);
+//        double minX = aabb[0];
+//        double minY = aabb[1];
+//        double maxX = aabb[2];
+//        double maxY = aabb[3];
+//        double stepX = (maxX - minX) / 9d;
+//        double stepY = (maxY - minY) / 9d;
+//        Point testP;
+//        for (int i = 0; i < 10; i++) {
+//            for (int j = 0; j < 10; j++) {
+//                Coordinate testC = new Coordinate(minX + i * stepX, minY + j * stepY);
+//                testP = ZFactory.jtsgf.createPoint(testC);
+//                if (p.contains(testP)) {
+//                    sampleCoords.add(testC);
+//                }
+//            }
+//        }
+//        for (int i = 0; i < 100; i++) {
+//            Coordinate testC = new Coordinate(
+//                    ZMath.random(aabb[0], aabb[2]),
+//                    ZMath.random(aabb[1], aabb[3])
+//            );
+//            if (p.contains(ZFactory.jtsgf.createPoint(testC))) {
+//                sampleCoords.add(testC);
+//            }
+//        }
+
+        double[][] sample = new double[sampleCoords.size()][];
+        for (int i = 0; i < sample.length; i++) {
+            sample[i] = new double[]{sampleCoords.get(i).getX(), sampleCoords.get(i).getY()};
         }
         double[][] matrix = ZMath.covarianceMatrix(sample);
 
@@ -288,6 +321,19 @@ public class ZShapeDescriptor {
 
     public ZPoint[] getAxes() {
         return axes;
+    }
+
+    public double[] getAsFeatureVector() {
+        return new double[]{
+                convexity,
+                solidity,
+                rectangularity,
+                elongation,
+                compactness,
+                circularity,
+                sphericity,
+                eccentricity
+        };
     }
 
     @Override

@@ -10,7 +10,7 @@ import render.JtsRender;
 import transform.ZJtsTransform;
 
 /**
- * description
+ * test transform for jts Geometry
  *
  * @author ZHANG Baizhou zhangbz
  * @project city_site_matching
@@ -28,7 +28,8 @@ public class TestJtsTransform extends PApplet {
     /* ------------- setup ------------- */
 
     private LineString original;
-    private LineString transform;
+    private LineString reflect;
+    private LineString multi;
 
     private CameraController gcam;
     private JtsRender jtsRender;
@@ -38,6 +39,7 @@ public class TestJtsTransform extends PApplet {
         this.jtsRender = new JtsRender(this);
         gcam.top();
 
+        // create original Geometry
         Coordinate[] coords = new Coordinate[]{
                 new Coordinate(100, 0),
                 new Coordinate(200, 200),
@@ -46,12 +48,23 @@ public class TestJtsTransform extends PApplet {
                 new Coordinate(700, 500)
         };
         this.original = ZFactory.jtsgf.createLineString(coords);
+
+        // mirror transform
+        ZJtsTransform transReflect = new ZJtsTransform();
+        transReflect.addReflect2D(new ZPoint(0, 0), new ZPoint(-100, 100));
+        this.reflect = (LineString) transReflect.applyToGeometry2D(original);
+
+        // multiple transform
         ZJtsTransform trans = new ZJtsTransform();
-        trans.addTranslate2D(new ZPoint(200, 0)).addRotateAboutPoint2D(Math.PI * 0.5, new ZPoint(200, 200));
-        this.transform = (LineString) trans.applyToGeometry2D(original);
+        trans.addTranslate2D(new ZPoint(200, 0)).addScale2D(2)
+                .addRotateAboutPoint2D(Math.PI * 0.5, new ZPoint(200, 200))
+                .addReflect2D(new ZPoint(0, 0), new ZPoint(0, 100))
+        ;
+        this.multi = (LineString) trans.applyToGeometry2D(original);
 
         System.out.println(original);
-        System.out.println(transform);
+        System.out.println(reflect);
+        System.out.println(multi);
     }
 
     /* ------------- draw ------------- */
@@ -60,8 +73,16 @@ public class TestJtsTransform extends PApplet {
         background(255);
         gcam.drawSystem(200);
 
+        strokeWeight(2);
+
+        stroke(0);
         jtsRender.drawGeometry(original);
-        jtsRender.drawGeometry(transform);
+        stroke(255, 0, 0);
+        jtsRender.drawGeometry(reflect);
+
+
+        stroke(255, 255, 0);
+        jtsRender.drawGeometry(multi);
     }
 
 }
