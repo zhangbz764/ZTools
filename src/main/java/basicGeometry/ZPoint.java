@@ -501,6 +501,8 @@ public class ZPoint {
     public void displayAsVector(PApplet app, ZPoint base, double scale, float vecCap) {
         ZPoint dest = base.add(this.scaleTo(scale));
         app.line(base.xf(), base.yf(), base.zf(), dest.xf(), dest.yf(), dest.zf());
-        app.ellipse(dest.xf(), dest.yf(), vecCap, vecCap);
+        if (vecCap > 0) {
+            app.ellipse(dest.xf(), dest.yf(), vecCap, vecCap);
+        }
     }
 }

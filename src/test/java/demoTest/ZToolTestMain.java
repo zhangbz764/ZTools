@@ -43,10 +43,10 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.Test9ArcCircle");
 
         /* test shape descriptors */
-//        PApplet.main("demoTest.Test10ShapeDescriptor");
+        PApplet.main("demoTest.Test10ShapeDescriptor");
 
         /* test K-Means clustering */
-        PApplet.main("demoTest.Test11KMeans");
+//        PApplet.main("demoTest.Test11KMeans");
 
         /* test transform for jts Geometry */
 //        PApplet.main("demoTest.TestJtsTransform");

@@ -1,5 +1,7 @@
 package math;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -187,6 +189,50 @@ public final class ZMath {
             }
         }
         return minIndex;
+    }
+
+    /**
+     * find the indices of maximum values in an array of double
+     *
+     * @param arr   input double array
+     * @param count number to select
+     * @return int[]
+     */
+    public static int[] getMaxIndices(final double[] arr, final int count) {
+        if (arr == null || arr.length == 0 || count > arr.length) {
+            int[] indices = new int[count];
+            Arrays.fill(indices, 0);
+            return indices;
+        }
+        int[] indices = new int[count];
+        double[] temp = Arrays.copyOf(arr, arr.length);
+        Arrays.sort(temp);
+        for (int i = 0; i < count; i++) {
+            indices[i] = ArrayUtils.indexOf(arr, temp[temp.length - 1 - i]);
+        }
+        return indices;
+    }
+
+    /**
+     * find the indices of minimum values in an array of double
+     *
+     * @param arr   input double array
+     * @param count number to select
+     * @return int[]
+     */
+    public static int[] getMinIndices(final double[] arr, final int count) {
+        if (arr == null || arr.length == 0 || count > arr.length) {
+            int[] indices = new int[count];
+            Arrays.fill(indices, 0);
+            return indices;
+        }
+        int[] indices = new int[count];
+        double[] temp = Arrays.copyOf(arr, arr.length);
+        Arrays.sort(temp);
+        for (int i = 0; i < count; i++) {
+            indices[i] = ArrayUtils.indexOf(arr, temp[i]);
+        }
+        return indices;
     }
 
     /**

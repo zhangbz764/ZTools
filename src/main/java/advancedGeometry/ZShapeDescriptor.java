@@ -2,10 +2,10 @@ package advancedGeometry;
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
-import basicGeometry.ZFactory;
 import basicGeometry.ZPoint;
 import math.ZGeoMath;
 import math.ZMath;
+import org.apache.commons.lang3.ArrayUtils;
 import org.locationtech.jts.algorithm.MinimumBoundingCircle;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.Coordinate;
@@ -38,6 +38,7 @@ public class ZShapeDescriptor {
     private final double eccentricity;
 
     private ZPoint[] axes;
+    private ZPoint[] axesNew;
 
     private final Geometry convexHull;
     private final Geometry obb;
@@ -57,13 +58,48 @@ public class ZShapeDescriptor {
         this.circularity = circularity(p, convexHull);
         this.sphericity = sphericity(p);
 
-        double[] eigen = covarianceMatrixEigen(p);
-        this.eccentricity = eccentricity(eigen);
+        Coordinate[] coords = new Coordinate[p.getNumPoints() - 1];
+        for (int i = 0; i < coords.length; i++) {
+            coords[i] = p.getCoordinates()[i];
+        }
+        double[] eigen = covarianceMatrixEigen(coords);
         this.axes = mainAxes(eigen);
+
+        List<ZPoint> split = ZGeoMath.splitPolygonEdge(p, 25);
+        Coordinate[] coordsSplit = new Coordinate[split.size()];
+        for (int i = 0; i < coordsSplit.length; i++) {
+            coordsSplit[i] = split.get(i).toJtsCoordinate();
+        }
+        double[] eigenSplit = covarianceMatrixEigen(coordsSplit);
+        this.eccentricity = eccentricity(eigenSplit);
+        this.axesNew = mainAxes(eigenSplit);
     }
 
     public ZShapeDescriptor(final WB_Polygon poly) {
         this(ZTransform.WB_PolygonToPolygon(poly));
+    }
+
+    public ZShapeDescriptor(final Double[] descriptors, final Double[] axes, final Double[] axesNew) {
+        this.convexity = descriptors[0];
+        this.solidity = descriptors[1];
+        this.rectangularity = descriptors[2];
+        this.elongation = descriptors[3];
+        this.compactness = descriptors[4];
+        this.circularity = descriptors[5];
+        this.sphericity = descriptors[6];
+        this.eccentricity = descriptors[7];
+
+        this.axes = new ZPoint[]{
+                new ZPoint(axes[0], axes[1]),
+                new ZPoint(axes[2], axes[3])
+        };
+        this.axesNew = new ZPoint[]{
+                new ZPoint(axesNew[0], axesNew[1]),
+                new ZPoint(axesNew[2], axesNew[3])
+        };
+
+        this.convexHull = null;
+        this.obb = null;
     }
 
     /* ------------- member function ------------- */
@@ -190,7 +226,11 @@ public class ZShapeDescriptor {
      * @return double
      */
     public static double eccentricity(final Polygon p) {
-        double[] eigen = covarianceMatrixEigen(p);
+        Coordinate[] coords = new Coordinate[p.getNumPoints() - 1];
+        for (int i = 0; i < coords.length; i++) {
+            coords[i] = p.getCoordinates()[i];
+        }
+        double[] eigen = covarianceMatrixEigen(coords);
         return eccentricity(eigen);
     }
 
@@ -205,7 +245,11 @@ public class ZShapeDescriptor {
      * @return basicGeometry.ZPoint[]
      */
     public static ZPoint[] mainAxes(final Polygon p) {
-        double[] eigen = covarianceMatrixEigen(p);
+        Coordinate[] coords = new Coordinate[p.getNumPoints() - 1];
+        for (int i = 0; i < coords.length; i++) {
+            coords[i] = p.getCoordinates()[i];
+        }
+        double[] eigen = covarianceMatrixEigen(coords);
         return mainAxes(eigen);
     }
 
@@ -218,16 +262,29 @@ public class ZShapeDescriptor {
     }
 
     /**
+     * description
+     *
+     * @param p
+     * @return basicGeometry.ZPoint[]
+     */
+    public static ZPoint[] mainAxesBySplit(final Polygon p) {
+        List<ZPoint> split = ZGeoMath.splitPolygonEdge(p, 25);
+        Coordinate[] coords = new Coordinate[split.size()];
+        for (int i = 0; i < coords.length; i++) {
+            coords[i] = split.get(i).toJtsCoordinate();
+        }
+        double[] eigen = covarianceMatrixEigen(coords);
+        return mainAxes(eigen);
+    }
+
+    /**
      * get the eigenvalues and vectors of the covariance matrix
      *
-     * @param p input polygon
+     * @param sampleCoords input polygon coordinates
      * @return double[]
      */
-    private static double[] covarianceMatrixEigen(final Polygon p) {
-        List<Coordinate> sampleCoords = new ArrayList<>();
-        for (int i = 0; i < p.getNumPoints() - 1; i++) {
-            sampleCoords.add(p.getCoordinates()[i]);
-        }
+    private static double[] covarianceMatrixEigen(final Coordinate[] sampleCoords) {
+
 //        double[] aabb = ZFactory.createJtsAABB2D(p);
 //        double minX = aabb[0];
 //        double minY = aabb[1];
@@ -255,9 +312,9 @@ public class ZShapeDescriptor {
 //            }
 //        }
 
-        double[][] sample = new double[sampleCoords.size()][];
+        double[][] sample = new double[sampleCoords.length][];
         for (int i = 0; i < sample.length; i++) {
-            sample[i] = new double[]{sampleCoords.get(i).getX(), sampleCoords.get(i).getY()};
+            sample[i] = new double[]{sampleCoords[i].getX(), sampleCoords[i].getY()};
         }
         double[][] matrix = ZMath.covarianceMatrix(sample);
 
@@ -323,7 +380,11 @@ public class ZShapeDescriptor {
         return axes;
     }
 
-    public double[] getAsFeatureVector() {
+    public ZPoint[] getAxesNew() {
+        return axesNew;
+    }
+
+    public double[] getDescriptorAsDouble() {
         return new double[]{
                 convexity,
                 solidity,
@@ -334,6 +395,55 @@ public class ZShapeDescriptor {
                 sphericity,
                 eccentricity
         };
+    }
+
+    public List<Double> getDescriptorAsList() {
+        List<Double> descriptors = new ArrayList<>();
+        descriptors.add(convexity);
+        descriptors.add(solidity);
+        descriptors.add(rectangularity);
+        descriptors.add(elongation);
+        descriptors.add(compactness);
+        descriptors.add(circularity);
+        descriptors.add(sphericity);
+        descriptors.add(eccentricity);
+        return descriptors;
+    }
+
+    public double[] getAxesAsDouble() {
+        return new double[]{
+                axes[0].xd(),
+                axes[0].yd(),
+                axes[1].xd(),
+                axes[1].yd()
+        };
+    }
+
+    public List<Double> getAxesAsList() {
+        List<Double> axes = new ArrayList<>();
+        axes.add(this.axes[0].xd());
+        axes.add(this.axes[0].yd());
+        axes.add(this.axes[1].xd());
+        axes.add(this.axes[1].yd());
+        return axes;
+    }
+
+    public double[] getAxesNewAsDouble() {
+        return new double[]{
+                axesNew[0].xd(),
+                axesNew[0].yd(),
+                axesNew[1].xd(),
+                axesNew[1].yd()
+        };
+    }
+
+    public List<Double> getAxesNewAsList() {
+        List<Double> axes = new ArrayList<>();
+        axes.add(this.axesNew[0].xd());
+        axes.add(this.axesNew[0].yd());
+        axes.add(this.axesNew[1].xd());
+        axes.add(this.axesNew[1].yd());
+        return axes;
     }
 
     @Override
@@ -348,8 +458,7 @@ public class ZShapeDescriptor {
                 ", sphericity=" + sphericity +
                 ", eccentricity=" + eccentricity +
                 ", axes=" + Arrays.toString(axes) +
-                ", convexHull=" + convexHull +
-                ", obb=" + obb +
+                ", axesNew=" + Arrays.toString(axesNew) +
                 '}';
     }
 }

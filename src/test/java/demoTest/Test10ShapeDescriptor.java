@@ -18,7 +18,6 @@ import render.JtsRender;
 import transform.ZTransform;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
