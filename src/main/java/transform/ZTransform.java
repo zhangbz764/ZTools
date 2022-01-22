@@ -305,7 +305,12 @@ public class ZTransform {
      * @return igeo.IPoint
      */
     public static IPoint PointToIPoint(final Point p) {
-        return new IPoint(p.getX(), p.getY(), 0);
+        Coordinate c = p.getCoordinate();
+        if (Double.isNaN(c.getZ())) {
+            return new IPoint(c.x, c.y, 0);
+        } else {
+            return new IPoint(c.x, c.y, c.getZ());
+        }
     }
 
     /**
@@ -362,6 +367,31 @@ public class ZTransform {
             System.out.println("***MAYBE OTHER TYPE OF GEOMETRY***");
             return null;
         }
+    }
+
+    /**
+    * LineString -> ICurve
+    *
+    * @param ls input LineString
+    * @return igeo.ICurve
+    */
+    public static ICurve LineStringToICurve(final LineString ls){
+        IVec[] vecs = new IVec[ls.getNumPoints()];
+        for (int i = 0; i < vecs.length; i++) {
+            vecs[i] = CoordinateToIVec(ls.getCoordinateN(i));
+        }
+        return new ICurve(vecs);
+    }
+
+    /**
+    * Polygon -> ICurve (exterior ring only)
+    *
+    * @param poly input Polygon
+    * @return igeo.ICurve
+    */
+    public static ICurve PolygonToICurve(final Polygon poly){
+        LineString exterior = poly.getExteriorRing();
+        return LineStringToICurve(exterior);
     }
 
     /*-------- WB <-> Jts --------*/
@@ -742,7 +772,6 @@ public class ZTransform {
     * validate z ordinate of jts Geometry (NaN -> 0)
     *
     * @param geo original Geometry
-    * @return void
     */
     public static void validateGeometry3D(Geometry geo) {
         Coordinate[] coords = new Coordinate[geo.getNumPoints()];

@@ -8,7 +8,7 @@ import processing.core.PApplet;
 /**
  * draw Jts Geometry
  *
- * @author ZHANG Bai-zhou zhangbz
+ * @author LI Biao, ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2020/10/10
  * @time 15:13

@@ -39,6 +39,7 @@ public class ZShapeDescriptor {
 
     private ZPoint[] axes;
     private ZPoint[] axesNew;
+    private ZPoint[] axesOBB;
 
     private final Geometry convexHull;
     private final Geometry obb;
@@ -53,7 +54,7 @@ public class ZShapeDescriptor {
         this.convexity = convexity(p, convexHull);
         this.solidity = solidity(p, convexHull);
         this.rectangularity = rectangularity(p, obb);
-        this.elongation = elongation(p, obb);
+        this.elongation = elongation(obb);
         this.compactness = compactness(p);
         this.circularity = circularity(p, convexHull);
         this.sphericity = sphericity(p);
@@ -73,13 +74,20 @@ public class ZShapeDescriptor {
         double[] eigenSplit = covarianceMatrixEigen(coordsSplit);
         this.eccentricity = eccentricity(eigenSplit);
         this.axesNew = mainAxes(eigenSplit);
+
+        this.axesOBB = mainAxesByOBB(obb);
     }
 
     public ZShapeDescriptor(final WB_Polygon poly) {
         this(ZTransform.WB_PolygonToPolygon(poly));
     }
 
-    public ZShapeDescriptor(final Double[] descriptors, final Double[] axes, final Double[] axesNew) {
+    public ZShapeDescriptor(
+            final Double[] descriptors,
+            final Double[] axes,
+            final Double[] axesNew,
+            final Double[] axesOBB
+    ) {
         this.convexity = descriptors[0];
         this.solidity = descriptors[1];
         this.rectangularity = descriptors[2];
@@ -96,6 +104,10 @@ public class ZShapeDescriptor {
         this.axesNew = new ZPoint[]{
                 new ZPoint(axesNew[0], axesNew[1]),
                 new ZPoint(axesNew[2], axesNew[3])
+        };
+        this.axesOBB = new ZPoint[]{
+                new ZPoint(axesOBB[0], axesOBB[1]),
+                new ZPoint(axesOBB[2], axesOBB[3])
         };
 
         this.convexHull = null;
@@ -157,10 +169,10 @@ public class ZShapeDescriptor {
      */
     public static double elongation(final Polygon p) {
         Geometry obb = MinimumDiameter.getMinimumRectangle(p);
-        return elongation(p, obb);
+        return elongation(obb);
     }
 
-    private static double elongation(final Polygon p, final Geometry obb) {
+    private static double elongation(final Geometry obb) {
         Polygon rect = (Polygon) obb;
         Coordinate c0 = rect.getCoordinates()[0];
         Coordinate c1 = rect.getCoordinates()[1];
@@ -262,9 +274,9 @@ public class ZShapeDescriptor {
     }
 
     /**
-     * description
+     * the principle axes of the polygon after splitting the polygon (normalized)
      *
-     * @param p
+     * @param p input polygon
      * @return basicGeometry.ZPoint[]
      */
     public static ZPoint[] mainAxesBySplit(final Polygon p) {
@@ -284,34 +296,6 @@ public class ZShapeDescriptor {
      * @return double[]
      */
     private static double[] covarianceMatrixEigen(final Coordinate[] sampleCoords) {
-
-//        double[] aabb = ZFactory.createJtsAABB2D(p);
-//        double minX = aabb[0];
-//        double minY = aabb[1];
-//        double maxX = aabb[2];
-//        double maxY = aabb[3];
-//        double stepX = (maxX - minX) / 9d;
-//        double stepY = (maxY - minY) / 9d;
-//        Point testP;
-//        for (int i = 0; i < 10; i++) {
-//            for (int j = 0; j < 10; j++) {
-//                Coordinate testC = new Coordinate(minX + i * stepX, minY + j * stepY);
-//                testP = ZFactory.jtsgf.createPoint(testC);
-//                if (p.contains(testP)) {
-//                    sampleCoords.add(testC);
-//                }
-//            }
-//        }
-//        for (int i = 0; i < 100; i++) {
-//            Coordinate testC = new Coordinate(
-//                    ZMath.random(aabb[0], aabb[2]),
-//                    ZMath.random(aabb[1], aabb[3])
-//            );
-//            if (p.contains(ZFactory.jtsgf.createPoint(testC))) {
-//                sampleCoords.add(testC);
-//            }
-//        }
-
         double[][] sample = new double[sampleCoords.length][];
         for (int i = 0; i < sample.length; i++) {
             sample[i] = new double[]{sampleCoords[i].getX(), sampleCoords[i].getY()};
@@ -340,6 +324,28 @@ public class ZShapeDescriptor {
 //        double vecK2 = -(cxy + cyy - lambda2) / (cxx + cxy - lambda2);
 
         return new double[]{lambda1, lambda2, vec1x, vec1y, vec2x, vec2y};
+    }
+
+    /**
+     * the principle axes of the polygon using obb (normalized)
+     *
+     * @param p input polygon
+     * @return basicGeometry.ZPoint[]
+     */
+    public static ZPoint[] mainAxesByOBB(final Polygon p) {
+        Geometry obb = MinimumDiameter.getMinimumRectangle(p);
+        return mainAxesByOBB(obb);
+    }
+
+    public static ZPoint[] mainAxesByOBB(final Geometry obb) {
+        Coordinate c0 = obb.getCoordinates()[0];
+        Coordinate c1 = obb.getCoordinates()[1];
+        Coordinate c2 = obb.getCoordinates()[2];
+
+        ZPoint dir1 = new ZPoint(c0).sub(new ZPoint(c1)).normalize();
+        ZPoint dir2 = new ZPoint(c2).sub(new ZPoint(c1)).normalize();
+
+        return c0.distance(c1) >= c1.distance(c2) ? new ZPoint[]{dir1, dir2} : new ZPoint[]{dir2, dir1};
     }
 
     /* ------------- setter & getter ------------- */
@@ -382,6 +388,10 @@ public class ZShapeDescriptor {
 
     public ZPoint[] getAxesNew() {
         return axesNew;
+    }
+
+    public ZPoint[] getAxesOBB() {
+        return axesOBB;
     }
 
     public double[] getDescriptorAsDouble() {
@@ -443,6 +453,24 @@ public class ZShapeDescriptor {
         axes.add(this.axesNew[0].yd());
         axes.add(this.axesNew[1].xd());
         axes.add(this.axesNew[1].yd());
+        return axes;
+    }
+
+    public double[] getAxesOBBAsDouble(){
+        return new double[]{
+                axesOBB[0].xd(),
+                axesOBB[0].yd(),
+                axesOBB[1].xd(),
+                axesOBB[1].yd()
+        };
+    }
+
+    public List<Double> getAxesOBBAsList() {
+        List<Double> axes = new ArrayList<>();
+        axes.add(this.axesOBB[0].xd());
+        axes.add(this.axesOBB[0].yd());
+        axes.add(this.axesOBB[1].xd());
+        axes.add(this.axesOBB[1].yd());
         return axes;
     }
 

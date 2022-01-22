@@ -60,6 +60,8 @@ public class ZToolTestMain {
         /* test function in WB_GeometryFactory */
 //        PApplet.main("demoTest.TestHE_MeshFactory");
 
+//        PApplet.main("demoTest.TestHE_MeshSlice");
+
         /* test jts buffer，cut out WB_PolyLine */
 //        PApplet.main("demoTest.TestJtsBuffer");
 

@@ -425,7 +425,7 @@ public class ZJtsTransform {
      * @param c original coordinate
      * @return org.locationtech.jts.geom.Coordinate
      */
-    private Coordinate applyToCoordinate2D(final Coordinate c) {
+    public Coordinate applyToCoordinate2D(final Coordinate c) {
         double xp = this.T3.m11 * c.getX() + this.T3.m12 * c.getY() + this.T3.m13;
         double yp = this.T3.m21 * c.getX() + this.T3.m22 * c.getY() + this.T3.m23;
         double wp = this.T3.m31 * c.getX() + this.T3.m32 * c.getY() + this.T3.m33;

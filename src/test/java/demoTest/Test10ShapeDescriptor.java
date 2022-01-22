@@ -15,6 +15,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
 import render.JtsRender;
+import transform.ZJtsTransform;
 import transform.ZTransform;
 
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class Test10ShapeDescriptor extends PApplet {
     private Geometry obb;
 
     private double r_equalLength;
+    private double r_convex_equalLength;
     private double r_O;
     private Coordinate c_O;
     private double r_I;
@@ -59,7 +61,7 @@ public class Test10ShapeDescriptor extends PApplet {
     /* ------------- settings ------------- */
 
     public void settings() {
-        size(1000, 1000, P3D);
+        size(1900, 1000, P3D);
     }
 
     /* ------------- setup ------------- */
@@ -67,6 +69,7 @@ public class Test10ShapeDescriptor extends PApplet {
     public void setup() {
         this.jtsRender = new JtsRender(this);
         this.gcam = new CameraController(this);
+        gcam.top();
         textSize(12);
 
         shapeDescriptors();
@@ -81,6 +84,15 @@ public class Test10ShapeDescriptor extends PApplet {
         System.out.println(p0.angleWith(p2));
         System.out.println(p0.angleWith(p3));
         System.out.println(p0.angleWith(p4));
+
+        System.out.println("convexity = " + String.format("%.2f", shapeDescriptor.getConvexity()));
+        System.out.println("solidity = " + String.format("%.2f", shapeDescriptor.getSolidity()));
+        System.out.println("elongation = " + String.format("%.2f", shapeDescriptor.getElongation()));
+        System.out.println("rectangularity = " + String.format("%.2f", shapeDescriptor.getRectangularity()));
+        System.out.println("compactness = " + String.format("%.2f", shapeDescriptor.getCompactness()));
+        System.out.println("circularity = " + String.format("%.2f", shapeDescriptor.getCircularity()));
+        System.out.println("sphericity = " + String.format("%.2f", shapeDescriptor.getSphericity()));
+        System.out.println("eccentricity = " + String.format("%.2f", shapeDescriptor.getEccentricity()));
     }
 
     private void shapeDescriptors() {
@@ -97,13 +109,22 @@ public class Test10ShapeDescriptor extends PApplet {
                 new Coordinate(53, 102)
         };
 //        Coordinate[] coords = new Coordinate[]{
-//                new Coordinate(120, 100),
-//                new Coordinate(150, 150),
-//                new Coordinate(180, 100),
-//                new Coordinate(150, 50),
-//                new Coordinate(120, 100)
+//                new Coordinate(18, -155),
+//                new Coordinate(22, -207),
+//                new Coordinate(18, -255),
+//                new Coordinate(30, -269),
+//                new Coordinate(119, -271),
+//                new Coordinate(117, -250),
+//                new Coordinate(121, -215),
+//                new Coordinate(79, -217),
+//                new Coordinate(74, -191),
+//                new Coordinate(78, -148),
+//                new Coordinate(18, -155)
 //        };
         this.polygon = ZFactory.jtsgf.createPolygon(coords);
+        ZJtsTransform transform = new ZJtsTransform();
+        transform.addScale2D(1.5);
+        this.polygon = (Polygon) transform.applyToGeometry2D(polygon);
         this.shapeDescriptor = new ZShapeDescriptor(polygon);
         this.randomPts = new ArrayList<>();
         double[] aabb = ZFactory.createJtsAABB2D(polygon);
@@ -121,6 +142,7 @@ public class Test10ShapeDescriptor extends PApplet {
         this.convexHull = polygon.convexHull();
         this.obb = MinimumDiameter.getMinimumRectangle(polygon);
         this.r_equalLength = polygon.getLength() / (2 * Math.PI);
+        this.r_convex_equalLength = convexHull.getLength() / (2 * Math.PI);
         MinimumBoundingCircle circle1 = new MinimumBoundingCircle(polygon);
         this.c_O = circle1.getCentre();
         this.r_O = circle1.getRadius();
@@ -159,7 +181,7 @@ public class Test10ShapeDescriptor extends PApplet {
 
     public void draw() {
         background(255);
-        gcam.drawSystem(100);
+//        gcam.drawSystem(100);
 
         if (draw) {
             pushMatrix();
@@ -178,15 +200,15 @@ public class Test10ShapeDescriptor extends PApplet {
         strokeWeight(3);
         stroke(255, 0, 0);
         jtsRender.drawGeometry(convexHull);
-        stroke(0, 255, 0);
-        for (ZPoint p : randomPts) {
-            p.displayAsPoint(this, 1);
-        }
-        strokeWeight(1);
+//        stroke(0,146,69);
+//        for (ZPoint p : randomPts) {
+//            p.displayAsPoint(this, 1);
+//        }
+        strokeWeight(2);
         stroke(0);
         jtsRender.drawGeometry(polygon);
         fill(0);
-        text("convexity = " + String.format("%.2f", shapeDescriptor.getConvexity()), (float) centroid.getX(), (float) centroid.getY() + 120);
+//        text("convexity = " + String.format("%.2f", shapeDescriptor.getConvexity()), (float) centroid.getX(), (float) centroid.getY() + 120);
         popStyle();
 
         // solidity
@@ -198,31 +220,7 @@ public class Test10ShapeDescriptor extends PApplet {
         fill(150);
         jtsRender.drawGeometry(polygon);
         fill(0);
-        text("solidity = " + String.format("%.2f", shapeDescriptor.getSolidity()), (float) centroid.getX(), (float) centroid.getY() + 120);
-        popStyle();
-
-        // compactness
-        translate(333, 0);
-        pushStyle();
-        noStroke();
-        fill(200);
-        ellipse((float) centroid.getX(), (float) centroid.getY(), (float) r_equalLength * 2, (float) r_equalLength * 2);
-        fill(150, 100);
-        jtsRender.drawGeometry(polygon);
-        fill(0);
-        text("compactness = " + String.format("%.2f", shapeDescriptor.getCompactness()), (float) centroid.getX(), (float) centroid.getY() + 120);
-        popStyle();
-
-        // rectangularity
-        translate(-666, 333);
-        pushStyle();
-        noStroke();
-        fill(200);
-        jtsRender.drawGeometry(obb);
-        fill(150);
-        jtsRender.drawGeometry(polygon);
-        fill(0);
-        text("rectangularity = " + String.format("%.2f", shapeDescriptor.getRectangularity()), (float) centroid.getX(), (float) centroid.getY() + 120);
+//        text("solidity = " + String.format("%.2f", shapeDescriptor.getSolidity()), (float) centroid.getX(), (float) centroid.getY() + 120);
         popStyle();
 
         // elongation
@@ -230,7 +228,9 @@ public class Test10ShapeDescriptor extends PApplet {
         pushStyle();
         stroke(0);
         noFill();
+        strokeWeight(1);
         jtsRender.drawGeometry(obb);
+        strokeWeight(2);
         jtsRender.drawGeometry(polygon);
         strokeWeight(3);
         stroke(255, 0, 0);
@@ -240,7 +240,7 @@ public class Test10ShapeDescriptor extends PApplet {
                 0.5f * (float) (obb.getCoordinates()[2].getX() + obb.getCoordinates()[3].getX()),
                 0.5f * (float) (obb.getCoordinates()[2].getY() + obb.getCoordinates()[3].getY())
         );
-        stroke(0, 0, 255);
+        stroke(0, 146, 69);
         line(
                 0.5f * (float) (obb.getCoordinates()[1].getX() + obb.getCoordinates()[2].getX()),
                 0.5f * (float) (obb.getCoordinates()[1].getY() + obb.getCoordinates()[2].getY()),
@@ -248,34 +248,72 @@ public class Test10ShapeDescriptor extends PApplet {
                 0.5f * (float) (obb.getCoordinates()[3].getY() + obb.getCoordinates()[0].getY())
         );
         fill(0);
-        text("elongation = " + String.format("%.2f", shapeDescriptor.getElongation()), (float) centroid.getX(), (float) centroid.getY() + 120);
+//        text("elongation = " + String.format("%.2f", shapeDescriptor.getElongation()), (float) centroid.getX(), (float) centroid.getY() + 120);
+        popStyle();
+
+        // rectangularity
+        translate(333, 0);
+        pushStyle();
+        noStroke();
+        fill(200);
+        jtsRender.drawGeometry(obb);
+        fill(150);
+        jtsRender.drawGeometry(polygon);
+        fill(0);
+//        text("rectangularity = " + String.format("%.2f", shapeDescriptor.getRectangularity()), (float) centroid.getX(), (float) centroid.getY() + 120);
+        popStyle();
+
+        // compactness
+        translate(-999, -333);
+        pushStyle();
+        noStroke();
+        fill(200);
+        ellipse((float) centroid.getX(), (float) centroid.getY(), (float) r_equalLength * 2, (float) r_equalLength * 2);
+        fill(150);
+        jtsRender.drawGeometry(polygon);
+        fill(0);
+//        text("compactness = " + String.format("%.2f", shapeDescriptor.getCompactness()), (float) centroid.getX(), (float) centroid.getY() + 120);
+        popStyle();
+
+        // circularity
+        translate(333, 0);
+        pushStyle();
+        noStroke();
+        fill(200);
+        ellipse((float) centroid.getX(), (float) centroid.getY(), (float) r_convex_equalLength * 2, (float) r_convex_equalLength * 2);
+        fill(150);
+        jtsRender.drawGeometry(polygon);
+        noFill();
+        strokeWeight(2);
+        stroke(0);
+        jtsRender.drawGeometry(convexHull);
         popStyle();
 
         // sphericity
         translate(333, 0);
         pushStyle();
         stroke(0);
-        strokeWeight(1);
+        strokeWeight(2);
         noFill();
         jtsRender.drawGeometry(polygon);
         strokeWeight(3);
         stroke(255, 0, 0);
         ellipse((float) c_O.getX(), (float) c_O.getY(), (float) r_O * 2, (float) r_O * 2);
         line((float) c_O.getX(), (float) c_O.getY(), (float) (c_O.getX() + r_O), (float) c_O.getY());
-        stroke(0, 0, 255);
+        stroke(0, 146, 69);
         ellipse((float) c_I.getX(), (float) c_I.getY(), (float) r_I * 2, (float) r_I * 2);
         line((float) c_I.getX(), (float) c_I.getY(), (float) (c_I.getX() + r_I), (float) c_I.getY());
         noStroke();
         fill(255, 0, 0);
         ellipse((float) c_O.getX(), (float) c_O.getY(), 5, 5);
-        fill(0, 0, 255);
+        fill(0, 146, 69);
         ellipse((float) c_I.getX(), (float) c_I.getY(), 5, 5);
         fill(0);
-        text("sphericity = " + String.format("%.2f", shapeDescriptor.getSphericity()), (float) centroid.getX(), (float) centroid.getY() + 120);
+//        text("sphericity = " + String.format("%.2f", shapeDescriptor.getSphericity()), (float) centroid.getX(), (float) centroid.getY() + 120);
         popStyle();
 
         // eccentricity
-        translate(-666, 333);
+        translate(333, 0);
         pushStyle();
         noFill();
         strokeWeight(3);
@@ -286,7 +324,7 @@ public class Test10ShapeDescriptor extends PApplet {
                 (float) centroid.getX() + vec1.xf() * 100,
                 (float) centroid.getY() + vec1.yf() * 100
         );
-        stroke(0, 0, 255);
+        stroke(0, 146, 69);
         line(
                 (float) (centroid.getX() - vec2.xf() * 100 * shapeDescriptor.getEccentricity()),
                 (float) (centroid.getY() - vec2.yf() * 100 * shapeDescriptor.getEccentricity()),
@@ -297,7 +335,7 @@ public class Test10ShapeDescriptor extends PApplet {
         fill(150, 100);
         jtsRender.drawGeometry(polygon);
         fill(0);
-        text("eccentricity = " + String.format("%.2f", shapeDescriptor.getEccentricity()), (float) centroid.getX(), (float) centroid.getY() + 120);
+//        text("eccentricity = " + String.format("%.2f", shapeDescriptor.getEccentricity()), (float) centroid.getX(), (float) centroid.getY() + 120);
         popStyle();
     }
 
@@ -305,6 +343,7 @@ public class Test10ShapeDescriptor extends PApplet {
         for (int i = 0; i < polygons.length; i++) {
             pushStyle();
             jtsRender.drawGeometry(polygons[i]);
+            jtsRender.drawGeometry(MinimumDiameter.getMinimumRectangle(polygons[i]));
             stroke(255, 0, 0);
             polyAxesVecs[i][0].displayAsVector(
                     this,
@@ -319,7 +358,7 @@ public class Test10ShapeDescriptor extends PApplet {
 //                    5
 //            );
 
-            stroke(0, 255, 0);
+            stroke(0, 146, 69);
             polyAxesVecs[i][1].displayAsVector(
                     this,
                     new ZPoint(polygons[i].getCentroid()),
