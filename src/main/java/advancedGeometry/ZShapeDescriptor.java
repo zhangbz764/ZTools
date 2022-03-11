@@ -5,7 +5,6 @@ import Jama.Matrix;
 import basicGeometry.ZPoint;
 import math.ZGeoMath;
 import math.ZMath;
-import org.apache.commons.lang3.ArrayUtils;
 import org.locationtech.jts.algorithm.MinimumBoundingCircle;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.Coordinate;

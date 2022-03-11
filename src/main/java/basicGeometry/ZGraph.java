@@ -22,6 +22,9 @@ public class ZGraph {
 
     private List<ZNode> boundaryNodes;
 
+    private boolean isLoop;
+    private boolean isPath;
+
     /* ------------- constructor ------------- */
 
     public ZGraph() {
@@ -154,13 +157,46 @@ public class ZGraph {
         addNodeIntoEdge(point, targetEdge);
     }
 
-    // TODO: 2021/4/1 check loop in a graph 
+    /**
+     * check if the graph has a loop
+     *
+     * @return boolean
+     */
     public boolean checkLoop() {
-        ZNode startNode = nodes.get(0);
-        for (int i = 0; i < startNode.getNeighborNum(); i++) {
+        List<ZNode> visited = new ArrayList<>();
+        this.isLoop = checkLoopCore(null, nodes.get(0), visited);
+        return isLoop;
+    }
 
+    private boolean checkLoopCore(ZNode fatherNode, ZNode currNode, List<ZNode> visited) {
+        for (int i = 0; i < currNode.getNeighborNum(); i++) {
+            ZNode neighbor = currNode.getNeighbor(i);
+            if (neighbor != fatherNode) {
+                if (visited.contains(neighbor)) {
+                    return true;
+                } else {
+                    visited.add(neighbor);
+                    checkLoopCore(currNode, neighbor, visited);
+                }
+            }
         }
         return false;
+    }
+
+    /**
+     * check if the graph is a single path
+     *
+     * @return boolean
+     */
+    public boolean checkPath() {
+        isPath = true;
+        for (ZNode n : nodes) {
+            if (n.getNeighborNum() > 2) {
+                isPath = false;
+                break;
+            }
+        }
+        return isPath;
     }
 
     /* ------------- setter & getter ------------- */
@@ -219,6 +255,14 @@ public class ZGraph {
         for (ZNode neighbor : neighbors) {
             edges.add(new ZEdge(node, neighbor));
         }
+    }
+
+    public boolean isLoop() {
+        return isLoop;
+    }
+
+    public boolean isPath() {
+        return isPath;
     }
 
     /* ------------- draw ------------- */

@@ -1,5 +1,8 @@
 package render;
 
+import advancedGeometry.ZSkeleton;
+import basicGeometry.ZLine;
+import basicGeometry.ZPoint;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import wblut.geom.WB_Polygon;
@@ -13,6 +16,49 @@ import wblut.geom.WB_Polygon;
  * @time 15:41
  */
 public class ZRender {
+
+    /*-------- skeleton --------*/
+
+    public static void drawZLine2D(PApplet app, ZLine l) {
+        app.line(l.getPt0().xf(), l.getPt0().yf(), l.getPt1().xf(), l.getPt1().yf());
+    }
+
+    public static void drawZPoint(PApplet app, ZPoint p, float r) {
+        app.ellipse(p.xf(), p.yf(), r, r);
+    }
+
+    public static void drawSkeleton(PApplet app, ZSkeleton skeleton) {
+        app.pushStyle();
+
+        app.noFill();
+
+        app.strokeWeight(1);
+        app.stroke(150);
+        for (ZLine l : skeleton.getSideEdges()) {
+            drawZLine2D(app, l);
+        }
+
+        app.strokeWeight(3);
+        app.stroke(190, 60, 45);
+        for (ZLine l : skeleton.getRidges()) {
+            drawZLine2D(app, l);
+        }
+
+        app.strokeWeight(3);
+        app.stroke(0);
+        for (ZLine l : skeleton.getBottomEdges()) {
+            drawZLine2D(app, l);
+        }
+
+        app.noStroke();
+        app.fill(255, 79, 76, 150);
+        for (ZPoint p : skeleton.getRidgePoints()) {
+            drawZPoint(app, p, 2.5f);
+        }
+
+        app.popStyle();
+    }
+
 
     /*-------- axis --------*/
 

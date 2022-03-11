@@ -37,13 +37,13 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.Test7PolygonTools");
 
         /* test ZGraph and graph methods */
-//        PApplet.main("demoTest.Test8ZGraph");
+        PApplet.main("demoTest.Test8ZGraph");
 
         /* test arc and circle related tools */
 //        PApplet.main("demoTest.Test9ArcCircle");
 
         /* test shape descriptors */
-        PApplet.main("demoTest.Test10ShapeDescriptor");
+//        PApplet.main("demoTest.Test10ShapeDescriptor");
 
         /* test K-Means clustering */
 //        PApplet.main("demoTest.Test11KMeans");
