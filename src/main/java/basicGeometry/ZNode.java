@@ -21,6 +21,8 @@ public class ZNode extends ZPoint {
     private List<ZPoint> vecNorToNeighbors;
     private List<ZEdge> linkedEdges;
 
+    public boolean covered = false;
+
     /* ------------- constructor ------------- */
 
     public ZNode() {

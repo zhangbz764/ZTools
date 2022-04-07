@@ -1,5 +1,8 @@
 package basicGeometry;
 
+import math.ZGeoMath;
+import math.ZMath;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +22,10 @@ public class ZEdge extends ZLine {
     private List<ZEdge> neighborEdgesAll;
     private List<ZEdge> neighborEdgesStart;
     private List<ZEdge> neighborEdgesEnd;
+
+    private double[][] coveredDomain = new double[][]{
+            new double[]{-1, -1}
+    };
 
     /* ------------- constructor ------------- */
 
@@ -72,6 +79,37 @@ public class ZEdge extends ZLine {
 
     public List<ZEdge> getNeighborEdgesEnd() {
         return neighborEdgesEnd;
+    }
+
+    public void setCoveredDomain(double[][] coveredDomain) {
+        this.coveredDomain = coveredDomain;
+    }
+
+    public void mergeCoveredDomain(double[][] domain) {
+        if (this.coveredDomain[0][0] < 0) {
+            // intialize
+            coveredDomain = domain;
+        } else {
+            // already set
+            double[][] toMerge = new double[coveredDomain.length + domain.length][];
+            System.arraycopy(coveredDomain, 0, toMerge, 0, coveredDomain.length);
+            System.arraycopy(domain, 0, toMerge, coveredDomain.length, domain.length);
+            coveredDomain = ZMath.mergeDoubleArray(toMerge);
+        }
+    }
+
+    public double[][] getCoveredDomain() {
+        return coveredDomain;
+    }
+
+    public int isStartOrEnd(ZNode node) {
+        if (node == start) {
+            return 0;
+        } else if (node == end) {
+            return 1;
+        } else {
+            return -1;
+        }
     }
 
     /* ------------- geometry method ------------- */

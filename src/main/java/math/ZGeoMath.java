@@ -7,10 +7,7 @@ import transform.ZTransform;
 import wblut.geom.*;
 import wblut.math.WB_Epsilon;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * geometry math tools
@@ -1155,18 +1152,31 @@ public final class ZGeoMath {
      */
     public static int[] pointOnWhichEdgeIndices(final ZPoint p, final WB_PolyLine poly) {
         int[] result = new int[]{-1, -1};
-        for (int i = 0; i < poly.getNumberOfPoints() - 1; i++) {
-            ZLine seg = new ZLine(poly.getPoint(i), poly.getPoint(i + 1));
-            if (pointOnSegment(p, seg)) {
-                result[0] = i;
-                result[1] = (i + 1) % (poly.getNumberOfPoints() - 1);
-                if (i != poly.getNumberSegments() - 1 && p.distance(new ZPoint(poly.getPoint(result[1]))) < epsilon) {
-                    // if it's not the last segment and the point is on the end of the segment
-                    // then move on to next
-                    result[0] = (i + 1) % (poly.getNumberOfPoints() - 1);
-                    result[1] = (i + 2) % (poly.getNumberOfPoints() - 1);
+        if (poly instanceof WB_Polygon) {
+            // polygon
+            for (int i = 0; i < poly.getNumberOfPoints() - 1; i++) {
+                ZLine seg = new ZLine(poly.getPoint(i), poly.getPoint(i + 1));
+                if (pointOnSegment(p, seg)) {
+                    result[0] = i;
+                    result[1] = (i + 1) % (poly.getNumberOfPoints() - 1);
+                    if (i != poly.getNumberSegments() - 1 && p.distance(new ZPoint(poly.getPoint(result[1]))) < epsilon) {
+                        // if it's not the last segment and the point is on the end of the segment
+                        // then move on to next
+                        result[0] = (i + 1) % (poly.getNumberOfPoints() - 1);
+                        result[1] = (i + 2) % (poly.getNumberOfPoints() - 1);
+                    }
+                    break;
                 }
-                break;
+            }
+        } else {
+            // polyline
+            for (int i = 0; i < poly.getNumberOfPoints() - 1; i++) {
+                ZLine seg = new ZLine(poly.getPoint(i), poly.getPoint(i + 1));
+                if (pointOnSegment(p, seg)) {
+                    result[0] = i;
+                    result[1] = i + 1;
+                    break;
+                }
             }
         }
         return result;
@@ -1232,6 +1242,31 @@ public final class ZGeoMath {
     /**
      * calculate the distance from start point to given point along the polyline
      *
+     * @param ls polyline
+     * @param p  point on the polyline
+     * @return double
+     */
+    public static double distFromStart(final LineString ls, final ZPoint p) {
+        int[] edgeID = pointOnWhichEdgeIndices(p, ls);
+        if (edgeID[0] > 0 && edgeID[1] > 0) {
+            double dist = 0;
+            for (int i = 0; i < edgeID[0]; i++) {
+                Coordinate c1 = ls.getCoordinateN(i);
+                Coordinate c2 = ls.getCoordinateN(i + 1);
+                dist += c1.distance(c2);
+            }
+            dist += ls.getCoordinateN(edgeID[0]).distance(p.toJtsCoordinate());
+            return dist;
+        } else if (edgeID[0] == 0) {
+            return ls.getCoordinateN(0).distance(p.toJtsCoordinate());
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * calculate the distance from start point to given point along the polyline
+     *
      * @param poly polyline
      * @param p    point on the polyline
      * @return double
@@ -1249,6 +1284,36 @@ public final class ZGeoMath {
             return poly.getPoint(0).getDistance2D(p);
         } else {
             return 0;
+        }
+    }
+
+    /**
+     * get the point from start point of a LineString by given distance
+     *
+     * @param ls   input LineString
+     * @param dist distance from start
+     * @return basicGeometry.ZPoint
+     */
+    public static ZPoint pointFromStart(final LineString ls, final double dist) {
+        if (dist >= ls.getLength()) {
+            return new ZPoint(ls.getCoordinateN(ls.getNumPoints() - 1));
+        } else {
+            double curr_dist = dist;
+            ZPoint result = null;
+            for (int i = 0; i < ls.getNumPoints() - 1; i++) {
+                ZPoint p0 = new ZPoint(ls.getCoordinateN(i));
+                ZPoint p1 = new ZPoint(ls.getCoordinateN(i + 1));
+                ZPoint vec = p1.sub(p0);
+                vec.normalizeSelf();
+
+                double segLength = p0.distance(p1);
+                if (curr_dist <= segLength) {
+                    result = p0.add(vec.scaleTo(curr_dist));
+                    break;
+                }
+                curr_dist -= segLength;
+            }
+            return result;
         }
     }
 
@@ -2409,6 +2474,19 @@ public final class ZGeoMath {
 
             return new WB_Polygon(newExteriorPoints, newInteriorPoints);
         }
+    }
+
+    /**
+     * reverse the order of a WB_PolyLine (update self)
+     *
+     * @return void
+     */
+    public static WB_PolyLine reversePolyLine(WB_PolyLine pl) {
+        WB_Point[] newOrder = new WB_Point[pl.getNumberOfPoints()];
+        for (int i = 0; i < newOrder.length; i++) {
+            newOrder[i] = pl.getPoint(newOrder.length - 1 - i);
+        }
+        return new WB_PolyLine(newOrder);
     }
 
     /**

@@ -142,6 +142,20 @@ public class ZTransform {
     }
 
     /**
+     * ICurve -> WB_PolyLine
+     *
+     * @param curve input ICurve
+     * @return wblut.geom.WB_Geometry2D
+     */
+    public static WB_PolyLine ICurveToWB_PolyLine(final ICurve curve) {
+        WB_Point[] points = new WB_Point[curve.cpNum()];
+        for (int i = 0; i < curve.cpNum(); i++) {
+            points[i] = new WB_Point(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z());
+        }
+        return ZFactory.wbgf.createPolyLine(points);
+    }
+
+    /**
      * ICurve -> WB_Geometry (WB_PolyLine, WB_Polygon, WB_Segment) (scale)
      *
      * @param curve input ICurve
@@ -370,12 +384,12 @@ public class ZTransform {
     }
 
     /**
-    * LineString -> ICurve
-    *
-    * @param ls input LineString
-    * @return igeo.ICurve
-    */
-    public static ICurve LineStringToICurve(final LineString ls){
+     * LineString -> ICurve
+     *
+     * @param ls input LineString
+     * @return igeo.ICurve
+     */
+    public static ICurve LineStringToICurve(final LineString ls) {
         IVec[] vecs = new IVec[ls.getNumPoints()];
         for (int i = 0; i < vecs.length; i++) {
             vecs[i] = CoordinateToIVec(ls.getCoordinateN(i));
@@ -384,12 +398,12 @@ public class ZTransform {
     }
 
     /**
-    * Polygon -> ICurve (exterior ring only)
-    *
-    * @param poly input Polygon
-    * @return igeo.ICurve
-    */
-    public static ICurve PolygonToICurve(final Polygon poly){
+     * Polygon -> ICurve (exterior ring only)
+     *
+     * @param poly input Polygon
+     * @return igeo.ICurve
+     */
+    public static ICurve PolygonToICurve(final Polygon poly) {
         LineString exterior = poly.getExteriorRing();
         return LineStringToICurve(exterior);
     }
@@ -769,10 +783,10 @@ public class ZTransform {
     /*-------- jts <-> jts --------*/
 
     /**
-    * validate z ordinate of jts Geometry (NaN -> 0)
-    *
-    * @param geo original Geometry
-    */
+     * validate z ordinate of jts Geometry (NaN -> 0)
+     *
+     * @param geo original Geometry
+     */
     public static void validateGeometry3D(Geometry geo) {
         Coordinate[] coords = new Coordinate[geo.getNumPoints()];
         for (int i = 0; i < geo.getNumPoints(); i++) {

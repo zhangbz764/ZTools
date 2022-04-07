@@ -2,8 +2,10 @@ package math;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * math tools
@@ -149,6 +151,21 @@ public final class ZMath {
         int[] result = new int[num];
         for (int i = 0; i < num; i++) {
             result[i] = start + i;
+        }
+        return result;
+    }
+
+    /**
+     * create a list of ascending integer
+     *
+     * @param start start index
+     * @param num   number of integers to create
+     * @return int[]
+     */
+    public static List<Integer> createIntegerList(final int start, final int num) {
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < num; i++) {
+            result.add(start + i);
         }
         return result;
     }
@@ -336,6 +353,118 @@ public final class ZMath {
             centroid[j] = sum / I;
         }
         return centroid;
+    }
+
+    /**
+     * merge several int arrays (as domains)
+     * https://blog.csdn.net/e891377/article/details/105559304
+     *
+     * @param intervals input
+     * @return int[][]
+     */
+    public static int[][] mergeIntArray(int[][] intervals) {
+        if (intervals.length == 0) return new int[0][0];
+        List<int[]> ans = new ArrayList<>();
+        int[] cur;
+        sort(intervals, 0, intervals.length - 1);
+        cur = intervals[0];
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] <= cur[1]) {
+                if (intervals[i][1] > cur[1]) cur[1] = intervals[i][1];
+                else continue;
+            } else {
+                ans.add(cur);
+                cur = intervals[i];
+            }
+        }
+        ans.add(cur);
+
+        return ans.toArray(new int[ans.size()][]);
+    }
+
+    private static void sort(int[][] intervals, int l, int r) {
+        if (l >= r) return;
+        int p = partition(intervals, l, r);
+        sort(intervals, l, p - 1);
+        sort(intervals, p + 1, r);
+    }
+
+    private static int partition(int[][] intervals, int l, int r) {
+        int[] temp = intervals[l];
+        while (l < r) {
+            while (l < r) {
+                if (intervals[r][0] < temp[0]) {
+                    intervals[l] = intervals[r];
+                    break;
+                }
+                r--;
+            }
+            while (l < r) {
+                if (intervals[l][0] > temp[0]) {
+                    intervals[r] = intervals[l];
+                    break;
+                }
+                l++;
+            }
+        }
+        intervals[l] = temp;
+        return l;
+    }
+
+    /**
+     * merge several double arrays (as domains)
+     * https://blog.csdn.net/e891377/article/details/105559304
+     *
+     * @param intervals input
+     * @return double[][]
+     */
+    public static double[][] mergeDoubleArray(double[][] intervals) {
+        if (intervals.length == 0) return new double[0][0];
+        List<double[]> ans = new ArrayList<>();
+        double[] cur;
+        sort(intervals, 0, intervals.length - 1);
+        cur = intervals[0];
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] <= cur[1]) {
+                if (intervals[i][1] > cur[1]) cur[1] = intervals[i][1];
+                else continue;
+            } else {
+                ans.add(cur);
+                cur = intervals[i];
+            }
+        }
+        ans.add(cur);
+
+        return ans.toArray(new double[ans.size()][]);
+    }
+
+    private static void sort(double[][] intervals, int l, int r) {
+        if (l >= r) return;
+        int p = partition(intervals, l, r);
+        sort(intervals, l, p - 1);
+        sort(intervals, p + 1, r);
+    }
+
+    private static int partition(double[][] intervals, int l, int r) {
+        double[] temp = intervals[l];
+        while (l < r) {
+            while (l < r) {
+                if (intervals[r][0] < temp[0]) {
+                    intervals[l] = intervals[r];
+                    break;
+                }
+                r--;
+            }
+            while (l < r) {
+                if (intervals[l][0] > temp[0]) {
+                    intervals[r] = intervals[l];
+                    break;
+                }
+                l++;
+            }
+        }
+        intervals[l] = temp;
+        return l;
     }
 
     /*-------- matrix --------*/

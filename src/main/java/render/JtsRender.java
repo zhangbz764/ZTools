@@ -17,8 +17,8 @@ public class JtsRender {
     private static final GeometryFactory gf = new GeometryFactory();
     private final PApplet app;
 
-    public JtsRender(PApplet app) {
-        this.app = app;
+    public JtsRender(PApplet PApplet) {
+        this.app = PApplet;
     }
 
     /**

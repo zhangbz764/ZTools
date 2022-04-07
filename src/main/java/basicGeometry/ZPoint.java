@@ -1,6 +1,8 @@
 package basicGeometry;
 
 import igeo.IPoint;
+import igeo.IVec;
+import igeo.IVecI;
 import math.ZGeoMath;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
@@ -61,6 +63,10 @@ public class ZPoint {
     }
 
     public ZPoint(IPoint p) {
+        this(p.x(), p.y(), p.z());
+    }
+
+    public ZPoint(IVecI p) {
         this(p.x(), p.y(), p.z());
     }
 
@@ -147,6 +153,10 @@ public class ZPoint {
 
     public IPoint toIPoint() {
         return new IPoint(x, y, z);
+    }
+
+    public IVec toIVec() {
+        return new IVec(x, y, z);
     }
 
     @Override

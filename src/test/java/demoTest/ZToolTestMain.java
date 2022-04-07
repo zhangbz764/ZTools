@@ -37,7 +37,8 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.Test7PolygonTools");
 
         /* test ZGraph and graph methods */
-        PApplet.main("demoTest.Test8ZGraph");
+//        PApplet.main("demoTest.Test8ZGraph");
+//        PApplet.main("demoTest.TestZGraph2");
 
         /* test arc and circle related tools */
 //        PApplet.main("demoTest.Test9ArcCircle");
@@ -54,8 +55,13 @@ public class ZToolTestMain {
         /*  */
 //        PApplet.main("demoTest.TestIntersection");
 
+        /* test JTS intersection results */
+//        PApplet.main("demoTest.TestJtsIntersection");
+
         /* test hemesh mesh and union，buffer */
 //        PApplet.main("demoTest.TestHE_Mesh");
+
+        PApplet.main("demoTest.TestHE_MeshEdgeSel");
 
         /* test function in WB_GeometryFactory */
 //        PApplet.main("demoTest.TestHE_MeshFactory");
@@ -79,12 +85,12 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.TestSubdivision");
 
 
-
-
-
         // demoTest2
 
         /* test bouncing ball */
 //        PApplet.main("demoTest2.BallBounce");
+
+        /* */
+//        PApplet.main("demoTest2.NodeQueue");
     }
 }

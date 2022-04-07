@@ -1,5 +1,7 @@
 package basicGeometry;
 
+import igeo.ICurve;
+import igeo.IVec;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
@@ -67,7 +69,6 @@ public class ZLine {
 
     /**
      * initialize properties
-     *
      */
     private void init() {
         this.direction = pt1.sub(pt0);
@@ -341,6 +342,14 @@ public class ZLine {
 
     public WB_Line toWB_Line() {
         return new WB_Line(pt0.toWB_Point(), direction.toWB_Point());
+    }
+
+    public ICurve createICurve() {
+        IVec[] vecs = new IVec[]{
+                pt0.toIVec(),
+                pt1.toIVec()
+        };
+        return new ICurve(vecs);
     }
 
     /* ------------- draw -------------*/
