@@ -101,6 +101,12 @@ public class ZPoint {
         this.z = c.zd();
     }
 
+    public void set(ZPoint point) {
+        this.x = point.xd();
+        this.y = point.yd();
+        this.z = point.zd();
+    }
+
     public double xd() {
         return this.x;
     }
@@ -177,7 +183,18 @@ public class ZPoint {
     }
 
     /**
-     * add
+     * add 2D
+     *
+     * @param x
+     * @param y
+     * @return basicGeometry.ZPoint
+     */
+    public ZPoint add(double x, double y) {
+        return new ZPoint(this.x + x, this.y + y);
+    }
+
+    /**
+     * add 3D
      *
      * @param x
      * @param y

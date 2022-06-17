@@ -482,6 +482,25 @@ public class ZFactory {
     }
 
     /**
+     * create an arc by giving center and radius, return a series of points for geometry creation
+     * can be used to create circle or regular polygon
+     *
+     * @param center center of the circle
+     * @param r      radius of the circle
+     * @param segNum number of segments to divide
+     * @return basicGeometry.ZPoint[]
+     */
+    public static ZPoint[] createCircle(final ZPoint center, final double r, final int segNum) {
+        ZPoint[] cirPoints = new ZPoint[segNum + 1];
+        double step = (Math.PI * 2) / segNum;
+        for (int i = 0; i < segNum; i++) {
+            cirPoints[i] = center.add(r * Math.cos(step * segNum), r * Math.sin(step * segNum));
+        }
+        cirPoints[cirPoints.length - 1] = cirPoints[0];
+        return cirPoints;
+    }
+
+    /**
      * create an AABB for jts Geometry
      * return 2 ordinates of bottom-left coordinate and 2 ordinates of top-right coordinate
      *

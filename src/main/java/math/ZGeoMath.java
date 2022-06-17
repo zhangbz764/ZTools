@@ -1203,6 +1203,32 @@ public final class ZGeoMath {
     }
 
     /**
+     * find the point is on which Polygon edge (-1)
+     *
+     * @param p    input point
+     * @param poly input Polygon
+     * @return int[]
+     */
+    public static int[] pointOnWhichEdgeIndices(final ZPoint p, final Polygon poly) {
+        int[] result = new int[]{-1, -1};
+
+        for (int i = 0; i < poly.getNumPoints() - 1; i++) {
+            ZLine seg = new ZLine(poly.getCoordinates()[i], poly.getCoordinates()[i + 1]);
+            if (pointOnSegment(p, seg)) {
+                result[0] = i;
+                result[1] = (i + 1) % (poly.getNumPoints() - 1);
+                // if it's not the last segment and the point is on the end of the segment
+                // then move on to next
+                if (i != poly.getNumPoints() - 2 && p.distance(new ZPoint(poly.getCoordinates()[result[1]])) < epsilon) {
+                    result[0] = (i + 1) % (poly.getNumPoints() - 1);
+                    result[1] = (i + 2) % (poly.getNumPoints() - 1);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * find the point is within which polygon (-1)
      *
      * @param p     input point
@@ -1333,7 +1359,7 @@ public final class ZGeoMath {
                 // on same edge
                 return p1.distance(p2);
             } else {
-                // on different edge
+                // on different edges
                 ZPoint forward, backward;
                 int fi, bi;
                 if (onWhich1[0] > onWhich2[0]) {
@@ -1353,6 +1379,53 @@ public final class ZGeoMath {
                     dist += ls.getCoordinateN(i).distance(ls.getCoordinateN(i + 1));
                 }
                 dist += new ZPoint(ls.getCoordinateN(fi)).distance(forward);
+                return dist;
+            }
+        } else {
+            System.out.println("point not on edges");
+            System.out.println(p1.toString());
+            System.out.println(p2.toString());
+            return -1;
+        }
+    }
+
+    /**
+     * calculate the distance between two given points along the edge
+     * (from p1 to p2, along polygon edge direction)
+     *
+     * @param p1   point 1 on edge
+     * @param p2   point 2 on edge
+     * @param poly Polygon
+     * @return double
+     */
+    public static double distAlongEdge(final ZPoint p1, final ZPoint p2, final Polygon poly) {
+        int[] onWhich1 = pointOnWhichEdgeIndices(p1, poly);
+        int[] onWhich2 = pointOnWhichEdgeIndices(p2, poly);
+        if (onWhich1[0] >= 0 && onWhich1[1] >= 0 && onWhich2[0] >= 0 && onWhich2[1] >= 0) {
+            if (onWhich1[0] == onWhich2[0] && onWhich1[1] == onWhich2[1]) {
+                // on same edge
+                ZPoint pStart = new ZPoint(poly.getCoordinates()[onWhich1[0]]);
+                if (p2.distanceSq(pStart) >= p1.distanceSq(pStart)) {
+                    return p1.distance(p2);
+                } else {
+                    return poly.getLength() - p1.distance(p2);
+                }
+            } else {
+                // on different edges
+                double dist = 0;
+                dist += p1.distance(new ZPoint(poly.getCoordinates()[onWhich1[1]])); // start
+                dist += p2.distance(new ZPoint(poly.getCoordinates()[onWhich2[0]])); // end
+                // middle edges
+                int index = onWhich1[1];
+                while (index != onWhich2[0]) {
+                    dist += poly.getCoordinates()[index].distance(poly.getCoordinates()[index + 1]);
+
+                    if (index == poly.getNumPoints() - 2) {
+                        index = 0;
+                    } else {
+                        index++;
+                    }
+                }
                 return dist;
             }
         } else {
@@ -2487,6 +2560,14 @@ public final class ZGeoMath {
             newOrder[i] = pl.getPoint(newOrder.length - 1 - i);
         }
         return new WB_PolyLine(newOrder);
+    }
+
+    public static LineString reverseLineString(LineString ls) {
+        Coordinate[] newOrder = new Coordinate[ls.getNumPoints()];
+        for (int i = 0; i < newOrder.length; i++) {
+            newOrder[i] = ls.getCoordinateN(newOrder.length - 1 - i);
+        }
+        return ZFactory.jtsgf.createLineString(newOrder);
     }
 
     /**

@@ -31,9 +31,9 @@ public class ZPermuCombi {
     /**
      * perform permutation
      *
-     * @param intList
-     * @param tar
-     * @param curr
+     * @param intList input integer list
+     * @param tar     number of each group
+     * @param curr    (0 for start)
      * @return void
      */
     public void permutation(int[] intList, int tar, int curr) {
@@ -55,10 +55,10 @@ public class ZPermuCombi {
     /**
      * perform combination
      *
-     * @param intList
-     * @param tar
-     * @param has
-     * @param curr
+     * @param intList input integer list
+     * @param tar     number of each group
+     * @param has     (0 for start)
+     * @param curr    (0 for start)
      * @return void
      */
     public void combination(int[] intList, int tar, int has, int curr) {
