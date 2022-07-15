@@ -4,6 +4,7 @@ import basicGeometry.ZFactory;
 import basicGeometry.ZPoint;
 import math.ZGeoMath;
 import processing.core.PApplet;
+import render.ZRender;
 import wblut.geom.WB_Circle;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Polygon;
@@ -83,7 +84,7 @@ public class Test9ArcCircle extends PApplet {
         stroke(0);
         // arc
         for (ZPoint p : arcPts) {
-            p.displayAsPoint(this, 5);
+            ZRender.drawZPoint2D(this, p, 5);
         }
         for (int i = 0; i < arcPts.length - 1; i++) {
             line(arcPts[i].xf(), arcPts[i].yf(), arcPts[i + 1].xf(), arcPts[i + 1].yf());

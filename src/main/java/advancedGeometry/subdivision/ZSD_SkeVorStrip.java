@@ -6,6 +6,7 @@ import math.ZGeoMath;
 import math.ZGraphMath;
 import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
+import render.ZRender;
 import wblut.geom.*;
 import wblut.processing.WB_Render;
 
@@ -60,9 +61,9 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
             ZGraph tempGraph = ZFactory.createZGraphFromSegments(topSegments);
             graph = tempGraph;
             List<ZEdge> longestChain = ZGraphMath.longestChain(tempGraph);
-            polyLine = ZFactory.createWB_PolyLine(longestChain);
+            polyLine = ZFactory.createWB_PolyLineFromSegs(longestChain);
         } else {
-            polyLine = ZFactory.createWB_PolyLine(topSegments);
+            polyLine = ZFactory.createWB_PolyLineFromSegs(topSegments);
         }
 
         // polyLine maybe null because segments might not be nose to tail
@@ -124,7 +125,7 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
         app.noStroke();
         app.fill(255, 0, 0);
         for (ZPoint p : voronoiGenerator) {
-            p.displayAsPoint(app, 5);
+            ZRender.drawZPoint2D(app, p, 5);
         }
 
 //        app.fill(0);

@@ -2,8 +2,10 @@ package basicGeometry;
 
 import math.ZGeoMath;
 import processing.core.PApplet;
+import render.ZRender;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -75,8 +77,6 @@ public class ZGraph {
 
     /**
      * find boundary nodes in the graph
-     *
-     * @return void
      */
     private void findBoundaryNodes() {
         this.boundaryNodes = new ArrayList<>();
@@ -100,7 +100,6 @@ public class ZGraph {
      *
      * @param point input point
      * @param edge  target edge
-     * @return void
      */
     public void addNodeIntoEdge(ZPoint point, ZEdge edge) {
         ZNode newNode;
@@ -138,7 +137,6 @@ public class ZGraph {
      * add a node to the graph by finding the closest edge to insert
      *
      * @param point input point
-     * @return void
      */
     public void addNodeByDist(ZPoint point) {
         ZEdge targetEdge = null;
@@ -250,7 +248,7 @@ public class ZGraph {
     }
 
     public void addNode(ZNode node, List<ZNode> neighbors) {
-        assert nodes.containsAll(neighbors) : "input neighbors are not in this graph";
+        assert new HashSet<>(nodes).containsAll(neighbors) : "input neighbors are not in this graph";
         nodes.add(node);
         for (ZNode neighbor : neighbors) {
             edges.add(new ZEdge(node, neighbor));
@@ -272,7 +270,7 @@ public class ZGraph {
             edge.display(app);
         }
         for (ZNode node : nodes) {
-            node.displayAsPoint(app, 3);
+            ZRender.drawZPoint2D(app, node, 3);
         }
     }
 }

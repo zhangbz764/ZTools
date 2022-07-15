@@ -61,7 +61,7 @@ public class ZToolTestMain {
         /* test hemesh mesh and union，buffer */
 //        PApplet.main("demoTest.TestHE_Mesh");
 
-        PApplet.main("demoTest.TestHE_MeshEdgeSel");
+//        PApplet.main("demoTest.TestHE_MeshEdgeSel");
 
         /* test function in WB_GeometryFactory */
 //        PApplet.main("demoTest.TestHE_MeshFactory");
@@ -84,6 +84,8 @@ public class ZToolTestMain {
         /* test advancedGeometry.subdivision methods */
 //        PApplet.main("demoTest.TestSubdivision");
 
+        /* test LineString offset */
+        PApplet.main("demoTest.TestOffsetLS");
 
         // demoTest2
 

@@ -1,8 +1,7 @@
 package render;
 
 import advancedGeometry.ZSkeleton;
-import basicGeometry.ZLine;
-import basicGeometry.ZPoint;
+import basicGeometry.*;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import wblut.geom.WB_Polygon;
@@ -17,17 +16,83 @@ import wblut.geom.WB_Polygon;
  */
 public class ZRender {
 
-    /*-------- skeleton --------*/
+    /*-------- basic --------*/
 
+    /**
+     * draw ZLine as a line
+     *
+     * @param app PApplet
+     * @param l   ZLine
+     */
     public static void drawZLine2D(PApplet app, ZLine l) {
         app.line(l.getPt0().xf(), l.getPt0().yf(), l.getPt1().xf(), l.getPt1().yf());
     }
 
-    public static void drawZPoint(PApplet app, ZPoint p, float r) {
+    /**
+     * draw ZLine as a line
+     *
+     * @param app PApplet
+     * @param l   ZLine
+     */
+    public static void drawZLine3D(PApplet app, ZLine l) {
+        app.line(l.getPt0().xf(), l.getPt0().yf(), l.getPt1().xf(), l.getPt1().yf(), l.getPt1().zf(), l.getPt1().zf());
+    }
+
+    /**
+     * draw ZPoint as a circle
+     *
+     * @param app PApplet
+     * @param p   ZPoint
+     * @param r   radius
+     */
+    public static void drawZPoint2D(PApplet app, ZPoint p, float r) {
         app.ellipse(p.xf(), p.yf(), r, r);
     }
 
-    public static void drawSkeleton(PApplet app, ZSkeleton skeleton) {
+    /**
+     * draw ZPoint as vector (set base point)
+     *
+     * @param app    PApplet
+     * @param vec    vector ZPoint to draw
+     * @param base   base point of the vector
+     * @param vecCap vector cap radius
+     */
+    public static void drawZPointAsVec2D(PApplet app, ZPoint vec, ZPoint base, float vecCap) {
+        ZPoint dest = base.add(vec);
+        app.pushStyle();
+        app.noFill();
+        app.stroke(255, 0, 0);
+        app.line(base.xf(), base.yf(), base.zf(), dest.xf(), dest.yf(), dest.zf());
+        app.ellipse(dest.xf(), dest.yf(), vecCap, vecCap);
+        app.popStyle();
+    }
+
+    /**
+     * draw ZPoint as vector (set base point)
+     *
+     * @param app    PApplet
+     * @param vec    vector ZPoint to draw
+     * @param base   base point of the vector
+     * @param scale  scale ratio
+     * @param vecCap vector cap radius
+     */
+    public static void drawZPointAsVec2D(PApplet app, ZPoint vec, ZPoint base, double scale, float vecCap) {
+        ZPoint dest = base.add(vec.scaleTo(scale));
+        app.line(base.xf(), base.yf(), base.zf(), dest.xf(), dest.yf(), dest.zf());
+        if (vecCap > 0) {
+            app.ellipse(dest.xf(), dest.yf(), vecCap, vecCap);
+        }
+    }
+
+    /*-------- advanced --------*/
+
+    /**
+     * draw ZSkeleton, all edges, ridges and ridge points
+     *
+     * @param app      PApplet
+     * @param skeleton ZSkeleton
+     */
+    public static void drawSkeleton2D(PApplet app, ZSkeleton skeleton) {
         app.pushStyle();
 
         app.noFill();
@@ -53,12 +118,26 @@ public class ZRender {
         app.noStroke();
         app.fill(255, 79, 76, 150);
         for (ZPoint p : skeleton.getRidgePoints()) {
-            drawZPoint(app, p, 2.5f);
+            drawZPoint2D(app, p, 2.5f);
         }
 
         app.popStyle();
     }
 
+    /**
+     * draw ZGraph
+     *
+     * @param app   PApplet
+     * @param graph ZGraph
+     */
+    public static void drawZGraph2D(PApplet app, ZGraph graph) {
+        for (ZEdge edge : graph.getEdges()) {
+            drawZLine2D(app, edge);
+        }
+        for (ZNode node : graph.getNodes()) {
+            drawZPoint2D(app, node, 3);
+        }
+    }
 
     /*-------- axis --------*/
 
@@ -66,7 +145,6 @@ public class ZRender {
      * 2D axis (default length)
      *
      * @param app PApplet
-     * @return void
      */
     public static void drawAxis2D(PApplet app) {
         app.pushStyle();
@@ -83,7 +161,6 @@ public class ZRender {
      *
      * @param app    PApplet
      * @param length axis length
-     * @return void
      */
     public static void drawAxis2D(PApplet app, float length) {
         app.pushStyle();
@@ -99,7 +176,6 @@ public class ZRender {
      * 3D axis (default length)
      *
      * @param app PApplet
-     * @return void
      */
     public static void drawAxis3D(PApplet app) {
         app.pushStyle();
@@ -118,7 +194,6 @@ public class ZRender {
      *
      * @param app    PApplet
      * @param length axis length
-     * @return void
      */
     public static void drawAxis3D(PApplet app, float length) {
         app.pushStyle();
@@ -137,7 +212,6 @@ public class ZRender {
      *
      * @param polygon input polygon
      * @param app     PApplet
-     * @return void
      */
     public static void drawWB_PolygonWithHoles(WB_Polygon polygon, PApplet app) {
         if (polygon.getNumberOfHoles() > 0) {

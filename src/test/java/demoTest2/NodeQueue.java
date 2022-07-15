@@ -70,11 +70,11 @@ public class NodeQueue extends PApplet {
     public void draw() {
         background(255);
         jtsRender.drawGeometry(ls);
-        ZRender.drawZPoint(this, p1.pos, 5);
+        ZRender.drawZPoint2D(this, p1.pos, 5);
         ellipse(p1.pos.xf(), p1.pos.yf(), (float) p1.r * 2, (float) p1.r * 2);
-        ZRender.drawZPoint(this, p2.pos, 5);
+        ZRender.drawZPoint2D(this, p2.pos, 5);
         ellipse(p2.pos.xf(), p2.pos.yf(), (float) p2.r * 2, (float) p2.r * 2);
-        ZRender.drawZPoint(this, p3.pos, 5);
+        ZRender.drawZPoint2D(this, p3.pos, 5);
         ellipse(p3.pos.xf(), p3.pos.yf(), (float) p3.r * 2, (float) p3.r * 2);
         updatePos();
     }

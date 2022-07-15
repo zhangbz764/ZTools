@@ -15,6 +15,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
 import render.JtsRender;
+import render.ZRender;
 import transform.ZJtsTransform;
 import transform.ZTransform;
 
@@ -345,8 +346,9 @@ public class Test10ShapeDescriptor extends PApplet {
             jtsRender.drawGeometry(polygons[i]);
             jtsRender.drawGeometry(MinimumDiameter.getMinimumRectangle(polygons[i]));
             stroke(255, 0, 0);
-            polyAxesVecs[i][0].displayAsVector(
+            ZRender.drawZPointAsVec2D(
                     this,
+                    polyAxesVecs[i][0],
                     new ZPoint(polygons[i].getCentroid()),
                     50,
                     5
@@ -359,8 +361,9 @@ public class Test10ShapeDescriptor extends PApplet {
 //            );
 
             stroke(0, 146, 69);
-            polyAxesVecs[i][1].displayAsVector(
+            ZRender.drawZPointAsVec2D(
                     this,
+                    polyAxesVecs[i][1],
                     new ZPoint(polygons[i].getCentroid()),
                     50,
                     5

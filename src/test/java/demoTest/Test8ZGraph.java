@@ -3,6 +3,7 @@ package demoTest;
 import basicGeometry.*;
 import math.ZGraphMath;
 import processing.core.PApplet;
+import render.ZRender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -153,7 +154,7 @@ public class Test8ZGraph extends PApplet {
             l.display(this);
         }
         for (ZNode n : resultNodes) {
-            n.displayAsPoint(this, 8);
+            ZRender.drawZPoint2D(this, n, 8);
         }
         if (select != null) {
             stroke(255, 0, 0);
@@ -162,7 +163,7 @@ public class Test8ZGraph extends PApplet {
 
         if (splitResult != null) {
             for (ZPoint p : splitResult) {
-                p.displayAsPoint(this, 2);
+                ZRender.drawZPoint2D(this, p, 2);
             }
         }
 

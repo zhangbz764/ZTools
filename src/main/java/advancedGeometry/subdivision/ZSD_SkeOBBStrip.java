@@ -8,6 +8,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import processing.core.PApplet;
+import render.ZRender;
 import transform.ZTransform;
 import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
@@ -57,7 +58,7 @@ public class ZSD_SkeOBBStrip extends ZSubdivision {
         ZGraph tempGraph = ZFactory.createZGraphFromSegments(topSegments);
         graph = tempGraph;
         List<ZEdge> longestChain = ZGraphMath.longestChain(tempGraph);
-        WB_PolyLine polyLine = ZFactory.createWB_PolyLine(longestChain);
+        WB_PolyLine polyLine = ZFactory.createWB_PolyLineFromSegs(longestChain);
 
         if (polyLine != null) {
             ZPoint dir = ZGeoMath.obbDir(super.getOriginPolygon());
@@ -123,7 +124,7 @@ public class ZSD_SkeOBBStrip extends ZSubdivision {
         app.noStroke();
         app.fill(255, 0, 0);
         for (ZPoint p : generator) {
-            p.displayAsPoint(app, 5);
+            ZRender.drawZPoint2D(app, p, 5);
         }
 
         app.popStyle();

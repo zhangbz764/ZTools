@@ -130,7 +130,7 @@ public final class ZGraphMath {
             double curr_span = currSpan;
             double curr_dist;
 
-            // determine if it's the first time to loop
+            // judge if it's the first time to loop
             if (step == currSpan && fatherNode == null) {
                 result.add(startNode);
             }
@@ -148,7 +148,7 @@ public final class ZGraphMath {
                         curr_dist = p1.distance(nei);
                     }
 
-                    // determine if the neighbor is the end and not exact divided
+                    // judge if the neighbor is the end and not exact divided
                     if (nei.isEnd() && curr_dist != 0) {
                         result.add(nei);
                     } else {

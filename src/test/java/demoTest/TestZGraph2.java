@@ -8,7 +8,6 @@ import math.ZGeoMath;
 import math.ZMath;
 import processing.core.PApplet;
 import render.JtsRender;
-import render.ZRender;
 import transform.ZTransform;
 import wblut.geom.WB_GeometryOp;
 import wblut.geom.WB_Point;
@@ -109,7 +108,7 @@ public class TestZGraph2 extends PApplet {
                     new ZPoint(c.cp(1))
             ));
         }
-        this.traffic = ZFactory.createWB_PolyLine(edges);
+        this.traffic = ZFactory.createWB_PolyLineFromSegs(edges);
         double length = 0;
         for (int i = 0; i < traffic.getNumberSegments(); i++) {
             length += traffic.getSegment(i).getLength();

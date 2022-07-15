@@ -8,6 +8,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import processing.core.PApplet;
 import render.JtsRender;
+import render.ZRender;
 import transform.ZTransform;
 import wblut.geom.WB_GeometryOp2D;
 import wblut.geom.WB_Point;
@@ -119,26 +120,26 @@ public class TestPolySplit extends PApplet {
         render.drawPoint2D(poly.getSegment(index).getEndpoint(), 10);
 
         fill(0, 255, 0);
-        start.displayAsPoint(this, 10);
-        start2.displayAsPoint(this, 10);
+        ZRender.drawZPoint2D(this, start, 10);
+        ZRender.drawZPoint2D(this, start2, 10);
         for (ZPoint p : besides) {
-            p.displayAsPoint(this, 15);
+            ZRender.drawZPoint2D(this, p, 15);
         }
 //        for (ZPoint p : besides2) {
 //            p.displayAsPoint(this, 15);
 //        }
-        beside3.displayAsPoint(this, 15);
+        ZRender.drawZPoint2D(this, beside3, 15);
         popStyle();
         strokeWeight(4);
         render.drawSegment2D(poly.getSegment(index));
         offset.display(this);
 
         for (ZPoint p : split) {
-            p.displayAsPoint(this);
+            ZRender.drawZPoint2D(this, p, 5);
         }
 
         jtsRender.drawGeometry(ls);
-        curvature.displayAsPoint(this, 10);
+        ZRender.drawZPoint2D(this, curvature, 10);
         strokeWeight(8);
         jtsRender.drawGeometry(cut);
     }

@@ -73,32 +73,6 @@ public class ZNode extends ZPoint {
         this.neighbors.remove(neighbor);
     }
 
-    public void setNeighbors(List<ZNode> neighbors) {
-        this.neighbors = neighbors;
-    }
-
-    //    public void setNeighbors(List<ZNode> neighbors) {  // set all nodes
-//        this.neighbors = neighbors;
-//        for (ZNode neighbor : neighbors) {
-//            this.vecToNeighbor.add(neighbor.sub(this));
-//        }
-//    }
-
-//    public void removeNeighbors(List<ZNode> neighbors) { // remove all nodes
-//        this.neighbors.removeAll(neighbors);
-//    }
-
-    @Deprecated
-    public void setNeighborFromEdge(ZEdge link) { // set one node from a linked edge
-        if (linkedEdges.contains(link)) {
-            if (this == link.getStart()) {
-                this.addNeighbor(link.getEnd());
-            } else {
-                this.addNeighbor(link.getStart());
-            }
-        }
-    }
-
     public void addLinkedEdge(ZEdge link) {  // set one edge
         this.linkedEdges.add(link);
     }
@@ -146,25 +120,6 @@ public class ZNode extends ZPoint {
             return false;
         } else {
             throw new NullPointerException("no neighbors");
-        }
-    }
-
-    /* ------------- draw ------------- */
-
-    /**
-     * @return void
-     * @description draw neighbor nodes if exists
-     */
-    public void displayNeighbor(PApplet app) {
-        if (this.neighbors != null) {
-            app.pushStyle();
-            app.noFill();
-            app.strokeWeight(3);
-            app.stroke(0, 0, 0);
-            for (ZPoint n : neighbors) {
-                n.displayAsPoint(app);
-            }
-            app.popStyle();
         }
     }
 }

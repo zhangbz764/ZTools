@@ -1,6 +1,5 @@
 package basicGeometry;
 
-import math.ZGeoMath;
 import math.ZMath;
 
 import java.util.ArrayList;

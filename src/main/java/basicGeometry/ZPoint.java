@@ -23,7 +23,7 @@ import java.util.List;
  * @time 17:55
  */
 public class ZPoint {
-    private double x = 0, y = 0, z = 0;
+    private double x, y, z = 0;
     private final float r = 5;
 
     /* ------------- constructor ------------- */
@@ -136,7 +136,7 @@ public class ZPoint {
     }
 
     public float rf() {
-        return (float) this.r;
+        return this.r;
     }
 
     /* ------------- transformation -------------*/
@@ -175,7 +175,7 @@ public class ZPoint {
     /**
      * add
      *
-     * @param v
+     * @param v vector to add
      * @return geometry.ZPoint
      */
     public ZPoint add(ZPoint v) {
@@ -185,8 +185,8 @@ public class ZPoint {
     /**
      * add 2D
      *
-     * @param x
-     * @param y
+     * @param x x value to add
+     * @param y y value to add
      * @return basicGeometry.ZPoint
      */
     public ZPoint add(double x, double y) {
@@ -196,9 +196,9 @@ public class ZPoint {
     /**
      * add 3D
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param x x value to add
+     * @param y y value to add
+     * @param z z value to add
      * @return geometry.ZPoint
      */
     public ZPoint add(double x, double y, double z) {
@@ -208,8 +208,7 @@ public class ZPoint {
     /**
      * add self
      *
-     * @param v
-     * @return void
+     * @param v vector to add
      */
     public void addSelf(ZPoint v) {
         this.set(x + v.xd(), y + v.yd(), z + v.zd());
@@ -218,7 +217,7 @@ public class ZPoint {
     /**
      * subtract
      *
-     * @param v
+     * @param v vector to subtract
      * @return geometry.ZPoint
      */
     public ZPoint sub(ZPoint v) {
@@ -228,9 +227,9 @@ public class ZPoint {
     /**
      * subtract
      *
-     * @param x
-     * @param y
-     * @param z
+     * @param x x value to subtract
+     * @param y y value to subtract
+     * @param z z value to subtract
      * @return geometry.ZPoint
      */
     public ZPoint sub(double x, double y, double z) {
@@ -249,8 +248,7 @@ public class ZPoint {
     /**
      * scale the vector self
      *
-     * @param t
-     * @return void
+     * @param t ratio to scale
      */
     public void scaleSelf(double t) {
         this.set(x * t, y * t, z * t);
@@ -259,7 +257,7 @@ public class ZPoint {
     /**
      * scale the vector
      *
-     * @param t
+     * @param t ratio to scale
      * @return geometry.ZPoint
      */
     public ZPoint scaleTo(double t) {
@@ -376,7 +374,7 @@ public class ZPoint {
     /**
      * dot product (2D)
      *
-     * @param v
+     * @param v vector to dot product
      * @return double
      */
     public double dot2D(ZPoint v) {
@@ -386,7 +384,7 @@ public class ZPoint {
     /**
      * cross product (2D)
      *
-     * @param v
+     * @param v vector to cross product
      * @return double
      */
     public double cross2D(ZPoint v) {
@@ -394,7 +392,7 @@ public class ZPoint {
     }
 
     /**
-     * determine if the vector is normalized
+     * judge if the vector is normalized
      *
      * @return boolean
      */
@@ -403,17 +401,17 @@ public class ZPoint {
     }
 
     /**
-     * determine if the vector is colinear with another
+     * judge if the vector is collinear with another
      *
-     * @param v
+     * @param v vector to judge
      * @return boolean
      */
-    public boolean isColinear(ZPoint v) {
+    public boolean isCollinear(ZPoint v) {
         return cross2D(v) == 0;
     }
 
     /**
-     * determine if the point is too close to another
+     * judge if the point is too close to another
      *
      * @param other the other ZPoint
      * @param dist  distance to check
@@ -432,35 +430,9 @@ public class ZPoint {
     /* ------------- geometry method -------------*/
 
     /**
-     * determine if the point is equal to another ( BUG )
+     * get the square of distance with the other point
      *
-     * @param other the other ZPoint
-     * @return boolean
-     */
-    @Deprecated
-    public boolean equals(ZPoint other) {
-        if (other == this) {
-            return true;
-        }
-        if (other == null) {
-            return false;
-        }
-        if (Math.abs(other.xd() - this.xd()) > ZGeoMath.epsilon) {
-            return false;
-        }
-        if (Math.abs(other.yd() - this.yd()) > ZGeoMath.epsilon) {
-            return false;
-        }
-        if (Math.abs(other.zd() - this.zd()) > ZGeoMath.epsilon) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * get the square of distance with another point
-     *
-     * @param other
+     * @param other the other point
      * @return double
      */
     public double distanceSq(ZPoint other) {
@@ -468,9 +440,9 @@ public class ZPoint {
     }
 
     /**
-     * get the distance with another point
+     * get the distance with the other point
      *
-     * @param other
+     * @param other the other point
      * @return double
      */
     public double distance(ZPoint other) {
@@ -478,58 +450,4 @@ public class ZPoint {
     }
 
     /* ------------- draw -------------*/
-
-    /**
-     * draw the point as a circle in Processing (default radium)
-     *
-     * @param app
-     * @return void
-     */
-    public void displayAsPoint(PApplet app) {
-        app.ellipse((float) x, (float) y, r, r);
-    }
-
-    /**
-     * draw the point as a circle in Processing (input radium)
-     *
-     * @param app
-     * @param r
-     * @return void
-     */
-    public void displayAsPoint(PApplet app, float r) {
-        app.ellipse((float) x, (float) y, r, r);
-    }
-
-    /**
-     * draw the vector in Processing (set base point)
-     *
-     * @param app
-     * @param base base point of a vector
-     * @return void
-     */
-    public void displayAsVector(PApplet app, ZPoint base, float vecCap) {
-        ZPoint dest = base.add(this);
-        app.pushStyle();
-        app.noFill();
-        app.stroke(255, 0, 0);
-        app.line(base.xf(), base.yf(), base.zf(), dest.xf(), dest.yf(), dest.zf());
-        app.ellipse(dest.xf(), dest.yf(), vecCap, vecCap);
-        app.popStyle();
-    }
-
-    /**
-     * draw the vector in Processing (set base point and scale number)
-     *
-     * @param app
-     * @param base  base point of a vector
-     * @param scale scale
-     * @return void
-     */
-    public void displayAsVector(PApplet app, ZPoint base, double scale, float vecCap) {
-        ZPoint dest = base.add(this.scaleTo(scale));
-        app.line(base.xf(), base.yf(), base.zf(), dest.xf(), dest.yf(), dest.zf());
-        if (vecCap > 0) {
-            app.ellipse(dest.xf(), dest.yf(), vecCap, vecCap);
-        }
-    }
 }

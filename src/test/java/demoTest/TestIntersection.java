@@ -12,6 +12,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
 import render.JtsRender;
+import render.ZRender;
 import transform.ZTransform;
 import wblut.geom.WB_Polygon;
 import wblut.processing.WB_Render;
@@ -106,7 +107,7 @@ public class TestIntersection extends PApplet {
         ray.display(this);
         List<ZPoint> inters = ZGeoMath.rayPolygonIntersection2D(ray.toLinePD(), intersectionPoly);
         for (ZPoint p : inters) {
-            p.displayAsPoint(this, 15);
+            ZRender.drawZPoint2D(this, p, 15);
         }
         List<Integer> interOrder = ZGeoMath.rayPolygonIntersectionIndices2D(ray.toLinePD(), intersectionPoly);
         fill(0);

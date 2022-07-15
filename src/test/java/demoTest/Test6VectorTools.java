@@ -3,6 +3,7 @@ package demoTest;
 import basicGeometry.ZPoint;
 import math.ZGeoMath;
 import processing.core.PApplet;
+import render.ZRender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class Test6VectorTools extends PApplet {
         line((float) bb.xd(), (float) bb.yd(), (float) rotate.xd(), (float) rotate.yd());
 
         bisector = ZGeoMath.getAngleBisectorOrdered(aa.sub(oo), bb.sub(oo));
-        bisector.displayAsVector(this, oo, 50);
+        ZRender.drawZPointAsVec2D(this, bisector, oo, 50);
     }
 
 }

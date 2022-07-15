@@ -4,6 +4,7 @@ import basicGeometry.ZLine;
 import basicGeometry.ZPoint;
 import math.ZGeoMath;
 import processing.core.PApplet;
+import render.ZRender;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Polygon;
 import wblut.processing.WB_Render;
@@ -61,9 +62,9 @@ public class Test2ExtendTrim extends PApplet {
         render.drawPolyLine2D(poly);
 
         fill(255, 0, 0);
-        origin1.displayAsPoint(this, 10);
+        ZRender.drawZPoint2D(this, origin1, 10);
         fill(0, 255, 0);
-        origin2.displayAsPoint(this, 10);
+        ZRender.drawZPoint2D(this, origin2, 10);
         strokeWeight(3);
         stroke(255, 0, 0);
         ZLine seg1 = new ZLine(origin1, new ZPoint(mouseX, mouseY));

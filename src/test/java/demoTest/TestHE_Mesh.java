@@ -9,7 +9,10 @@ import transform.ZTransform;
 import wblut.geom.WB_GeometryFactory;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Polygon;
-import wblut.hemesh.*;
+import wblut.hemesh.HEC_FromPolygons;
+import wblut.hemesh.HE_Face;
+import wblut.hemesh.HE_Halfedge;
+import wblut.hemesh.HE_Mesh;
 import wblut.processing.WB_Render;
 
 import java.util.ArrayList;
