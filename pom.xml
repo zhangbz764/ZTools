@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.github.zhangbz764</groupId>
-    <artifactId>Ztools</artifactId>
-    <version>0.1.0</version>
+    <artifactId>ztools</artifactId>
+    <version>0.1-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
