@@ -68,6 +68,9 @@ public class ZToolTestMain {
 
 //        PApplet.main("demoTest.TestHE_MeshSlice");
 
+        /* test ZAABBTree */
+        PApplet.main("demoTest.TestHE_MeshAABBTree");
+
         /* test jts buffer，cut out WB_PolyLine */
 //        PApplet.main("demoTest.TestJtsBuffer");
 
@@ -85,7 +88,7 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.TestSubdivision");
 
         /* test LineString offset */
-        PApplet.main("demoTest.TestOffsetLS");
+//        PApplet.main("demoTest.TestOffsetLS");
 
         // demoTest2
 
