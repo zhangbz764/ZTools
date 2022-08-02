@@ -69,7 +69,12 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.TestHE_MeshSlice");
 
         /* test ZAABBTree */
-        PApplet.main("demoTest.TestHE_MeshAABBTree");
+//        PApplet.main("demoTest.TestZAABBTree");
+
+        /* test KDTree */
+//        PApplet.main("demoTest.TestKDTree");
+
+        PApplet.main("demoTest.TestGuoCamPick");
 
         /* test jts buffer，cut out WB_PolyLine */
 //        PApplet.main("demoTest.TestJtsBuffer");

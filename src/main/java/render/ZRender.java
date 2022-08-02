@@ -16,6 +16,8 @@ import wblut.geom.WB_Polygon;
  */
 public class ZRender {
 
+    public final static ZPoint origin = new ZPoint(0, 0, 0);
+
     /*-------- basic --------*/
 
     /**
@@ -50,6 +52,20 @@ public class ZRender {
     }
 
     /**
+     * draw ZPoint as a box in 3D
+     *
+     * @param app PApplet
+     * @param p   ZPoint
+     * @param w   width of the box
+     */
+    public static void drawZPoint3D(PApplet app, ZPoint p, float w) {
+        app.pushMatrix();
+        app.translate(p.xf(), p.yf(), p.zf());
+        app.box(w);
+        app.popMatrix();
+    }
+
+    /**
      * draw ZPoint as vector (set base point)
      *
      * @param app    PApplet
@@ -81,6 +97,45 @@ public class ZRender {
         app.line(base.xf(), base.yf(), base.zf(), dest.xf(), dest.yf(), dest.zf());
         if (vecCap > 0) {
             app.ellipse(dest.xf(), dest.yf(), vecCap, vecCap);
+        }
+    }
+
+    /**
+     * draw ZPoint as vector in 3D (set base point)
+     *
+     * @param app    PApplet
+     * @param vec    vector ZPoint to draw
+     * @param base   base point of the vector
+     * @param vecCap vector cap radius
+     */
+    public static void drawZPointAsVec3D(PApplet app, ZPoint vec, ZPoint base, float vecCap) {
+        ZPoint dest = base.add(vec);
+        app.line(base.xf(), base.yf(), base.zf(), dest.xf(), dest.yf(), dest.zf());
+        if (vecCap > 0) {
+            app.pushMatrix();
+            app.translate(dest.xf(), dest.yf(), dest.zf());
+            app.box(vecCap);
+            app.popMatrix();
+        }
+    }
+
+    /**
+     * draw ZPoint as vector in 3D (set base point)
+     *
+     * @param app    PApplet
+     * @param vec    vector ZPoint to draw
+     * @param base   base point of the vector
+     * @param scale  scale ratio
+     * @param vecCap vector cap radius
+     */
+    public static void drawZPointAsVec3D(PApplet app, ZPoint vec, ZPoint base, double scale, float vecCap) {
+        ZPoint dest = base.add(vec.scaleTo(scale));
+        app.line(base.xf(), base.yf(), base.zf(), dest.xf(), dest.yf(), dest.zf());
+        if (vecCap > 0) {
+            app.pushMatrix();
+            app.translate(dest.xf(), dest.yf(), dest.zf());
+            app.box(vecCap);
+            app.popMatrix();
         }
     }
 
