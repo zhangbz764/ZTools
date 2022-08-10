@@ -58,6 +58,8 @@ public class ZToolTestMain {
         /* test JTS intersection results */
 //        PApplet.main("demoTest.TestJtsIntersection");
 
+        PApplet.main("demoTest.TestJtsTri");
+
         /* test hemesh mesh and union，buffer */
 //        PApplet.main("demoTest.TestHE_Mesh");
 
@@ -68,13 +70,15 @@ public class ZToolTestMain {
 
 //        PApplet.main("demoTest.TestHE_MeshSlice");
 
+//        PApplet.main("demoTest.TestHE_MeshTri");
+
         /* test ZAABBTree */
 //        PApplet.main("demoTest.TestZAABBTree");
 
         /* test KDTree */
 //        PApplet.main("demoTest.TestKDTree");
 
-        PApplet.main("demoTest.TestGuoCamPick");
+//        PApplet.main("demoTest.TestGuoCamPick");
 
         /* test jts buffer，cut out WB_PolyLine */
 //        PApplet.main("demoTest.TestJtsBuffer");

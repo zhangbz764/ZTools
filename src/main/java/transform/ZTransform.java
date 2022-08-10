@@ -384,6 +384,20 @@ public class ZTransform {
     }
 
     /**
+     * ICurve -> LineString
+     *
+     * @param curve input ICurve
+     * @return org.locationtech.jts.geom.LineString
+     */
+    public static LineString ICurveToLineString(final ICurve curve) {
+        Coordinate[] curvePts = new Coordinate[curve.cpNum()];
+        for (int i = 0; i < curve.cpNum(); i++) {
+            curvePts[i] = new Coordinate(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z());
+        }
+        return ZFactory.jtsgf.createLineString(curvePts);
+    }
+
+    /**
      * LineString -> ICurve
      *
      * @param ls input LineString

@@ -2,7 +2,7 @@ package demoTest;
 
 import guo_cam.CameraController;
 import processing.core.PApplet;
-import wblut.geom.WB_Plane;
+import wblut.geom.*;
 import wblut.hemesh.*;
 import wblut.processing.WB_Render;
 
@@ -79,17 +79,17 @@ public class TestHE_MeshSlice extends PApplet {
         fill(255);
         noStroke();
         render.drawFaces(mesh);
-        fill(255,0,0);
+        fill(255, 0, 0);
         render.drawFaces(mesh.getSelection("caps"));
-        fill(0,0,255);
+        fill(0, 0, 255);
         render.drawFaces(mesh.getSelection("cuts"));
         noFill();
         stroke(0);
         render.drawEdges(mesh);
-        stroke(0,255,0);
+        stroke(0, 255, 0);
         render.drawEdges(mesh.getSelection("edges"));
-        stroke(255,0,0);
-        render.drawPlane(P,300);
+        stroke(255, 0, 0);
+        render.drawPlane(P, 300);
     }
 
 }
