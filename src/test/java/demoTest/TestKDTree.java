@@ -4,7 +4,6 @@ import guo_cam.CameraController;
 import processing.core.PApplet;
 import wblut.geom.*;
 import wblut.processing.WB_Render;
-import wblut.processing.WB_Render3D;
 
 import java.util.ArrayList;
 import java.util.List;

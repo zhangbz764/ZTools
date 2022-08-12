@@ -1,8 +1,6 @@
 package render;
 
 import org.locationtech.jts.geom.*;
-import org.locationtech.jts.triangulate.ConformingDelaunayTriangulationBuilder;
-import org.locationtech.jts.triangulate.VoronoiDiagramBuilder;
 import processing.core.PApplet;
 
 /**
@@ -204,33 +202,4 @@ public class JtsRender {
         app.endShape();
     }
 
-    /**
-     * draw delaunay triangles
-     *
-     * @param delaunayBuilder
-     * @return void
-     */
-    @Deprecated
-    public void drawDelaunayTriangle(ConformingDelaunayTriangulationBuilder delaunayBuilder) {
-        Geometry triangles = delaunayBuilder.getTriangles(JtsRender.gf);
-        int num = triangles.getNumGeometries();
-        for (int i = 0; i < num; i++) {
-            this.drawGeometry(triangles.getGeometryN(i));
-        }
-    }
-
-    /**
-     * draw voronoi polygons
-     *
-     * @param voronoiBuilder
-     * @return void
-     */
-    @Deprecated
-    public void drawVoronoi(VoronoiDiagramBuilder voronoiBuilder) {
-        Geometry voronois = voronoiBuilder.getDiagram(JtsRender.gf);
-        int num = voronois.getNumGeometries();
-        for (int i = 0; i < num; i++) {
-            this.drawGeometry(voronois.getGeometryN(i));
-        }
-    }
 }

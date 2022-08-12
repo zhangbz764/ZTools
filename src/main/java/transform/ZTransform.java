@@ -4,6 +4,8 @@ import basicGeometry.ZFactory;
 import igeo.*;
 import org.locationtech.jts.geom.*;
 import wblut.geom.*;
+import wblut.hemesh.HEC_FromFacelist;
+import wblut.hemesh.HE_Mesh;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -253,6 +255,46 @@ public class ZTransform {
         IVec v = circle.center();
         double r = circle.radius();
         return new WB_Circle(IVecIToWB_Point(v), r);
+    }
+
+    /**
+    * IVertex -> WB_Point
+    *
+    * @param vertex input IVertex
+    * @return wblut.geom.WB_Point
+    */
+    public static WB_Point IVertexToWB_Point(final IVertex vertex) {
+        return new WB_Point(vertex.x(), vertex.y(), vertex.z());
+    }
+
+    /**
+    * IMesh -> HE_Mesh
+    *
+    * @param mesh input IMesh
+    * @return wblut.hemesh.HE_Mesh
+    */
+    public static HE_Mesh IMeshToHE_Mesh(final IMesh mesh) {
+        ArrayList<IVertex> vertices = mesh.vertices();
+        List<WB_Point> pts = new ArrayList<>();
+        for (IVertex v : vertices) {
+            pts.add(IVertexToWB_Point(v));
+        }
+
+        List<int[]> faceList = new ArrayList<>();
+        for (int i = 0; i < mesh.faceNum(); i++) {
+            IFace face = mesh.face(i);
+            IVertex[] vInFace = face.vertices;
+            int[] id = new int[vInFace.length];
+            for (int j = 0; j < vInFace.length; j++) {
+                id[j] = vertices.indexOf(vInFace[j]);
+            }
+            faceList.add(id);
+        }
+
+        HEC_FromFacelist creator = new HEC_FromFacelist();
+        creator.setVertices(pts);
+        creator.setFaces(faceList);
+        return new HE_Mesh(creator);
     }
 
     /*-------- IGeo <-> Jts --------*/

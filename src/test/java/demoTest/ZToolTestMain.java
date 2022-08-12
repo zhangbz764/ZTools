@@ -59,6 +59,7 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.TestJtsIntersection");
 
         PApplet.main("demoTest.TestJtsTri");
+//        PApplet.main("demoTest.TestMeshTransform");
 
         /* test hemesh mesh and union，buffer */
 //        PApplet.main("demoTest.TestHE_Mesh");

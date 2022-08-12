@@ -12,8 +12,6 @@ import org.locationtech.jts.triangulate.DelaunayTriangulationBuilder;
 import processing.core.PApplet;
 import render.JtsRender;
 import transform.ZTransform;
-import wblut.geom.*;
-import wblut.processing.WB_Render;
 
 import java.util.ArrayList;
 import java.util.List;

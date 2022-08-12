@@ -2,7 +2,7 @@ package demoTest;
 
 import guo_cam.CameraController;
 import processing.core.PApplet;
-import wblut.geom.*;
+import wblut.geom.WB_Plane;
 import wblut.hemesh.*;
 import wblut.processing.WB_Render;
 

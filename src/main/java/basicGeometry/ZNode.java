@@ -2,7 +2,6 @@ package basicGeometry;
 
 import igeo.IPoint;
 import org.locationtech.jts.geom.Coordinate;
-import processing.core.PApplet;
 import wblut.geom.WB_Coord;
 
 import java.util.ArrayList;

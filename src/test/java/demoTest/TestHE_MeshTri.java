@@ -5,16 +5,12 @@ import guo_cam.CameraController;
 import igeo.ICurve;
 import igeo.IG;
 import math.ZGeoMath;
-import org.locationtech.jts.triangulate.ConformingDelaunayTriangulationBuilder;
-import org.locationtech.jts.triangulate.ConstraintVertex;
-import org.locationtech.jts.triangulate.DelaunayTriangulationBuilder;
 import processing.core.PApplet;
 import transform.ZTransform;
 import wblut.geom.*;
 import wblut.processing.WB_Render;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
