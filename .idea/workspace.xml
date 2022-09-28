@@ -4,9 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9908a337-7326-415b-9122-96285820e2cb" name="Changes" comment="fix simple polygon bugs">
+    <list default="true" id="9908a337-7326-415b-9122-96285820e2cb" name="Changes" comment="rollback &amp; add plugins">
+      <change afterPath="$PROJECT_DIR$/src/main/java/render/ZColorPalette.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/render/ZHeatMap.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/demoTest/TestZHeatMap.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/render/ZRender.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/render/ZRender.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/ZToolTestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/demoTest/ZToolTestMain.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +56,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/0_code/aaa-java-utils/pom.xml&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/0_code/cgal-swig-bindings&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -99,6 +104,12 @@
       <workItem from="1660017761158" duration="6103000" />
       <workItem from="1660119863919" duration="9223000" />
       <workItem from="1660284876728" duration="10659000" />
+      <workItem from="1660721413997" duration="2956000" />
+      <workItem from="1661504675408" duration="1221000" />
+      <workItem from="1661600891513" duration="322000" />
+      <workItem from="1661601248246" duration="3590000" />
+      <workItem from="1662002964646" duration="921000" />
+      <workItem from="1664244842482" duration="20117000" />
     </task>
     <task id="LOCAL-00001" summary="independent project">
       <created>1659169641151</created>
@@ -128,7 +139,14 @@
       <option name="project" value="LOCAL" />
       <updated>1660136090978</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="rollback &amp; add plugins">
+      <created>1660379945663</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1660379945663</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -149,6 +167,7 @@
     <MESSAGE value="independent project" />
     <MESSAGE value="add ZAABBTree &amp; test based on WB_AABBTree" />
     <MESSAGE value="new tests" />
-    <option name="LAST_COMMIT_MESSAGE" value="new tests" />
+    <MESSAGE value="rollback &amp; add plugins" />
+    <option name="LAST_COMMIT_MESSAGE" value="rollback &amp; add plugins" />
   </component>
 </project>
