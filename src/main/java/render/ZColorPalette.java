@@ -8,7 +8,7 @@ package render;
  * @date 2022/9/27
  * @time 15:45
  */
-enum ZColorPalette {
+public enum ZColorPalette {
 
     /*-------- single color --------*/
     Grays {
