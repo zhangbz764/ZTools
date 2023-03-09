@@ -1,88 +1,26 @@
-# 个人java工具包 慎用
+# Personal Java Tookit by [zhangbz764](https://github.com/zhangbz764)
 
-详细说明见 [instruction_detail](https://github.com/Agent14zbz/ZTools/blob/main/instruction_detail.md "instruction_detail.md")
-测试类见 [demoTest](https://github.com/Agent14zbz/ZTools/tree/main/src/test/java/demoTest "demoTest")
+本仓库与本人在运算化设计方向的研究内容有关，是核心功能代码的一些辅助工具。
 
-#### Global Dependencies:
+其中包含了一些个人惯用的图元定义、几何运算方法、数学计算、图论算法、几何图元格式转换等等。
 
-[Processing 3.3.7](https://processing.org/)  
-[jts 1.16.1](https://github.com/locationtech/jts)  
-[HE_Mesh 2019](https://github.com/wblut/HE_Mesh)  
-[igeo 0.9.3.0](http://igeo.jp/)
+本人对该仓库代码的鲁棒性无法保证，但随着个人研究的持续进行，仓库会不断更新。
 
-## **ZPoint**
+---
 
-自定义的点数据类型，可代表点或向量
+详细说明见 [instruction_detail](https://github.com/Agent14zbz/ZTools/blob/main/instruction_detail.md "instruction_detail.md")  
+测试类见 [test ](https://github.com/Agent14zbz/ZTools/tree/main/src/test/java "test ")文件夹
 
-## **ZNode**
+---
 
-graph中的node
+### Global Dependencies:
 
-## **ZLine**
-
-自定义的线数据类型，可代表直线、射线、线段，也可转化为 *定点p+方向td* 的形式
-
-## **ZEdge**
-
-graph中的edge
-
-## **ZGraph**
-
-（需完善）图，包含若干节点ZNode，连接边ZEdge，记录相互引用关系
-
-## **ZSkeleton**
-
-计算多边形直骨架（straight skeleton），可以生成2D或3D结果，支持带洞  
-#### External Dependencies:
-[campskeleton](https://github.com/twak/campskeleton "campskeleton")
-
-## **ZCatmullRom**
-
-创建Catmull-Rom曲线  
-inspired by [CatmullRomSpline](https://github.com/jurajstrecha/CatmullRomSpline)
-
-## **ZLargestRectangle**
-
-使用粒子群优化算法计算多边形的最大内接矩形  
-inspired by [LargestRectangle](https://github.com/dawnwords/LargestRectangle "LargestRectangle")
-#### External Dependencies:  
-[JSwarm-PSO](http://jswarm-pso.sourceforge.net/ "JSwarm-PSO")
-
-## **ZRectCover**
-
-（需完善）使用轮廓点+射线的方法近似找到给定数量的最小矩形覆盖
-
-## **ZGeomath**
-
-一些自定义的几何计算工具  
-
-## **ZGraphMath**
-
-与自定义图结构相关的计算工具
-
-## **ZFileOP**
-
-本地文件读取与写入方法
-
-## **ZMath**
-
-一些数学工具
-
-## **ZPermuCombi**
-
-整数的排列组合
-
-## **ZSubdivision**
-
-（需完善）若干种多边形剖分模式
-
-## **ZTransform**
-
-常用库几何数据的相互转换  
-*目前主要针对简单多边形，部分涉及带洞*
-
-## **ZFactory**
-
-包含了jts的GeometryFactory和HE_Mesh的WB_GeometryFactory，以及其他创建命令
-
-## 完善中...
+[Processing 3.3.7](https://processing.org/ "Processing")  
+[jts 1.16.1](https://github.com/locationtech/jts "jts")  
+[HE_Mesh 2019](https://github.com/wblut/HE_Mesh "HE_Mesh")  
+[igeo 0.9.3.0](http://igeo.jp/ "igeo")  
+[campskeleton](https://github.com/twak/campskeleton "campskeleton")  
+[JSwarm-PSO](http://jswarm-pso.sourceforge.net/ "JSwarm-PSO")  
+[Gurobi 9.1.1](https://www.gurobi.com/ "Gurobi")  
+[camera 1.1](https://github.com/archialgo/camera) by [Zifeng Guo](https://github.com/guozifeng91)  
+[commons-lang3 3.12.0](https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 "commons-lang3")

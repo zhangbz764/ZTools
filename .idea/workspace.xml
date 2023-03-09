@@ -4,23 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9908a337-7326-415b-9122-96285820e2cb" name="Changes" comment="add ZHeatMap &amp; several color palette">
-      <change afterPath="$PROJECT_DIR$/src/test/java/demoTest/TestLargestRect.java" afterDir="false" />
+    <list default="true" id="9908a337-7326-415b-9122-96285820e2cb" name="Changes" comment="fix bugs">
       <change afterPath="$PROJECT_DIR$/src/test/java/demoTest/TestMultiThreads.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/advancedGeometry/ZAABBTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/advancedGeometry/ZAABBTree.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/advancedGeometry/largestRectangle/LRFitnessFunction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/advancedGeometry/largestRectangle/LRFitnessFunction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/advancedGeometry/largestRectangle/ZLargestRectangle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/advancedGeometry/largestRectangle/ZLargestRectangle.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/render/ZHeatMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/render/ZHeatMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/transform/ZTransform.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/transform/ZTransform.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/Test5LargestRect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/demoTest/Test5LargestRect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestZAABBTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/demoTest/TestZAABBTree.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/ZToolTestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/demoTest/ZToolTestMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/test_largest_rect.3dm" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/test_largest_rect.3dm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/test_largest_rect.3dmbak" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/test_largest_rect.3dmbak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -157,7 +145,7 @@
       <workItem from="1677310026180" duration="4530000" />
       <workItem from="1677568328490" duration="609000" />
       <workItem from="1677593358400" duration="1794000" />
-      <workItem from="1678091851255" duration="2548000" />
+      <workItem from="1678091851255" duration="3853000" />
     </task>
     <task id="LOCAL-00001" summary="independent project">
       <created>1659169641151</created>
@@ -201,7 +189,14 @@
       <option name="project" value="LOCAL" />
       <updated>1664359411230</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="fix bugs">
+      <created>1678348868430</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1678348868430</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -224,7 +219,8 @@
     <MESSAGE value="new tests" />
     <MESSAGE value="rollback &amp; add plugins" />
     <MESSAGE value="add ZHeatMap &amp; several color palette" />
-    <option name="LAST_COMMIT_MESSAGE" value="add ZHeatMap &amp; several color palette" />
+    <MESSAGE value="fix bugs" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix bugs" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
