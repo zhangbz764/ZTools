@@ -3,7 +3,7 @@ package render;
 import java.util.Arrays;
 
 /**
- * description
+ * create a heatmap color marks
  *
  * @author ZHANG Baizhou zhangbz
  * @project Ztools

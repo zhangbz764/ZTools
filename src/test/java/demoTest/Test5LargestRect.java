@@ -1,9 +1,11 @@
 package demoTest;
 
 import advancedGeometry.largestRectangle.ZLargestRectangle;
+import basicGeometry.ZFactory;
 import guo_cam.CameraController;
 import igeo.ICurve;
 import igeo.IG;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
@@ -46,21 +48,19 @@ public class Test5LargestRect extends PApplet {
         this.jtsRender = new JtsRender(this);
         this.render = new WB_Render(this);
 
-//        String path = this.getClass().getResource("/test_largest_rect.3dm").getPath();
-//        String path = "E:\\AAA_Study\\0_JavaTools\\Ztools\\target\\test-classes\\test_largest_rect.3dm";
-//        String path = "E:\\AAA_Study\\0_JavaTools\\Ztools\\src\\test\\resources\\test_largest_rect.3dm";
-        String path = Objects.requireNonNull(
-                this.getClass().getClassLoader().getResource("./test_largest_rect.3dm")
-        ).getPath();
-
-        IG.init();
-        IG.open(path);
         this.polys = new ArrayList<>();
+        polys.add(ZFactory.jtsgf.createPolygon(
+                new Coordinate[]{
+                        new Coordinate(0,0,0),
+                        new Coordinate(50,-12,0),
+                        new Coordinate(100,25,0),
+                        new Coordinate(80,50,0),
+                        new Coordinate(100,100,0),
+                        new Coordinate(-20,80,0),
+                        new Coordinate(0,0,0)
+                }
+        ));
 
-        ICurve[] polyLines = IG.layer("test").curves();
-        for (ICurve polyLine : polyLines) {
-            polys.add(ZTransform.ICurveToJts(polyLine));
-        }
 
         // largest rectangle
         this.largestRectangles = new ArrayList<>();

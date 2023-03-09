@@ -40,12 +40,13 @@ public class TestZAABBTree extends PApplet {
     /* ------------- setup ------------- */
 
     public void setup() {
+        this.beginContour();
         this.render = new WB_Render(this);
         this.gcam = new CameraController(this);
 
         this.btMesh = new HE_Mesh(new HEC_Beethoven().setScale(10).setZAxis(0, 1, 0).setZAngle(PI));
 
-        this.zaabbTree = new ZAABBTree(btMesh, 40);
+        this.zaabbTree = new ZAABBTree(btMesh, 10);
         this.aabbEachDepth = zaabbTree.getAllAABBs();
         this.aabbLeaves = zaabbTree.getLeafAABBs();
 

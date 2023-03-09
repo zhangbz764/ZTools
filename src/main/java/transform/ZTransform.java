@@ -6,6 +6,7 @@ import org.locationtech.jts.geom.*;
 import wblut.geom.*;
 import wblut.hemesh.HEC_FromFacelist;
 import wblut.hemesh.HE_Mesh;
+import wblut.hemesh.HE_MeshOp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -462,6 +463,20 @@ public class ZTransform {
     public static ICurve PolygonToICurve(final Polygon poly) {
         LineString exterior = poly.getExteriorRing();
         return LineStringToICurve(exterior);
+    }
+
+    /**
+     * Polygon -> ISurface (exterior ring only)
+     *
+     * @param poly input Polygon
+     * @return igeo.ICurve
+     */
+    public static ISurface PolygonToISurface(final Polygon poly){
+        IVec[] vecs = new IVec[poly.getNumPoints()];
+        for (int i = 0; i < vecs.length; i++) {
+            vecs[i] = CoordinateToIVec(poly.getCoordinates()[i]);
+        }
+        return new ISurface(vecs);
     }
 
     /*-------- WB <-> Jts --------*/

@@ -1,6 +1,14 @@
 package render;
 
-public enum ZColorPalette {
+/**
+ * some color palette for heatmap color mark
+ *
+ * @author Baizhou Zhang zhangbz
+ * @project Ztools
+ * @date 2022/9/27
+ * @time 15:45
+ */
+enum ZColorPalette {
 
     /*-------- single color --------*/
     Grays {

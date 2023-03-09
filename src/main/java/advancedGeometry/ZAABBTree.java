@@ -2,7 +2,10 @@ package advancedGeometry;
 
 import wblut.geom.WB_AABB;
 import wblut.geom.WB_AABBTree;
+import wblut.geom.WB_AABBTree2D;
+import wblut.geom.WB_GeometryOp;
 import wblut.hemesh.HE_Mesh;
+import wblut.hemesh.HE_MeshOp;
 
 import java.util.ArrayList;
 import java.util.List;

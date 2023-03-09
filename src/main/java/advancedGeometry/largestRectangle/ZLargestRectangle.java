@@ -1,10 +1,10 @@
 package advancedGeometry.largestRectangle;
 
-import basicGeometry.ZPoint;
 import net.sourceforge.jswarm_pso.Swarm;
 import wblut.geom.WB_AABB;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Polygon;
+import wblut.geom.WB_Vector;
 
 /**
  * description
@@ -81,16 +81,17 @@ public class ZLargestRectangle {
         double w = best[LRFitnessFunction.W];
         double h = best[LRFitnessFunction.H];
         double a = best[LRFitnessFunction.A];
-        ZPoint base = new ZPoint(x, y);
-        ZPoint dir1 = new ZPoint(Math.cos(a), Math.sin(a));
-        ZPoint dir2 = dir1.rotate2D(Math.PI * 0.5);
-        ZPoint base2 = base.add(dir1.scaleTo(w));
+
+        WB_Point base = new WB_Point(x, y);
+        WB_Vector dir1 = new WB_Vector(Math.cos(a), Math.sin(a));
+        WB_Vector dir2 = dir1.rotateAboutOrigin2D(Math.PI * 0.5);
+        WB_Point base2 = base.add(dir1.scale(w));
 
         WB_Point[] rectPoints = new WB_Point[5];
-        rectPoints[0] = base.toWB_Point();
-        rectPoints[1] = base2.toWB_Point();
-        rectPoints[2] = (base2.add(dir2.scaleTo(h))).toWB_Point();
-        rectPoints[3] = (base.add(dir2.scaleTo(h))).toWB_Point();
+        rectPoints[0] = base;
+        rectPoints[1] = base2;
+        rectPoints[2] = (base2.add(dir2.scale(h)));
+        rectPoints[3] = (base.add(dir2.scale(h)));
         rectPoints[4] = rectPoints[0];
 
         return new WB_Polygon(rectPoints);

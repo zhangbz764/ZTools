@@ -28,7 +28,7 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.Test4Curve");
 
         /* test ZLargestRectangle */
-//        PApplet.main("demoTest.Test5LargestRect");
+        PApplet.main("demoTest.Test5LargestRect");
 
         /* test vector methods in ZGeoMath */
 //        PApplet.main("demoTest.Test6VectorTools");
@@ -61,7 +61,7 @@ public class ZToolTestMain {
 //        PApplet.main("demoTest.TestJtsTri");
 //        PApplet.main("demoTest.TestMeshTransform");
 
-        PApplet.main("demoTest.TestZHeatMap");
+//        PApplet.main("demoTest.TestZHeatMap");
 
         /* test hemesh mesh and union，buffer */
 //        PApplet.main("demoTest.TestHE_Mesh");

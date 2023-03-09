@@ -4,14 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9908a337-7326-415b-9122-96285820e2cb" name="Changes" comment="rollback &amp; add plugins">
-      <change afterPath="$PROJECT_DIR$/src/main/java/render/ZColorPalette.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/render/ZHeatMap.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/demoTest/TestZHeatMap.java" afterDir="false" />
+    <list default="true" id="9908a337-7326-415b-9122-96285820e2cb" name="Changes" comment="add ZHeatMap &amp; several color palette">
+      <change afterPath="$PROJECT_DIR$/src/test/java/demoTest/TestLargestRect.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/demoTest/TestMultiThreads.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/render/ZRender.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/render/ZRender.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/advancedGeometry/ZAABBTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/advancedGeometry/ZAABBTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/advancedGeometry/largestRectangle/LRFitnessFunction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/advancedGeometry/largestRectangle/LRFitnessFunction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/advancedGeometry/largestRectangle/ZLargestRectangle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/advancedGeometry/largestRectangle/ZLargestRectangle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/render/ZHeatMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/render/ZHeatMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/transform/ZTransform.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/transform/ZTransform.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/Test5LargestRect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/demoTest/Test5LargestRect.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestZAABBTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/demoTest/TestZAABBTree.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/ZToolTestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/demoTest/ZToolTestMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/test_largest_rect.3dm" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/test_largest_rect.3dm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/test_largest_rect.3dmbak" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/test_largest_rect.3dmbak" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,20 +65,33 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/0_code/cgal-swig-bindings&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/0_code/testaw&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Global Libraries&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.39885056&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.IDE.editor.colors.Java&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.TestLargestRect">
+    <configuration name="TestLargestRect" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="demoTest.TestLargestRect" />
+      <module name="ztools" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="demoTest.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="ZToolTestMain" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="demoTest.ZToolTestMain" />
       <module name="ztools" />
@@ -85,6 +107,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.TestLargestRect" />
         <item itemvalue="Application.ZToolTestMain" />
       </list>
     </recent_temporary>
@@ -109,7 +132,32 @@
       <workItem from="1661600891513" duration="322000" />
       <workItem from="1661601248246" duration="3590000" />
       <workItem from="1662002964646" duration="921000" />
-      <workItem from="1664244842482" duration="20117000" />
+      <workItem from="1664244842482" duration="21552000" />
+      <workItem from="1664419542585" duration="1045000" />
+      <workItem from="1664520277117" duration="1666000" />
+      <workItem from="1664846798075" duration="644000" />
+      <workItem from="1665658465788" duration="739000" />
+      <workItem from="1665714251142" duration="1343000" />
+      <workItem from="1667278556079" duration="2996000" />
+      <workItem from="1667545816831" duration="3465000" />
+      <workItem from="1667880427096" duration="3841000" />
+      <workItem from="1668049519237" duration="1295000" />
+      <workItem from="1668325187686" duration="1226000" />
+      <workItem from="1670927602732" duration="699000" />
+      <workItem from="1670994813555" duration="1211000" />
+      <workItem from="1671191342433" duration="679000" />
+      <workItem from="1671440124991" duration="880000" />
+      <workItem from="1671441015372" duration="1511000" />
+      <workItem from="1671442535353" duration="5286000" />
+      <workItem from="1673317326972" duration="49000" />
+      <workItem from="1676537133948" duration="3695000" />
+      <workItem from="1676910378946" duration="1478000" />
+      <workItem from="1677135293516" duration="842000" />
+      <workItem from="1677247318860" duration="657000" />
+      <workItem from="1677310026180" duration="4530000" />
+      <workItem from="1677568328490" duration="609000" />
+      <workItem from="1677593358400" duration="1794000" />
+      <workItem from="1678091851255" duration="2548000" />
     </task>
     <task id="LOCAL-00001" summary="independent project">
       <created>1659169641151</created>
@@ -146,7 +194,14 @@
       <option name="project" value="LOCAL" />
       <updated>1660379945663</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="add ZHeatMap &amp; several color palette">
+      <created>1664359411230</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1664359411230</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -168,6 +223,11 @@
     <MESSAGE value="add ZAABBTree &amp; test based on WB_AABBTree" />
     <MESSAGE value="new tests" />
     <MESSAGE value="rollback &amp; add plugins" />
-    <option name="LAST_COMMIT_MESSAGE" value="rollback &amp; add plugins" />
+    <MESSAGE value="add ZHeatMap &amp; several color palette" />
+    <option name="LAST_COMMIT_MESSAGE" value="add ZHeatMap &amp; several color palette" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
