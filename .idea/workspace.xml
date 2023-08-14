@@ -4,52 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9908a337-7326-415b-9122-96285820e2cb" name="Changes" comment="update README.md &amp; .gitignore">
-      <change afterPath="$PROJECT_DIR$/src/test/java/testApps/MainTestApps.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/testFunc/MainTestFunc.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestMultiThreads.java" afterDir="false" />
+    <list default="true" id="9908a337-7326-415b-9122-96285820e2cb" name="Changes" comment="update test file structure">
+      <change afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestLineMergeGraph.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/render/ZColorPalette.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/render/ZColorPalette.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/Test10ShapeDescriptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/Test10ShapeDescriptor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/Test11KMeans.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/Test11KMeans.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/Test1ConvexConcave.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/Test1ConvexConcave.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/Test2ExtendTrim.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/Test2ExtendTrim.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/Test3Skeleton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/Test3Skeleton.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/Test4Curve.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/Test4Curve.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/Test5LargestRect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/Test5LargestRect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/Test6VectorTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/Test6VectorTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/Test7PolygonTools.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/Test7PolygonTools.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/Test8ZGraph.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/Test8ZGraph.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/Test9ArcCircle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/Test9ArcCircle.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestGuoCamPick.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestGuoCamPick.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestGurobi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestGurobi.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestHE_Mesh.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestHE_Mesh.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestHE_MeshEdgeSel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestHE_MeshEdgeSel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestHE_MeshFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestHE_MeshFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestHE_MeshSlice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestHE_MeshSlice.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestHE_MeshTri.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestHE_MeshTri.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestIntersection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestHEJtsIntersection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestJtsBuffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestJtsBuffer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestJtsGeoRelation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestJtsGeoRelation.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestJtsIntersection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestJtsIntersection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestJtsLineMerger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestJtsLineMerger.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestJtsTransform.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestJtsTransform.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestJtsTri.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestJtsTri.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestKDTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestHE_MeshKDTree.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestLargestRect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/TestLargestRect.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestMeshTransform.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/TestMeshTransform.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestOffsetLS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestJtsOffsetLS.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestPolyDecomp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/TestPolyDecomp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestPolySplit.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/TestPolySplit.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestSubdivision.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/TestSubdivision.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestZAABBTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/TestZAABBTree.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestZGraph2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/TestZGraph2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/TestZHeatMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/TestZHeatMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest/ZToolTestMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/MainTestMyself.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest2/BallBounce.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testApps/BallBounce.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest2/NodeQueue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testApps/NodeQueue.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/demoTest2/RandomSeat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testApps/RandomSeat.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/math/ZKMeans.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/math/ZKMeans.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/testFunc/MainTestFunc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testFunc/MainTestFunc.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/testMyself/MainTestMyself.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/MainTestMyself.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/testMyself/Test11KMeans.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/testMyself/Test11KMeans.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,13 +35,10 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="MavenImportPreferences">
-    <option name="generalSettings">
-      <MavenGeneralSettings>
-        <option name="useMavenConfig" value="true" />
-      </MavenGeneralSettings>
-    </option>
-  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 7
+}</component>
   <component name="ProjectId" id="2CecuwYhGUohiJxNku2qikQiMrU" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -94,6 +54,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;last_opened_file_path&quot;: &quot;E:/0_code/testaw&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -103,7 +64,7 @@
     &quot;project.structure.last.edited&quot;: &quot;Global Libraries&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.39885056&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -113,13 +74,26 @@
       <recent name="testMyself" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.MainTestMyself">
     <configuration name="MainTestFunc" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="testFunc.MainTestFunc" />
       <module name="Ztools" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="testMyself.*" />
+          <option name="PATTERN" value="testFunc.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MainTestMyself" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="testMyself.MainTestMyself" />
+      <module name="ztools" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="testFunc.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -129,6 +103,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.MainTestMyself" />
         <item itemvalue="Application.MainTestFunc" />
       </list>
     </recent_temporary>
@@ -178,7 +153,15 @@
       <workItem from="1677310026180" duration="4530000" />
       <workItem from="1677568328490" duration="609000" />
       <workItem from="1677593358400" duration="1794000" />
-      <workItem from="1678091851255" duration="4693000" />
+      <workItem from="1678091851255" duration="5233000" />
+      <workItem from="1679556544351" duration="1108000" />
+      <workItem from="1679623376501" duration="663000" />
+      <workItem from="1679839036378" duration="7759000" />
+      <workItem from="1682395967544" duration="11925000" />
+      <workItem from="1684483933838" duration="6347000" />
+      <workItem from="1691313229379" duration="692000" />
+      <workItem from="1691655701043" duration="4019000" />
+      <workItem from="1691831415353" duration="1060000" />
     </task>
     <task id="LOCAL-00001" summary="independent project">
       <created>1659169641151</created>
@@ -236,7 +219,14 @@
       <option name="project" value="LOCAL" />
       <updated>1678350049352</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="update test file structure">
+      <created>1678350840353</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1678350840353</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -261,7 +251,8 @@
     <MESSAGE value="add ZHeatMap &amp; several color palette" />
     <MESSAGE value="fix bugs" />
     <MESSAGE value="update README.md &amp; .gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="update README.md &amp; .gitignore" />
+    <MESSAGE value="update test file structure" />
+    <option name="LAST_COMMIT_MESSAGE" value="update test file structure" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

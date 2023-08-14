@@ -43,7 +43,7 @@ public class ZKMeans {
     /**
      * perform K-means clustering
      */
-    public void init() {
+    public void cluster() {
         // iterate until the maximum moving distance of centroids is less than the epsilon
         double maxCentroidMoveDist = Double.MAX_VALUE;
         int count = 0;
@@ -68,19 +68,25 @@ public class ZKMeans {
             // move the centroids to the average location of points assigned to it
             double maxMoveDists = -1;
             for (int i = 0; i < k; i++) {
-                double[][] groupData = new double[currClusters.get(i).size()][];
-                for (int j = 0; j < groupData.length; j++) {
-                    groupData[j] = currClusters.get(i).get(j).data;
+                if (currClusters.get(i).size() > 0) {
+                    // current cluster has elements
+                    double[][] groupData = new double[currClusters.get(i).size()][];
+                    for (int j = 0; j < groupData.length; j++) {
+                        groupData[j] = currClusters.get(i).get(j).data;
+                    }
+                    double[] newCentroid = ZMath.dataCentroid(groupData);
+                    double moveD = ZMath.distanceEuclidean(centroid[i], newCentroid);
+                    if (moveD > maxMoveDists) {
+                        maxMoveDists = moveD;
+                    }
+                    centroid[i] = newCentroid;
+                } else {
+                    // current cluster is empty
+                    centroid[i] = new double[]{};
                 }
-                double[] newCentroid = ZMath.dataCentroid(groupData);
-                double moveD = ZMath.distanceEuclidean(centroid[i], newCentroid);
-                if (moveD > maxMoveDists) {
-                    maxMoveDists = moveD;
-                }
-                centroid[i] = newCentroid;
             }
             maxCentroidMoveDist = maxMoveDists;
-
+//            System.out.println("maxCentroidMoveDist: " + maxCentroidMoveDist);
             count++;
         }
 
@@ -92,15 +98,15 @@ public class ZKMeans {
             }
         }
 
-        System.out.println(">>> K-means iterated " + count + " times");
-        System.out.println(">>> final centroids: ");
-        for (int i = 0; i < k; i++) {
-            System.out.println("centroid " + i + " -> " + Arrays.toString(centroid[i]));
-        }
-        System.out.println(">>> final clusters: ");
-        for (int i = 0; i < k; i++) {
-            System.out.println(clusters[i].length + " samples in cluster " + i + " -> " + Arrays.toString(clusters[i]));
-        }
+//        System.out.println(">>> K-means iterated " + count + " times");
+//        System.out.println(">>> final centroids: ");
+//        for (int i = 0; i < k; i++) {
+//            System.out.println("centroid " + i + " -> " + Arrays.toString(centroid[i]));
+//        }
+//        System.out.println(">>> final clusters: ");
+//        for (int i = 0; i < k; i++) {
+//            System.out.println(clusters[i].length + " samples in cluster " + i + " -> " + Arrays.toString(clusters[i]));
+//        }
     }
 
     /**
@@ -138,10 +144,11 @@ public class ZKMeans {
         for (int i = 0; i < cen.size(); i++) {
             result[i] = cen.get(i);
         }
-        System.out.println(">>> initial K-means centroids:");
-        for (double[] c : result) {
-            System.out.println(Arrays.toString(c));
-        }
+//        System.out.println(">>> initial K-means centroids:");
+//        for (double[] c : result) {
+//            System.out.println(Arrays.toString(c));
+//        }
+        System.out.println("init result: " + Arrays.deepToString(result));
         return result;
     }
 

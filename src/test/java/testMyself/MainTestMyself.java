@@ -26,7 +26,7 @@ public class MainTestMyself {
 //        PApplet.main("demoTest.Test4Curve");
 
         /* test ZLargestRectangle */
-        PApplet.main("testMyself.Test5LargestRect");
+//        PApplet.main("testMyself.Test5LargestRect");
 
         /* test vector methods in ZGeoMath */
 //        PApplet.main("demoTest.Test6VectorTools");
@@ -44,6 +44,8 @@ public class MainTestMyself {
 //        PApplet.main("demoTest.Test10ShapeDescriptor");
 
         /* test K-Means clustering */
-//        PApplet.main("demoTest.Test11KMeans");
+        PApplet.main("testMyself.Test11KMeans");
+
+//        PApplet.main("testMyself.TestZGraph2");
     }
 }

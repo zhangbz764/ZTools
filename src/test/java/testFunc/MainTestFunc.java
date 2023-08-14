@@ -28,7 +28,7 @@ public class MainTestFunc {
 //        PApplet.main("demoTest.Test4Curve");
 
         /* test ZLargestRectangle */
-        PApplet.main("demoTest.Test5LargestRect");
+//        PApplet.main("demoTest.Test5LargestRect");
 
         /* test vector methods in ZGeoMath */
 //        PApplet.main("demoTest.Test6VectorTools");
@@ -39,6 +39,7 @@ public class MainTestFunc {
         /* test ZGraph and graph methods */
 //        PApplet.main("demoTest.Test8ZGraph");
 //        PApplet.main("demoTest.TestZGraph2");
+        PApplet.main("testFunc.TestLineMergeGraph");
 
         /* test arc and circle related tools */
 //        PApplet.main("demoTest.Test9ArcCircle");
