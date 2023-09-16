@@ -6,7 +6,6 @@ import org.locationtech.jts.geom.*;
 import wblut.geom.*;
 import wblut.hemesh.HEC_FromFacelist;
 import wblut.hemesh.HE_Mesh;
-import wblut.hemesh.HE_MeshOp;
 
 import java.util.ArrayList;
 import java.util.List;

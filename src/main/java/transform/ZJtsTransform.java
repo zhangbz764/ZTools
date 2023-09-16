@@ -1,8 +1,9 @@
 package transform;
 
 import basicGeometry.ZFactory;
-import basicGeometry.ZPoint;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.math.Vector2D;
+import org.locationtech.jts.math.Vector3D;
 import wblut.math.WB_Epsilon;
 import wblut.math.WB_M33;
 import wblut.math.WB_M44;
@@ -42,9 +43,9 @@ public class ZJtsTransform {
      * @param v vector to translate
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addTranslate2D(final ZPoint v) {
-        this.T3 = (new WB_M33(1.0D, 0.0D, v.xd(), 0.0D, 1.0D, v.yd(), 0.0D, 0.0D, 1.0D)).mul(this.T3);
-        this.invT3 = this.invT3.mul(new WB_M33(1.0D, 0.0D, -v.xd(), 0.0D, 1.0D, -v.yd(), 0.0D, 0.0D, 1.0D));
+    public ZJtsTransform addTranslate2D(final Vector2D v) {
+        this.T3 = (new WB_M33(1.0D, 0.0D, v.getX(), 0.0D, 1.0D, v.getY(), 0.0D, 0.0D, 1.0D)).mul(this.T3);
+        this.invT3 = this.invT3.mul(new WB_M33(1.0D, 0.0D, -v.getX(), 0.0D, 1.0D, -v.getY(), 0.0D, 0.0D, 1.0D));
         return this;
     }
 
@@ -55,9 +56,9 @@ public class ZJtsTransform {
      * @param v vector to translate
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addTranslate2D(final double f, final ZPoint v) {
-        this.T3 = (new WB_M33(1.0D, 0.0D, f * v.xd(), 0.0D, 1.0D, f * v.yd(), 0.0D, 0.0D, 1.0D)).mul(this.T3);
-        this.invT3 = this.invT3.mul(new WB_M33(1.0D, 0.0D, -f * v.xd(), 0.0D, 1.0D, -f * v.yd(), 0.0D, 0.0D, 1.0D));
+    public ZJtsTransform addTranslate2D(final double f, final Vector2D v) {
+        this.T3 = (new WB_M33(1.0D, 0.0D, f * v.getX(), 0.0D, 1.0D, f * v.getY(), 0.0D, 0.0D, 1.0D)).mul(this.T3);
+        this.invT3 = this.invT3.mul(new WB_M33(1.0D, 0.0D, -f * v.getX(), 0.0D, 1.0D, -f * v.getY(), 0.0D, 0.0D, 1.0D));
         return this;
     }
 
@@ -67,9 +68,9 @@ public class ZJtsTransform {
      * @param s scale vector
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addScale2D(final ZPoint s) {
-        this.T3 = (new WB_M33(s.xd(), 0.0D, 0.0D, 0.0D, s.yd(), 0.0D, 0.0D, 0.0D, 1.0D)).mul(this.T3);
-        this.invT3 = this.invT3.mul(new WB_M33(1.0D / s.xd(), 0.0D, 0.0D, 0.0D, 1.0D / s.yd(), 0.0D, 0.0D, 0.0D, 1.0D));
+    public ZJtsTransform addScale2D(final Vector2D s) {
+        this.T3 = (new WB_M33(s.getX(), 0.0D, 0.0D, 0.0D, s.getY(), 0.0D, 0.0D, 0.0D, 1.0D)).mul(this.T3);
+        this.invT3 = this.invT3.mul(new WB_M33(1.0D / s.getX(), 0.0D, 0.0D, 0.0D, 1.0D / s.getY(), 0.0D, 0.0D, 0.0D, 1.0D));
         return this;
     }
 
@@ -120,7 +121,7 @@ public class ZJtsTransform {
      * @param p     rotate base
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addRotateAboutPoint2D(final double angle, final ZPoint p) {
+    public ZJtsTransform addRotateAboutPoint2D(final double angle, final Vector2D p) {
         this.addTranslate2D(-1.0D, p);
         this.addRotateAboutOrigin2D(angle);
         this.addTranslate2D(p);
@@ -153,7 +154,7 @@ public class ZJtsTransform {
      * @param p point
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addReflectXAboutPoint2D(ZPoint p) {
+    public ZJtsTransform addReflectXAboutPoint2D(Vector2D p) {
         this.addTranslate2D(-1.0D, p);
         this.addScale2D(1.0D, -1.0D);
         this.addTranslate2D(p);
@@ -166,7 +167,7 @@ public class ZJtsTransform {
      * @param p point
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addReflectYAboutPoint2D(ZPoint p) {
+    public ZJtsTransform addReflectYAboutPoint2D(Vector2D p) {
         this.addTranslate2D(-1.0D, p);
         this.addScale2D(-1.0D, 1.0D);
         this.addTranslate2D(p);
@@ -180,12 +181,12 @@ public class ZJtsTransform {
      * @param p2 second point on the line
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addReflect2D(ZPoint p1, ZPoint p2) {
-        ZPoint v = p2.sub(p1).normalize();
-        ZPoint newP2 = p1.add(v);
-        double a = p1.yd() - newP2.yd();
-        double b = newP2.xd() - p1.xd();
-        double c = p1.xd() * newP2.yd() - newP2.xd() * p1.yd();
+    public ZJtsTransform addReflect2D(Vector2D p1, Vector2D p2) {
+        Vector2D v = p2.subtract(p1).normalize();
+        Vector2D newP2 = p1.add(v);
+        double a = p1.getY() - newP2.getY();
+        double b = newP2.getX() - p1.getX();
+        double c = p1.getX() * newP2.getY() - newP2.getX() * p1.getY();
         WB_M33 tmp = new WB_M33(
                 b * b - a * a,
                 -2 * a * b,
@@ -220,9 +221,9 @@ public class ZJtsTransform {
      * @param v vector to translate
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addTranslate3D(final ZPoint v) {
-        this.T4 = (new WB_M44(1.0D, 0.0D, 0.0D, v.xd(), 0.0D, 1.0D, 0.0D, v.yd(), 0.0D, 0.0D, 1.0D, v.zd(), 0.0D, 0.0D, 0.0D, 1.0D)).mult(this.T4);
-        this.invT4 = this.invT4.mult(new WB_M44(1.0D, 0.0D, 0.0D, -v.xd(), 0.0D, 1.0D, 0.0D, -v.yd(), 0.0D, 0.0D, 1.0D, -v.zd(), 0.0D, 0.0D, 0.0D, 1.0D));
+    public ZJtsTransform addTranslate3D(final Vector3D v) {
+        this.T4 = (new WB_M44(1.0D, 0.0D, 0.0D, v.getX(), 0.0D, 1.0D, 0.0D, v.getY(), 0.0D, 0.0D, 1.0D, v.getZ(), 0.0D, 0.0D, 0.0D, 1.0D)).mult(this.T4);
+        this.invT4 = this.invT4.mult(new WB_M44(1.0D, 0.0D, 0.0D, -v.getX(), 0.0D, 1.0D, 0.0D, -v.getY(), 0.0D, 0.0D, 1.0D, -v.getZ(), 0.0D, 0.0D, 0.0D, 1.0D));
         return this;
     }
 
@@ -233,9 +234,9 @@ public class ZJtsTransform {
      * @param v vector to translate
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addTranslate3D(final double f, final ZPoint v) {
-        this.T4 = (new WB_M44(1.0D, 0.0D, 0.0D, f * v.xd(), 0.0D, 1.0D, 0.0D, f * v.yd(), 0.0D, 0.0D, 1.0D, f * v.zd(), 0.0D, 0.0D, 0.0D, 1.0D)).mult(this.T4);
-        this.invT4 = this.invT4.mult(new WB_M44(1.0D, 0.0D, 0.0D, -f * v.xd(), 0.0D, 1.0D, 0.0D, -f * v.yd(), 0.0D, 0.0D, 1.0D, -f * v.zd(), 0.0D, 0.0D, 0.0D, 1.0D));
+    public ZJtsTransform addTranslate3D(final double f, final Vector3D v) {
+        this.T4 = (new WB_M44(1.0D, 0.0D, 0.0D, f * v.getX(), 0.0D, 1.0D, 0.0D, f * v.getY(), 0.0D, 0.0D, 1.0D, f * v.getZ(), 0.0D, 0.0D, 0.0D, 1.0D)).mult(this.T4);
+        this.invT4 = this.invT4.mult(new WB_M44(1.0D, 0.0D, 0.0D, -f * v.getX(), 0.0D, 1.0D, 0.0D, -f * v.getY(), 0.0D, 0.0D, 1.0D, -f * v.getZ(), 0.0D, 0.0D, 0.0D, 1.0D));
         return this;
     }
 
@@ -245,9 +246,9 @@ public class ZJtsTransform {
      * @param s scale vector
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addScale3D(final ZPoint s) {
-        this.T4 = (new WB_M44(s.xd(), 0.0D, 0.0D, 0.0D, 0.0D, s.yd(), 0.0D, 0.0D, 0.0D, 0.0D, s.zd(), 0.0D, 0.0D, 0.0D, 0.0D, 1.0D)).mult(this.T4);
-        this.invT4 = this.invT4.mult(new WB_M44(1.0D / s.xd(), 0.0D, 0.0D, 0.0D, 0.0D, 1.0D / s.yd(), 0.0D, 0.0D, 0.0D, 0.0D, 1.0D / s.zd(), 0.0D, 0.0D, 0.0D, 0.0D, 1.0D));
+    public ZJtsTransform addScale3D(final Vector3D s) {
+        this.T4 = (new WB_M44(s.getX(), 0.0D, 0.0D, 0.0D, 0.0D, s.getY(), 0.0D, 0.0D, 0.0D, 0.0D, s.getZ(), 0.0D, 0.0D, 0.0D, 0.0D, 1.0D)).mult(this.T4);
+        this.invT4 = this.invT4.mult(new WB_M44(1.0D / s.getX(), 0.0D, 0.0D, 0.0D, 0.0D, 1.0D / s.getY(), 0.0D, 0.0D, 0.0D, 0.0D, 1.0D / s.getZ(), 0.0D, 0.0D, 0.0D, 0.0D, 1.0D));
         return this;
     }
 
@@ -329,11 +330,11 @@ public class ZJtsTransform {
      * @param axisVec axis direction vector
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addRotateAboutOrigin3D(final double angle, final ZPoint axisVec) {
-        ZPoint a = axisVec.normalize();
+    public ZJtsTransform addRotateAboutOrigin3D(final double angle, final Vector3D axisVec) {
+        Vector3D a = axisVec.normalize();
         double s = Math.sin(angle);
         double c = Math.cos(angle);
-        WB_M44 tmp = new WB_M44(a.xd() * a.xd() + (1.0D - a.xd() * a.xd()) * c, a.xd() * a.yd() * (1.0D - c) - a.zd() * s, a.xd() * a.zd() * (1.0D - c) + a.yd() * s, 0.0D, a.xd() * a.yd() * (1.0D - c) + a.zd() * s, a.yd() * a.yd() + (1.0D - a.yd() * a.yd()) * c, a.yd() * a.zd() * (1.0D - c) - a.xd() * s, 0.0D, a.xd() * a.zd() * (1.0D - c) - a.yd() * s, a.yd() * a.zd() * (1.0D - c) + a.xd() * s, a.zd() * a.zd() + (1.0D - a.zd() * a.zd()) * c, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D);
+        WB_M44 tmp = new WB_M44(a.getX() * a.getX() + (1.0D - a.getX() * a.getX()) * c, a.getX() * a.getY() * (1.0D - c) - a.getZ() * s, a.getX() * a.getZ() * (1.0D - c) + a.getY() * s, 0.0D, a.getX() * a.getY() * (1.0D - c) + a.getZ() * s, a.getY() * a.getY() + (1.0D - a.getY() * a.getY()) * c, a.getY() * a.getZ() * (1.0D - c) - a.getX() * s, 0.0D, a.getX() * a.getZ() * (1.0D - c) - a.getY() * s, a.getY() * a.getZ() * (1.0D - c) + a.getX() * s, a.getZ() * a.getZ() + (1.0D - a.getZ() * a.getZ()) * c, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D);
         this.T4 = tmp.mult(this.T4);
         this.invT4 = this.invT4.mult(tmp.getTranspose());
         return this;
@@ -347,7 +348,7 @@ public class ZJtsTransform {
      * @param axisVec axis direction vector
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addRotateAboutAxis3D(final double angle, final ZPoint p, final ZPoint axisVec) {
+    public ZJtsTransform addRotateAboutAxis3D(final double angle, final Vector3D p, final Vector3D axisVec) {
         this.addTranslate3D(-1.0D, p);
         this.addRotateAboutOrigin3D(angle, axisVec);
         this.addTranslate3D(p);
@@ -362,9 +363,10 @@ public class ZJtsTransform {
      * @param p1    second point
      * @return transform.ZJtsTransform
      */
-    public ZJtsTransform addRotateAboutTwoPoints3D(final double angle, final ZPoint p0, final ZPoint p1) {
+    public ZJtsTransform addRotateAboutTwoPoints3D(final double angle, final Vector3D p0, final Vector3D p1) {
         this.addTranslate3D(-1.0D, p0);
-        this.addRotateAboutOrigin3D(angle, p1.sub(p0));
+        Vector3D sub = new Vector3D(p1.getX() - p0.getX(), p1.getY() - p0.getY(), p1.getZ() - p0.getZ());
+        this.addRotateAboutOrigin3D(angle, sub);
         this.addTranslate3D(p0);
         return this;
     }
