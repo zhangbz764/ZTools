@@ -18,6 +18,47 @@ public class ZRender {
 
     public final static ZPoint origin = new ZPoint(0, 0, 0);
 
+    /*-------- color format --------*/
+
+    /**
+     * convert decimal color data to ARGB stats
+     *
+     * @param decimalColor original decimal color data, including A, R, G, B
+     * @return int[]
+     */
+    public static int[] convertDecimalToARGB(int decimalColor) {
+        long longColor = decimalColor & 0xFFFFFFFFL; // 转为无符号的 long 值
+
+        StringBuilder hexColor = new StringBuilder(Long.toHexString(longColor));
+        while (hexColor.length() < 8) {
+            hexColor.insert(0, "0");
+        }
+
+        int alpha = Integer.parseInt(hexColor.substring(0, 2), 16);
+        int red = Integer.parseInt(hexColor.substring(2, 4), 16);
+        int green = Integer.parseInt(hexColor.substring(4, 6), 16);
+        int blue = Integer.parseInt(hexColor.substring(6, 8), 16);
+
+        return new int[]{alpha, red, green, blue};
+    }
+
+    /**
+     * convert hexColor data to ARGB stats
+     *
+     * @param hexColor hexColor data
+     * @return int[]
+     */
+    public static int[] convertHexToARGB(String hexColor) {
+        int decimalColor = Integer.parseInt(hexColor, 16);
+
+        int alpha = (decimalColor >> 24) & 0xFF;
+        int red = (decimalColor >> 16) & 0xFF;
+        int green = (decimalColor >> 8) & 0xFF;
+        int blue = decimalColor & 0xFF;
+
+        return new int[]{alpha, red, green, blue};
+    }
+
     /*-------- basic --------*/
 
     /**
