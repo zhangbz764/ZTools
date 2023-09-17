@@ -2,10 +2,7 @@ package math;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * math tools
@@ -231,6 +228,29 @@ public final class ZMath {
     }
 
     /**
+     * find the indices of maximum values in an array of double, return List
+     *
+     * @param arr   input double array
+     * @param count number to select
+     * @return java.util.List<java.lang.Integer>
+     */
+    public static List<Integer> getMaxIndicesList(final double[] arr, final int count) {
+        List<Integer> indices = new ArrayList<>();
+
+        // 初始化索引列表
+        for (int i = 0; i < arr.length; i++) {
+            indices.add(i);
+        }
+
+        // 使用比较器对索引列表进行排序，降序排序以获取最大值的索引
+        indices.sort(Comparator.comparingDouble(index -> -arr[index]));
+
+        // 取前n个索引
+
+        return indices.subList(0, count);
+    }
+
+    /**
      * find the indices of minimum values in an array of double
      *
      * @param arr   input double array
@@ -250,6 +270,29 @@ public final class ZMath {
             indices[i] = ArrayUtils.indexOf(arr, temp[i]);
         }
         return indices;
+    }
+
+    /**
+     * find the indices of minimum values in an array of double, return List
+     *
+     * @param arr   input double array
+     * @param count number to select
+     * @return java.util.List<java.lang.Integer>
+     */
+    public static List<Integer> getMinIndicesList(final double[] arr, final int count) {
+        List<Integer> indices = new ArrayList<>();
+
+        // 初始化索引列表
+        for (int i = 0; i < arr.length; i++) {
+            indices.add(i);
+        }
+
+        // 使用比较器对索引列表进行排序
+        indices.sort(Comparator.comparingDouble(index -> arr[index]));
+
+        // 取前n个索引
+
+        return indices.subList(0, count);
     }
 
     /**
@@ -467,6 +510,19 @@ public final class ZMath {
         return l;
     }
 
+    /**
+     * remove elements in array b from array a
+     *
+     * @param a array a
+     * @param b array b
+     * @return int[]
+     */
+    public static int[] arrayComplement(int[] a, int[] b) {
+        return Arrays.stream(a)
+                .filter(num -> Arrays.stream(b).noneMatch(bNum -> bNum == num))
+                .toArray();
+    }
+
     /*-------- matrix --------*/
 
     /**
@@ -540,17 +596,6 @@ public final class ZMath {
     }
 
     /**
-     * generate random integer by given floor and ceiling
-     *
-     * @param min floor limit
-     * @param max ceil limit
-     * @return int
-     */
-    public static int randomInt(final double min, final double max) {
-        return (int) (Math.random() * (max - min) + min);
-    }
-
-    /**
      * generate a series of random integer (start from 0)
      *
      * @param length length of random integer series
@@ -577,6 +622,55 @@ public final class ZMath {
     public static double mapToRegion(final double num, final double oldMin, final double oldMax, final double newMin, final double newMax) {
         double k = (newMax - newMin) / (oldMax - oldMin);
         return k * (num - oldMin) + newMin;
+    }
+
+    /**
+     * generate random integer by given floor and ceiling
+     *
+     * @param min floor limit
+     * @param max ceil limit
+     * @return int
+     */
+    public static int randomInteger(int min, int max) {
+        if (min >= max) {
+            throw new IllegalArgumentException("min must be less than max");
+        }
+
+        Random random = new Random();
+        return random.nextInt(max - min + 1) + min;
+    }
+
+    /**
+     * generate random integers by given floor and ceiling
+     *
+     * @param min   floor limit
+     * @param max   ceil limit
+     * @param count amount
+     * @return int[]
+     */
+    public static int[] randomIntegers(int min, int max, int count) {
+        if (min >= max) {
+            throw new IllegalArgumentException("min must be less than max");
+        }
+        if (count > max - min + 1) {
+            throw new IllegalArgumentException("count must be less than or equal to the range");
+        }
+
+        Set<Integer> randomNumbersSet = new HashSet<>();
+        Random random = new Random();
+
+        while (randomNumbersSet.size() < count) {
+            int randomNumber = random.nextInt(max - min + 1) + min;
+            randomNumbersSet.add(randomNumber);
+        }
+
+        int[] randomNumbersArray = new int[count];
+        int index = 0;
+        for (int number : randomNumbersSet) {
+            randomNumbersArray[index++] = number;
+        }
+
+        return randomNumbersArray;
     }
 
     /*-------- other --------*/

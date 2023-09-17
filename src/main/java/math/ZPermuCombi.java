@@ -14,10 +14,10 @@ import java.util.Stack;
  * @time 14:50
  */
 public class ZPermuCombi {
-    private static Stack<Integer> stack = new Stack<Integer>();
+    private static final Stack<Integer> stack = new Stack<Integer>();
 
-    private List<List<Integer>> combinationResults;
-    private List<List<Integer>> permutationResults;
+    private final List<List<Integer>> combinationResults;
+    private final List<List<Integer>> permutationResults;
 
     /* ------------- constructor ------------- */
 
