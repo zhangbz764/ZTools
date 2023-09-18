@@ -12,6 +12,7 @@ import org.twak.utils.collections.Loop;
 import org.twak.utils.collections.LoopL;
 import processing.core.PApplet;
 import transform.ZTransform;
+import wblut.geom.WB_CoordOp2D;
 import wblut.geom.WB_Polygon;
 import wblut.hemesh.HEC_FromPolygons;
 import wblut.hemesh.HE_Mesh;
@@ -44,14 +45,14 @@ public class ZSkeleton {
     private Skeleton skeleton;
 
     // output
-    private List<ZLine> allEdges;
-    private List<ZLine> topEdges;
-    private List<ZLine> sideEdges;
-    private List<ZLine> bottomEdges;
+    private List<LineString> allEdges;
+    private List<LineString> topEdges;
+    private List<LineString> sideEdges;
+    private List<LineString> bottomEdges;
 
-    private List<ZLine> ridges;
-    private List<ZLine> extendedRidges;
-    private List<ZPoint> ridgePoints;
+    private List<LineString> ridges;
+    private List<LineString> extendedRidges;
+    private List<Coordinate> ridgePoints;
 
     private List<Polygon> allFacePolys;
     private HE_Mesh skeletonMesh;
@@ -129,31 +130,31 @@ public class ZSkeleton {
         return skeleton;
     }
 
-    public List<ZLine> getAllEdges() {
+    public List<LineString> getAllEdges() {
         return this.allEdges;
     }
 
-    public List<ZLine> getTopEdges() {
+    public List<LineString> getTopEdges() {
         return this.topEdges;
     }
 
-    public List<ZLine> getSideEdges() {
+    public List<LineString> getSideEdges() {
         return this.sideEdges;
     }
 
-    public List<ZLine> getBottomEdges() {
+    public List<LineString> getBottomEdges() {
         return this.bottomEdges;
     }
 
-    public List<ZLine> getRidges() {
+    public List<LineString> getRidges() {
         return this.ridges;
     }
 
-    public List<ZLine> getExtendedRidges() {
+    public List<LineString> getExtendedRidges() {
         return this.extendedRidges;
     }
 
-    public List<ZPoint> getRidgePoints() {
+    public List<Coordinate> getRidgePoints() {
         return this.ridgePoints;
     }
 
@@ -273,7 +274,11 @@ public class ZSkeleton {
     private void extractEdges3D() {
         // extract all edges
         for (Output.SharedEdge se : skeleton.output.edges.map.values()) {
-            allEdges.add(new ZLine(new ZPoint(se.start.getX(), se.start.getY(), se.start.getZ()), new ZPoint(se.end.getX(), se.end.getY(), se.end.getZ())));
+            allEdges.add(ZFactory.jtsgf.createLineString(
+                    new Coordinate[]{
+                            new Coordinate(se.start.getX(), se.start.getY(), se.start.getZ()), new Coordinate(se.end.getX(), se.end.getY(), se.end.getZ())
+                    }
+            ));
         }
 
         // convert skeleton faces to HE_Mesh, find ridges from mesh
@@ -299,14 +304,14 @@ public class ZSkeleton {
         for (Output.Face face : skeleton.output.faces.values()) {
             for (Loop<Output.SharedEdge> egdeLoop : face.edges) {
                 for (Output.SharedEdge edge : egdeLoop) {
-                    ZPoint start = new ZPoint(edge.start.getX(), edge.start.getY(), edge.start.getZ());
-                    ZPoint end = new ZPoint(edge.end.getX(), edge.end.getY(), edge.start.getZ());
+                    Coordinate start = new Coordinate(edge.start.getX(), edge.start.getY(), edge.start.getZ());
+                    Coordinate end = new Coordinate(edge.end.getX(), edge.end.getY(), edge.start.getZ());
                     if (face.isSide(edge) && !nonRepeatShared.contains(edge)) {
-                        sideEdges.add(new ZLine(start, end));
+                        sideEdges.add(ZFactory.jtsgf.createLineString(new Coordinate[]{start, end}));
                     } else if (face.isBottom(edge) && !nonRepeatShared.contains(edge)) {
-                        bottomEdges.add(new ZLine(start, end));
+                        bottomEdges.add(ZFactory.jtsgf.createLineString(new Coordinate[]{start, end}));
                     } else if (face.isTop(edge) && !nonRepeatShared.contains(edge)) {
-                        topEdges.add(new ZLine(start, end));
+                        topEdges.add(ZFactory.jtsgf.createLineString(new Coordinate[]{start, end}));
                     }
                     nonRepeatShared.add(edge);
                 }
@@ -324,7 +329,11 @@ public class ZSkeleton {
     private void extractEdges2D() {
         // extract all edges
         for (Output.SharedEdge se : skeleton.output.edges.map.values()) {
-            allEdges.add(new ZLine(new ZPoint(se.start.getX(), se.start.getY()), new ZPoint(se.end.getX(), se.end.getY())));
+            allEdges.add(ZFactory.jtsgf.createLineString(
+                    new Coordinate[]{
+                            new Coordinate(se.start.getX(), se.start.getY()), new Coordinate(se.end.getX(), se.end.getY())
+                    }
+            ));
         }
 
         // convert skeleton faces to HE_Mesh, find ridges from mesh
@@ -350,14 +359,14 @@ public class ZSkeleton {
         for (Output.Face face : skeleton.output.faces.values()) {
             for (Loop<Output.SharedEdge> egdeLoop : face.edges) {
                 for (Output.SharedEdge edge : egdeLoop) {
-                    ZPoint start = new ZPoint(edge.start.getX(), edge.start.getY());
-                    ZPoint end = new ZPoint(edge.end.getX(), edge.end.getY());
+                    Coordinate start = new Coordinate(edge.start.getX(), edge.start.getY());
+                    Coordinate end = new Coordinate(edge.end.getX(), edge.end.getY());
                     if (face.isSide(edge) && !nonRepeatShared.contains(edge)) {
-                        sideEdges.add(new ZLine(start, end));
+                        sideEdges.add(ZFactory.jtsgf.createLineString(new Coordinate[]{start, end}));
                     } else if (face.isBottom(edge) && !nonRepeatShared.contains(edge)) {
-                        bottomEdges.add(new ZLine(start, end));
+                        bottomEdges.add(ZFactory.jtsgf.createLineString(new Coordinate[]{start, end}));
                     } else if (face.isTop(edge) && !nonRepeatShared.contains(edge)) {
-                        topEdges.add(new ZLine(start, end));
+                        topEdges.add(ZFactory.jtsgf.createLineString(new Coordinate[]{start, end}));
                     }
                     nonRepeatShared.add(edge);
                 }
@@ -385,20 +394,24 @@ public class ZSkeleton {
             HE_Vertex v = skeletonMesh.getVertexWithIndex(i);
             if (!v.isBoundary()) {
                 curr_vertices.add(v);
-                ridgePoints.add(new ZPoint(v));
+                ridgePoints.add(new Coordinate(v.xd(), v.yd(), v.zd()));
 
-                List<ZPoint> verticesFromRidgeEnd = new ArrayList<>();
+                List<HE_Vertex> verticesFromRidgeEnd = new ArrayList<>();
                 for (HE_Vertex vertex : v.getNeighborVertices()) {
                     if (!vertex.isBoundary() && !curr_vertices.contains(vertex)) {
-                        ridges.add(new ZLine(new ZPoint(v), new ZPoint(vertex)));
+                        ridges.add(ZFactory.jtsgf.createLineString(new Coordinate[]{ZTransform.WB_CoordToCoordinate(v), ZTransform.WB_CoordToCoordinate(v)}));
                     }
                     if (vertex.isBoundary()) {
-                        verticesFromRidgeEnd.add(new ZPoint(vertex));
+                        verticesFromRidgeEnd.add(vertex);
                     }
                 }
+
                 if (verticesFromRidgeEnd.size() == 2 && v.getNeighborVertices().size() == 3) {
-                    ZPoint center = verticesFromRidgeEnd.get(0).centerWith(verticesFromRidgeEnd.get(1));
-                    extendedRidges.add(new ZLine(new ZPoint(v), center));
+                    HE_Vertex v0 = verticesFromRidgeEnd.get(0);
+                    HE_Vertex v1 = verticesFromRidgeEnd.get(1);
+
+                    Coordinate center = new Coordinate((v0.xd() + v1.xd()) * 0.5, (v0.yd() + v1.yd()) * 0.5, (v0.zd() + v1.zd()) * 0.5);
+                    extendedRidges.add(ZFactory.jtsgf.createLineString(new Coordinate[]{ZTransform.WB_CoordToCoordinate(v), center}));
                 }
             }
         }
@@ -422,32 +435,4 @@ public class ZSkeleton {
                 '}';
     }
 
-    public void display(PApplet app) {
-        app.pushStyle();
-        displayAllEdges(app);
-        displayTopEdges(app);
-        displayExtendedRidges(app);
-        app.popStyle();
-    }
-
-    public void displayAllEdges(PApplet app) {
-        app.stroke(0, 0, 200);
-        for (ZLine line : allEdges) {
-            line.display(app, 1);
-        }
-    }
-
-    public void displayTopEdges(PApplet app) {
-        app.stroke(137, 57, 50);
-        for (ZLine top : topEdges) {
-            top.display(app, 5);
-        }
-    }
-
-    public void displayExtendedRidges(PApplet app) {
-        app.stroke(104, 210, 120);
-        for (ZLine extendRidge : extendedRidges) {
-            extendRidge.display(app, 5);
-        }
-    }
 }
