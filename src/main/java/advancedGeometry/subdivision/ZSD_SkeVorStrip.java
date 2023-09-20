@@ -61,9 +61,9 @@ public class ZSD_SkeVorStrip extends ZSubdivision {
             ZGraph tempGraph = ZFactory.createZGraphFromSegments(topSegments);
             graph = tempGraph;
             List<ZEdge> longestChain = ZGraphMath.longestChain(tempGraph);
-            polyLine = ZFactory.createWB_PolyLineFromSegs(longestChain);
+            polyLine = ZFactory.createWB_PolyLineFromZLines(longestChain);
         } else {
-            polyLine = ZFactory.createWB_PolyLineFromSegs(topSegments);
+            polyLine = ZFactory.createWB_PolyLineFromZLines(topSegments);
         }
 
         // polyLine maybe null because segments might not be nose to tail

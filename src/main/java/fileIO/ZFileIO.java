@@ -1,16 +1,16 @@
-package fileManager;
+package fileIO;
 
 import java.io.*;
 
 /**
- * description
+ * file input & output
  *
  * @author zhangbz ZHANG Baizhou
  * @project shopping_mall
  * @date 2021/8/4
  * @time 16:10
  */
-public class ZFileOP {
+public class ZFileIO {
 
     /**
      * write String to a local file

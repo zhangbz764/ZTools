@@ -1,8 +1,6 @@
 package advancedGeometry;
 
 import basicGeometry.ZFactory;
-import basicGeometry.ZLine;
-import basicGeometry.ZPoint;
 import math.ZGeoMath;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
@@ -10,9 +8,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.twak.camp.*;
 import org.twak.utils.collections.Loop;
 import org.twak.utils.collections.LoopL;
-import processing.core.PApplet;
 import transform.ZTransform;
-import wblut.geom.WB_CoordOp2D;
 import wblut.geom.WB_Polygon;
 import wblut.hemesh.HEC_FromPolygons;
 import wblut.hemesh.HE_Mesh;

@@ -7,18 +7,11 @@ import java.util.List;
 
 /**
  * graph tools
- * <p>
  *
  * @author ZHANG Bai-zhou zhangbz
  * @project shopping_mall
  * @date 2021/3/30
  * @time 11:03
- * <p>
- * giving start node and distance, find the destinations / nodes passed / segments passed / along graph edges
- * giving step and start node, split graph edges
- * giving step and start node, split graph edges by each
- * find all chains from the start node (return ZEdge of ZNode)
- * find the longest chain in a non-loop graph
  */
 public final class ZGraphMath {
 

@@ -58,7 +58,7 @@ public class ZSD_SkeOBBStrip extends ZSubdivision {
         ZGraph tempGraph = ZFactory.createZGraphFromSegments(topSegments);
         graph = tempGraph;
         List<ZEdge> longestChain = ZGraphMath.longestChain(tempGraph);
-        WB_PolyLine polyLine = ZFactory.createWB_PolyLineFromSegs(longestChain);
+        WB_PolyLine polyLine = ZFactory.createWB_PolyLineFromZLines(longestChain);
 
         if (polyLine != null) {
             ZPoint dir = ZGeoMath.obbDir(super.getOriginPolygon());

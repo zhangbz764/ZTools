@@ -65,10 +65,10 @@ public class ZShapeDescriptor {
         double[] eigen = covarianceMatrixEigen(coords);
         this.axes = mainAxes(eigen);
 
-        List<ZPoint> split = ZGeoMath.splitPolygonEdge(p, 25);
+        List<Coordinate> split = ZGeoMath.dividePolygonEdge(p, 25);
         Coordinate[] coordsSplit = new Coordinate[split.size()];
         for (int i = 0; i < coordsSplit.length; i++) {
-            coordsSplit[i] = split.get(i).toJtsCoordinate();
+            coordsSplit[i] = split.get(i);
         }
         double[] eigenSplit = covarianceMatrixEigen(coordsSplit);
         this.eccentricity = eccentricity(eigenSplit);
@@ -279,10 +279,10 @@ public class ZShapeDescriptor {
      * @return basicGeometry.ZPoint[]
      */
     public static ZPoint[] mainAxesBySplit(final Polygon p) {
-        List<ZPoint> split = ZGeoMath.splitPolygonEdge(p, 25);
+        List<Coordinate> split = ZGeoMath.dividePolygonEdge(p, 25);
         Coordinate[] coords = new Coordinate[split.size()];
         for (int i = 0; i < coords.length; i++) {
-            coords[i] = split.get(i).toJtsCoordinate();
+            coords[i] = split.get(i);
         }
         double[] eigen = covarianceMatrixEigen(coords);
         return mainAxes(eigen);

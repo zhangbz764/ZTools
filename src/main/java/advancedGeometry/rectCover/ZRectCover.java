@@ -1,14 +1,12 @@
 package advancedGeometry.rectCover;
 
-import basicGeometry.ZLine;
-import basicGeometry.ZPoint;
+import basicGeometry.ZFactory;
 import math.ZGeoMath;
 import math.ZMath;
 import math.ZPermuCombi;
 import org.locationtech.jts.algorithm.MinimumDiameter;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.TopologyException;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.math.Vector2D;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import transform.ZTransform;
 import wblut.geom.WB_Polygon;
@@ -31,7 +29,7 @@ public class ZRectCover {
 
     // rays
     private int rayDensity = 100;
-    private List<ZLine> rayExtends;
+    private List<LineString> rayExtends;
 
     // rectangles and nets
     private int rectNum = 3;
@@ -81,24 +79,26 @@ public class ZRectCover {
      */
     private void initRays() {
         // generate rays
-        ZPoint[] dirs = new ZPoint[this.rayDensity];
+        Vector2D[] dirs = new Vector2D[this.rayDensity];
         double step = (Math.PI * 2) / dirs.length;
         for (int i = 0; i < dirs.length; i++) {
-            dirs[i] = new ZPoint(Math.cos(step * i), Math.sin(step * i));
+            dirs[i] = new Vector2D(Math.cos(step * i), Math.sin(step * i));
         }
 
         // TODO: 2021/4/30 no concave?
         // find concave points
-        List<ZPoint> concave = ZGeoMath.getConcavePoints(boundary);
+        List<Coordinate> concave = ZGeoMath.getConcavePoints(boundary);
 
         // rays extends to boundary
         this.rayExtends = new ArrayList<>();
-        for (ZPoint c : concave) {
-            for (ZPoint dir : dirs) {
-                ZPoint[] ray = new ZPoint[]{c, dir};
-                ZLine extendRay = ZGeoMath.extendSegmentToPolygon(ray, ZTransform.PolygonToWB_Polygon(boundary));
+        for (Coordinate c : concave) {
+            for (Vector2D dir : dirs) {
+                Vector2D[] ray = new Vector2D[]{Vector2D.create(c), dir};
+                LineString extendRay = ZGeoMath.extendSegmentToPolygon(ray, boundary);
                 if (extendRay != null) {
-                    rayExtends.add(new ZLine(c, extendRay.getPt1()));
+                    rayExtends.add(ZFactory.jtsgf.createLineString(new Coordinate[]{
+                            c, extendRay.getCoordinateN(1)
+                    }));
                 }
             }
         }
@@ -127,7 +127,7 @@ public class ZRectCover {
             Geometry nodedLineStrings = ZTransform.PolygonToLineString(boundary).get(0);
             for (int index : list) {
                 try {
-                    nodedLineStrings = nodedLineStrings.union(rayExtends.get(index).extendBothSides(1).toJtsLineString());
+                    nodedLineStrings = nodedLineStrings.union(ZFactory.createExtendedLineString(rayExtends.get(index), 1));
                 } catch (TopologyException e) {
                     invalidCount++;
                 }
@@ -189,7 +189,7 @@ public class ZRectCover {
         this.boundary = boundary;
     }
 
-    public List<ZLine> getRayExtends() {
+    public List<LineString> getRayExtends() {
         return rayExtends;
     }
 

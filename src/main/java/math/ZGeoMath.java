@@ -88,6 +88,30 @@ public final class ZGeoMath {
     }
 
     /**
+     * get angle bisector by the order of v0 -> v1 (counter-clockwise, reflex angle includes)
+     *
+     * @param v0 first vector
+     * @param v1 second vector
+     */
+    public static Vector2D getAngleBisectorOrdered(final Vector2D v0, final Vector2D v1) {
+        if (cross2D(v0, v1) > 0) {
+            return v0.normalize().add(v1.normalize()).normalize();
+        } else if (cross2D(v0, v1) < 0) {
+            return v0.normalize().add(v1.normalize()).normalize().multiply(-1);
+        } else {
+            if (v0.dot(v1) > 0) {
+                return v0.normalize();
+            } else {
+                Vector2D ortho = new Vector2D(v0.getY(), -v0.getX()).normalize();
+                if (!(cross2D(v0, ortho) > 0)) {
+                    ortho = ortho.multiply(-1);
+                }
+                return ortho;
+            }
+        }
+    }
+
+    /**
      * find all concave points in a polygon (WB_Polygon)
      *
      * @param polygon input WB_Polygon
@@ -230,6 +254,76 @@ public final class ZGeoMath {
         return other.get(maxIndex);
     }
 
+    /*-------- intersection 2D (jts) --------*/
+
+
+    /**
+     * get intersection points of two rays
+     *
+     * @param ray0 first ray {point P, direction d}
+     * @param ray1 second ray {point P, direction d}
+     * @return org.locationtech.jts.geom.Coordinate
+     */
+    public static Coordinate rayIntersection2D(final Vector2D[] ray0, final Vector2D[] ray1) {
+        Vector2D delta = ray1[0].subtract(ray0[0]);
+        double crossBase = cross2D(ray0[1], ray1[1]);
+        double crossDelta0 = cross2D(delta, ray0[1]);
+        double crossDelta1 = cross2D(delta, ray1[1]);
+
+        if (Math.abs(crossBase) < epsilon) {
+//            System.out.println("parallel or same or overlap");
+            return null;
+        } else {
+            double s = crossDelta1 / crossBase; // ray0
+            double t = crossDelta0 / crossBase; // ray1
+            if (s >= 0 && t >= 0) {
+                return ray1[0].add(ray1[1].multiply(t)).toCoordinate();
+            } else {
+//                System.out.println("intersection is not on one of these line elements");
+                return null;
+            }
+        }
+    }
+
+
+    /**
+     * get intersection points of a ray and a polygon ([--) for each edge)
+     *
+     * @param ray  ray {point P, direction d}
+     * @param poly input polygon
+     * @return java.util.List<org.locationtech.jts.geom.Coordinate>
+     */
+    public static List<Coordinate> rayPolygonIntersection2D(final Vector2D[] ray, final Polygon poly) {
+        List<Coordinate> result = new ArrayList<>();
+
+        for (int i = 0; i < poly.getCoordinates().length - 1; i++) {
+            Coordinate c0 = poly.getCoordinates()[i];
+            Coordinate c1 = poly.getCoordinates()[i + 1];
+            Vector2D[] polySeg = new Vector2D[]{
+                    Vector2D.create(c0),
+                    new Vector2D(c0, c1).normalize()
+            };
+
+            Coordinate intersect = null;
+            Vector2D delta = polySeg[0].subtract(ray[0]);
+            double crossBase = cross2D(ray[1], polySeg[1]);
+            double crossDelta0 = cross2D(delta, ray[1]);
+            double crossDelta1 = cross2D(delta, polySeg[1]);
+
+            if (Math.abs(crossBase) >= epsilon) {
+                double s = crossDelta1 / crossBase; // ray
+                double t = crossDelta0 / crossBase; // seg
+                if (s >= 0 && t >= 0 && t < 1) {
+                    intersect = polySeg[0].add(polySeg[1].multiply(t)).toCoordinate();
+                }
+            }
+
+            if (intersect != null) {
+                result.add(intersect);
+            }
+        }
+        return result;
+    }
 
     /*-------- intersection 2D --------*/
 
@@ -885,6 +979,40 @@ public final class ZGeoMath {
             return new ZLine(segment[0], interResult.get(ascending[0]));
         } else if (interResult.size() == 1) {
             return new ZLine(segment[0], interResult.get(0));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * extend or trim the segment to polygon boundary
+     *
+     * @param segment segment {point P, direction d}
+     * @param poly    input polygon
+     * @return geometry.ZLine
+     */
+    public static LineString extendSegmentToPolygon(final Vector2D[] segment, final Polygon poly) {
+        List<Coordinate> interResult = rayPolygonIntersection2D(segment, poly);
+        if (!interResult.isEmpty()) {
+            for (int i = 0; i < interResult.size(); i++) {
+                if (interResult.get(i).distance(segment[0].toCoordinate()) < epsilon) {
+                    interResult.remove(i--);
+                }
+            }
+        }
+        if (interResult.size() > 1) {
+            double[] resultDist = new double[interResult.size()];
+            for (int i = 0; i < interResult.size(); i++) {
+                resultDist[i] = segment[0].toCoordinate().distance(interResult.get(i));
+            }
+            int[] ascending = ZMath.getArraySortedIndices(resultDist);
+            return jtsgf.createLineString(new Coordinate[]{
+                    segment[0].toCoordinate(), interResult.get(ascending[0])
+            });
+        } else if (interResult.size() == 1) {
+            return jtsgf.createLineString(new Coordinate[]{
+                    segment[0].toCoordinate(), interResult.get(0)
+            });
         } else {
             return null;
         }
@@ -1684,10 +1812,10 @@ public final class ZGeoMath {
         } else {
             int result = 1;
             double flag = -Double.MAX_VALUE;
-            List<Coordinate> split = splitPolyLineEdge(ls, density);
-            for (int i = 1; i < split.size() - 1; i++) {
-                Vector2D v1 = Vector2D.create(split.get(i - 1)).subtract(Vector2D.create(split.get(i))).normalize();
-                Vector2D v2 = Vector2D.create(split.get(i + 1)).subtract(Vector2D.create(split.get(i))).normalize();
+            List<Coordinate> divide = dividePolyLineEdge(ls, density);
+            for (int i = 1; i < divide.size() - 1; i++) {
+                Vector2D v1 = Vector2D.create(divide.get(i - 1)).subtract(Vector2D.create(divide.get(i))).normalize();
+                Vector2D v2 = Vector2D.create(divide.get(i + 1)).subtract(Vector2D.create(divide.get(i))).normalize();
 
                 double dot = v1.dot(v2);
                 if (dot > flag) {
@@ -1695,19 +1823,18 @@ public final class ZGeoMath {
                     result = i;
                 }
             }
-            return split.get(result);
+            return divide.get(result);
         }
     }
 
     /**
-     * core function of split jts geometries
+     * core function of divide jts geometries
      *
      * @param coords input Coordinates
      * @param step   step to divide
      * @param type   type of geometry ("LineString""Polygon")
-     * @return java.util.List<geometry.ZPoint>
      */
-    private static List<Coordinate> splitJts(final Coordinate[] coords, final double step, final String type) {
+    private static List<Coordinate> divideJts(final Coordinate[] coords, final double step, final String type) {
         // initialize
         Vector2D p1 = Vector2D.create(coords[0]);
         double curr_span = step;
@@ -1744,14 +1871,13 @@ public final class ZGeoMath {
     }
 
     /**
-     * core function of split jts geometries with edge index
+     * core function of divide jts geometries with edge index
      *
      * @param coords input Coordinates
      * @param step   step to divide
      * @param type   type of geometry ("LineString""Polygon")
-     * @return java.util.Map<basicGeometry.ZPoint, java.lang.Integer>
      */
-    private static Map<Coordinate, Integer> splitJtsWithIndex(final Coordinate[] coords, final double step, final String type) {
+    private static Map<Coordinate, Integer> divideJtsWithIndex(final Coordinate[] coords, final double step, final String type) {
         // initialize
         Vector2D p1 = Vector2D.create(coords[0]);
         double curr_span = step;
@@ -1796,37 +1922,34 @@ public final class ZGeoMath {
     }
 
     /**
-     * giving step to split a polygon (Polygon)
+     * giving step to divide a polygon (Polygon)
      *
      * @param poly input polygon
      * @param step step to divide
-     * @return java.util.List<geometry.ZPoint>
      */
-    public static List<Coordinate> splitPolygonEdgeByStep(final Polygon poly, final double step) {
+    public static List<Coordinate> dividePolygonEdgeByStep(final Polygon poly, final double step) {
         Coordinate[] polyPoints = poly.getCoordinates();
-        return splitJts(polyPoints, step, "Polygon");
+        return divideJts(polyPoints, step, "Polygon");
     }
 
     /**
-     * giving step to split a LineString (LineString)
+     * giving step to divide a LineString (LineString)
      *
      * @param ls   input LineString
      * @param step step to divide
-     * @return java.util.List<geometry.ZPoint>
      */
-    public static List<Coordinate> splitPolyLineByStep(final LineString ls, final double step) {
+    public static List<Coordinate> dividePolyLineByStep(final LineString ls, final double step) {
         Coordinate[] lsPoints = ls.getCoordinates();
-        return splitJts(lsPoints, step, "LineString");
+        return divideJts(lsPoints, step, "LineString");
     }
 
     /**
-     * giving step to split a WB_PolyLine or WB_Polygon  (WB_PolyLine)
+     * giving step to divide a WB_PolyLine or WB_Polygon  (WB_PolyLine)
      *
      * @param poly input polyline (polygon)
      * @param step step to divide
-     * @return java.util.List<geometry.ZPoint>
      */
-    public static List<WB_Point> splitPolyLineByStep(final WB_PolyLine poly, final double step) {
+    public static List<WB_Point> dividePolyLineByStep(final WB_PolyLine poly, final double step) {
         WB_Coord[] polyPoints = poly.getPoints().toArray();
 
         // initialize
@@ -1869,14 +1992,13 @@ public final class ZGeoMath {
     }
 
     /**
-     * giving step to split a WB_PolyLine or WB_Polygon
-     * return a LinkedHashMap of split point and edge index
+     * giving step to divide a WB_PolyLine or WB_Polygon
+     * return a LinkedHashMap of divide point and edge index
      *
      * @param poly input polyline (polygon)
      * @param step step to divide
-     * @return java.util.Map<geometry.ZPoint, java.lang.Integer>
      */
-    public static Map<WB_Point, Integer> splitPolyLineByStepWithIndex(final WB_PolyLine poly, final double step) {
+    public static Map<WB_Point, Integer> dividePolyLineByStepWithIndex(final WB_PolyLine poly, final double step) {
         WB_Coord[] polyPoints = poly.getPoints().toArray();
 
         // initialize
@@ -1930,14 +2052,13 @@ public final class ZGeoMath {
     }
 
     /**
-     * giving step and shaking threshold to split a WB_PolyLine or WB_Polygon (WB_PolyLine)
+     * giving step and shaking threshold to divide a WB_PolyLine or WB_Polygon (WB_PolyLine)
      *
      * @param poly  input polyline (polygon)
      * @param step  step to divide
      * @param shake threshold to shake
-     * @return java.util.List<geometry.ZPoint>
      */
-    public static List<WB_Point> splitPolyLineByRandomStep(final WB_PolyLine poly, final double step, final double shake) {
+    public static List<WB_Point> dividePolyLineByRandomStep(final WB_PolyLine poly, final double step, final double shake) {
         WB_Coord[] polyPoints = poly.getPoints().toArray();
 
         WB_Point start = (WB_Point) polyPoints[0];
@@ -1977,14 +2098,13 @@ public final class ZGeoMath {
     }
 
     /**
-     * giving step threshold to split a polygon (Polygon)
+     * giving step threshold to divide a polygon (Polygon)
      *
      * @param poly    input polygon
      * @param maxStep max step to divide
      * @param minStep min step to divide
-     * @return java.util.List<geometry.ZPoint>
      */
-    public static List<Coordinate> splitPolygonEdgeByThreshold(final Polygon poly, final double maxStep, final double minStep) {
+    public static List<Coordinate> dividePolygonEdgeByThreshold(final Polygon poly, final double maxStep, final double minStep) {
         double finalStep = 0;
         for (int i = 1; i < Integer.MAX_VALUE; i++) {
             double curr_step = poly.getLength() / i;
@@ -1996,18 +2116,17 @@ public final class ZGeoMath {
             }
         }
         //        System.out.println("step:" + finalStep);
-        return splitPolygonEdgeByStep(poly, finalStep);
+        return dividePolygonEdgeByStep(poly, finalStep);
     }
 
     /**
-     * giving step threshold to split a WB_PolyLine or WB_Polygon (WB_PolyLine)
+     * giving step threshold to divide a WB_PolyLine or WB_Polygon (WB_PolyLine)
      *
      * @param poly    input polyline (polygon)
      * @param maxStep max step to divide
      * @param minStep min step to divide
-     * @return java.util.List<geometry.ZPoint>
      */
-    public static List<WB_Point> splitPolyLineByThreshold(final WB_PolyLine poly, final double maxStep, final double minStep) {
+    public static List<WB_Point> dividePolyLineByThreshold(final WB_PolyLine poly, final double maxStep, final double minStep) {
         assert maxStep >= minStep : "please input valid threshold";
         double length = 0;
         for (int i = 0; i < poly.getNumberSegments(); i++) {
@@ -2020,23 +2139,22 @@ public final class ZGeoMath {
                 finalStep = curr_step;
                 break;
             } else if (curr_step < minStep) {
-                System.out.println("cannot generate split point by this step!");
+                System.out.println("cannot generate divide point by this step!");
                 return new ArrayList<>();
             }
         }
-        return splitPolyLineByStep(poly, finalStep);
+        return dividePolyLineByStep(poly, finalStep);
     }
 
     /**
-     * giving step threshold to split a WB_PolyLine or WB_Polygon (WB_PolyLine)
+     * giving step threshold to divide a WB_PolyLine or WB_Polygon (WB_PolyLine)
      *
      * @param ls       input LineString
      * @param maxStep  max step to divide
      * @param minStep  min step to divide
      * @param max1min0 maximum result - 1, minimum result - 0
-     * @return java.util.List<basicGeometry.ZPoint>
      */
-    public static List<Coordinate> splitPolyLineByThreshold(final LineString ls, final double maxStep, final double minStep, final int max1min0) {
+    public static List<Coordinate> dividePolyLineByThreshold(final LineString ls, final double maxStep, final double minStep, final int max1min0) {
         assert maxStep >= minStep : "please input valid threshold";
         double length = ls.getLength();
 
@@ -2049,7 +2167,7 @@ public final class ZGeoMath {
                     finalStep = curr_step;
                     break;
                 } else if (curr_step < minStep) {
-                    System.out.println("cannot generate split point by this step!");
+                    System.out.println("cannot generate divide point by this step!");
                     return new ArrayList<>();
                 }
             }
@@ -2065,26 +2183,25 @@ public final class ZGeoMath {
                     if (flag) {
                         break;
                     } else {
-                        System.out.println("cannot generate split point by this step!");
+                        System.out.println("cannot generate divide point by this step!");
                         return new ArrayList<>();
                     }
                 }
             }
         }
 
-        return splitJts(ls.getCoordinates(), finalStep, "LineString");
+        return divideJts(ls.getCoordinates(), finalStep, "LineString");
     }
 
     /**
-     * giving step threshold to split a WB_PolyLine or WB_Polygon
-     * return a LinkedHashMap of split point and edge index
+     * giving step threshold to divide a WB_PolyLine or WB_Polygon
+     * return a LinkedHashMap of divide point and edge index
      *
      * @param poly    input polyline (polygon)
      * @param maxStep max step to divide
      * @param minStep min step to divide
-     * @return java.util.Map<geometry.ZPoint, java.lang.Integer>
      */
-    public static Map<WB_Point, Integer> splitPolyLineByThresholdWithIndex(final WB_PolyLine poly, final double maxStep, final double minStep) {
+    public static Map<WB_Point, Integer> dividePolyLineByThresholdWithIndex(final WB_PolyLine poly, final double maxStep, final double minStep) {
         assert maxStep >= minStep : "please input valid threshold";
         double length = 0;
         for (int i = 0; i < poly.getNumberSegments(); i++) {
@@ -2100,19 +2217,18 @@ public final class ZGeoMath {
                 return new LinkedHashMap<>();
             }
         }
-        return splitPolyLineByStepWithIndex(poly, finalStep);
+        return dividePolyLineByStepWithIndex(poly, finalStep);
     }
 
     /**
-     * giving step threshold to split a LineString
-     * return a LinkedHashMap of split point and edge index
+     * giving step threshold to divide a LineString
+     * return a LinkedHashMap of divide point and edge index
      *
      * @param ls      input LineString
      * @param maxStep max step to divide
      * @param minStep min step to divide
-     * @return java.util.Map<basicGeometry.ZPoint, java.lang.Integer>
      */
-    public static Map<Coordinate, Integer> splitPolyLineByThresholdWithIndex(final LineString ls, final double maxStep, final double minStep) {
+    public static Map<Coordinate, Integer> dividePolyLineByThresholdWithIndex(final LineString ls, final double maxStep, final double minStep) {
         assert maxStep >= minStep : "please input valid threshold";
         double length = ls.getLength();
 
@@ -2126,30 +2242,29 @@ public final class ZGeoMath {
                 return new LinkedHashMap<>();
             }
         }
-        return splitJtsWithIndex(ls.getCoordinates(), finalStep, "LineString");
+        return divideJtsWithIndex(ls.getCoordinates(), finalStep, "LineString");
     }
 
     /**
-     * giving step threshold to split each segment of a WB_PolyLine or WB_Polygon
+     * giving step threshold to divide each segment of a WB_PolyLine or WB_Polygon
      *
      * @param poly    input polyline (polygon)
      * @param maxStep max step to divide
      * @param minStep min step to divide
-     * @return java.util.List<geometry.ZPoint>
      */
-    public static List<WB_Point> splitPolyLineEachEdgeByThreshold(final WB_PolyLine poly, final double maxStep, final double minStep) {
+    public static List<WB_Point> dividePolyLineEachEdgeByThreshold(final WB_PolyLine poly, final double maxStep, final double minStep) {
         assert maxStep >= minStep : "please input valid threshold";
         List<WB_Point> result = new ArrayList<>();
         for (int i = 0; i < poly.getNumberSegments(); i++) {
             WB_Segment segment = poly.getSegment(i);
             double length = segment.getLength();
             double stepOnEdge = 0;
-            int splitNum = -1;
+            int divideNum = -1;
             for (int j = 1; j < Integer.MAX_VALUE; j++) {
                 double curr_step = length / j;
                 if (curr_step >= minStep && curr_step <= maxStep) {
                     stepOnEdge = curr_step;
-                    splitNum = j;
+                    divideNum = j;
                     break;
                 } else if (curr_step < minStep) {
                     break;
@@ -2159,7 +2274,7 @@ public final class ZGeoMath {
             if (stepOnEdge != 0) {
                 WB_Point curr = (WB_Point) segment.getOrigin();
                 result.add(curr);
-                for (int j = 0; j < splitNum - 1; j++) {
+                for (int j = 0; j < divideNum - 1; j++) {
                     curr = curr.add(segment.getDirection()).scale(stepOnEdge);
                     result.add(curr);
                 }
@@ -2175,58 +2290,54 @@ public final class ZGeoMath {
     }
 
     /**
-     * giving a split number, split equally (LineString)
+     * giving a divide number, divide equally (LineString)
      *
-     * @param ls       input LineString
-     * @param splitNum number to split
-     * @return java.util.List<geometry.ZPoint>
+     * @param ls        input LineString
+     * @param divideNum number to divide
      */
-    public static List<Coordinate> splitPolyLineEdge(final LineString ls, final int splitNum) {
-        double step = ls.getLength() / splitNum;
-        return splitPolyLineByStep(ls, step);
+    public static List<Coordinate> dividePolyLineEdge(final LineString ls, final int divideNum) {
+        double step = ls.getLength() / divideNum;
+        return dividePolyLineByStep(ls, step);
     }
 
     /**
-     * giving a split number, split equally(WB_PolyLine)
+     * giving a divide number, divide equally(WB_PolyLine)
      *
-     * @param poly     input polyline (polygon)
-     * @param splitNum number to split
-     * @return java.util.List<geometry.ZPoint>
+     * @param poly      input polyline (polygon)
+     * @param divideNum number to divide
      */
-    public static List<WB_Point> splitPolyLineEdge(final WB_PolyLine poly, final int splitNum) {
+    public static List<WB_Point> dividePolyLineEdge(final WB_PolyLine poly, final int divideNum) {
         // get step
         double length = 0;
         for (int i = 0; i < poly.getNumberSegments(); i++) {
             length = length + poly.getSegment(i).getLength();
         }
-        double step = length / splitNum;
+        double step = length / divideNum;
 
-        return splitPolyLineByStep(poly, step);
+        return dividePolyLineByStep(poly, step);
     }
 
     /**
-     * giving a split number, split equally(Polygon)
+     * giving a divide number, divide equally(Polygon)
      *
-     * @param poly     input polygon
-     * @param splitNum number to split
-     * @return java.util.List<geometry.ZPoint>
+     * @param poly      input polygon
+     * @param divideNum number to divide
      */
-    public static List<Coordinate> splitPolygonEdge(final Polygon poly, final int splitNum) {
-        double step = poly.getLength() / splitNum;
-        return splitPolygonEdgeByStep(poly, step);
+    public static List<Coordinate> dividePolygonEdge(final Polygon poly, final int divideNum) {
+        double step = poly.getLength() / divideNum;
+        return dividePolygonEdgeByStep(poly, step);
     }
 
     /**
-     * giving a split number, split equally(Polygon)
-     * return a LinkedHashMap of split point and edge index
+     * giving a divide number, divide equally(Polygon)
+     * return a LinkedHashMap of divide point and edge index
      *
-     * @param poly     input polygon
-     * @param splitNum umber to split
-     * @return java.util.Map<basicGeometry.ZPoint, java.lang.Integer>
+     * @param poly      input polygon
+     * @param divideNum umber to divide
      */
-    public static Map<Coordinate, Integer> splitPolygonWithIndex(final Polygon poly, final int splitNum) {
-        double step = poly.getLength() / splitNum;
-        return splitJtsWithIndex(poly.getCoordinates(), step, "Polygon");
+    public static Map<Coordinate, Integer> dividePolygonWithIndex(final Polygon poly, final int divideNum) {
+        double step = poly.getLength() / divideNum;
+        return divideJtsWithIndex(poly.getCoordinates(), step, "Polygon");
     }
 
 
@@ -2579,7 +2690,6 @@ public final class ZGeoMath {
         }
         return jtsgf.createLineString(newOrder);
     }
-
 
 
     /**

@@ -2,7 +2,9 @@ package basicGeometry;
 
 import math.ZGeoMath;
 import math.ZMath;
+import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.math.Vector2D;
 import org.locationtech.jts.operation.linemerge.LineMergeGraph;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.planargraph.Edge;
@@ -22,23 +24,6 @@ import java.util.List;
  * @project shopping_mall
  * @date 2020/11/8
  * @time 22:04
- * <p>
- * #### create geometries
- * create a LineString / Polygon from a Coordinate list
- * create a Polygon with hole from other alternative data
- * create a LineString from a list of segments, if the result is MultiLineString, choose the longest one
- * create a list of WB_PolyLine from a list of segments
- * create a WB_PolyLine from a list of segments, if the result is MultiLineString, choose the longest one
- * break WB_PolyLine by giving point indices to break
- * break LineString by giving point indices to break
- * cut LineString with two point on it
- * cut out a WB_PolyLine from a WB_Polygon by giving indices
- * extend both ends of a LineString
- * create an arc by giving center, start and end
- * <p>
- * #### create graphs
- * create a ZGraph from a list of segments
- * create a mini-spanning tree from a list of points (Prim algorithm)
  */
 public class ZFactory {
     public static final WB_GeometryFactory wbgf = new WB_GeometryFactory();
@@ -158,11 +143,43 @@ public class ZFactory {
      * @param lines list of lines
      * @return wblut.geom.WB_PolyLine
      */
-    public static WB_PolyLine createWB_PolyLineFromSegs(final List<? extends ZLine> lines) {
+    public static WB_PolyLine createWB_PolyLineFromZLines(final List<? extends ZLine> lines) {
         LineMerger lineMerger = new LineMerger();
         List<LineString> lineStrings = new ArrayList<>();
         for (ZLine line : lines) {
             lineStrings.add(line.toJtsLineString());
+        }
+        lineMerger.add(lineStrings);
+        if (lineMerger.getMergedLineStrings().size() > 1) {
+            double[] lineStringLengths = new double[lineMerger.getMergedLineStrings().toArray().length];
+            for (int i = 0; i < lineMerger.getMergedLineStrings().toArray().length; i++) {
+                LineString l = (LineString) lineMerger.getMergedLineStrings().toArray()[i];
+                lineStringLengths[i] = l.getLength();
+            }
+//            System.out.println("lines:"+lineMerger.getMergedLineStrings().toArray().length);
+
+            LineString merged = (LineString) lineMerger.getMergedLineStrings().toArray()[ZMath.getMaxIndex(lineStringLengths)];
+            return ZTransform.LineStringToWB_PolyLine(merged);
+        } else if (lineMerger.getMergedLineStrings().size() == 1) {
+            LineString merged = (LineString) lineMerger.getMergedLineStrings().toArray()[0];
+            return ZTransform.LineStringToWB_PolyLine(merged);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * create a WB_PolyLine from a list of WB_Segment
+     * if the result is MultiLineString, choose the longest one
+     *
+     * @param segs list of WB_Segment
+     * @return wblut.geom.WB_PolyLine
+     */
+    public static WB_PolyLine createWB_PolyLineFromSegs(final List<? extends WB_Segment> segs) {
+        LineMerger lineMerger = new LineMerger();
+        List<LineString> lineStrings = new ArrayList<>();
+        for (WB_Segment seg : segs) {
+            lineStrings.add(ZTransform.WB_SegmentToLineString(seg));
         }
         lineMerger.add(lineStrings);
         if (lineMerger.getMergedLineStrings().size() > 1) {
@@ -198,7 +215,32 @@ public class ZFactory {
             lineStrings.add(line.toJtsLineString());
         }
         lineMerger.add(lineStrings);
-        if (lineMerger.getMergedLineStrings().size() > 0) {
+        if (!lineMerger.getMergedLineStrings().isEmpty()) {
+            for (Object ls : lineMerger.getMergedLineStrings()) {
+                if (ls instanceof LineString) {
+                    result.add(ZTransform.LineStringToWB_PolyLine((LineString) ls));
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * create a list of WB_PolyLine from a list of segments
+     *
+     * @param segs list of lines
+     * @return java.util.List<wblut.geom.WB_PolyLine>
+     */
+    public static List<WB_PolyLine> createWB_PolyLineListFromSegments(final List<WB_Segment> segs) {
+        List<WB_PolyLine> result = new ArrayList<>();
+
+        LineMerger lineMerger = new LineMerger();
+        List<LineString> lineStrings = new ArrayList<>();
+        for (WB_Segment seg : segs) {
+            lineStrings.add(ZTransform.WB_SegmentToLineString(seg));
+        }
+        lineMerger.add(lineStrings);
+        if (!lineMerger.getMergedLineStrings().isEmpty()) {
             for (Object ls : lineMerger.getMergedLineStrings()) {
                 if (ls instanceof LineString) {
                     result.add(ZTransform.LineStringToWB_PolyLine((LineString) ls));
@@ -300,36 +342,36 @@ public class ZFactory {
      * @param p2         point 2
      * @return org.locationtech.jts.geom.LineString
      */
-    public static LineString cutLineString2Points(final LineString lineString, final ZPoint p1, final ZPoint p2) {
+    public static LineString cutLineString2Points(final LineString lineString, final Coordinate p1, final Coordinate p2) {
         int[] p1Edge = ZGeoMath.pointOnWhichEdgeIndices(p1, lineString);
         int[] p2Edge = ZGeoMath.pointOnWhichEdgeIndices(p2, lineString);
         if (p1Edge[0] > -1 && p1Edge[1] > -1 && p2Edge[0] > -1 && p2Edge[1] > -1) {
             List<Coordinate> coords = new ArrayList<>();
             if (p1Edge[0] < p2Edge[0]) {
                 // p1 is in front of p2
-                coords.add(p1.toJtsCoordinate());
+                coords.add(p1);
                 for (int i = p1Edge[1]; i < p2Edge[1]; i++) {
                     coords.add(lineString.getCoordinateN(i));
                 }
-                coords.add(p2.toJtsCoordinate());
+                coords.add(p2);
             } else if (p1Edge[0] > p2Edge[0]) {
                 // p2 is in front of p1
-                coords.add(p2.toJtsCoordinate());
+                coords.add(p2);
                 for (int i = p2Edge[1]; i < p1Edge[1]; i++) {
                     coords.add(lineString.getCoordinateN(i));
                 }
-                coords.add(p1.toJtsCoordinate());
+                coords.add(p1);
             } else {
                 // on same edge
-                ZPoint p0 = new ZPoint(lineString.getCoordinateN(p1Edge[0]));
-                if (p0.distanceSq(p1) <= p0.distanceSq(p2)) {
+                Coordinate p0 = lineString.getCoordinateN(p1Edge[0]);
+                if (p0.distance(p1) <= p0.distance(p2)) {
                     // p1 is in front of p2
-                    coords.add(p1.toJtsCoordinate());
-                    coords.add(p2.toJtsCoordinate());
+                    coords.add(p1);
+                    coords.add(p2);
                 } else {
                     // p2 is in front of p1
-                    coords.add(p2.toJtsCoordinate());
-                    coords.add(p1.toJtsCoordinate());
+                    coords.add(p2);
+                    coords.add(p1);
                 }
             }
             return createLineStringFromList(coords);
@@ -369,16 +411,16 @@ public class ZFactory {
         if (coords.length > 2) {
             Coordinate[] newCoords = new Coordinate[coords.length];
 
-            ZPoint p0 = new ZPoint(coords[0]);
-            ZPoint p1 = new ZPoint(coords[1]);
-            ZPoint p2 = new ZPoint(coords[coords.length - 2]);
-            ZPoint p3 = new ZPoint(coords[coords.length - 1]);
+            Coordinate p0 = coords[0];
+            Coordinate p1 = coords[1];
+            Coordinate p2 = coords[coords.length - 2];
+            Coordinate p3 = coords[coords.length - 1];
 
-            ZPoint v1 = p0.sub(p1).normalize();
-            ZPoint v2 = p3.sub(p2).normalize();
+            Vector2D v1 = new Vector2D(p1, p0).normalize();
+            Vector2D v2 = new Vector2D(p2, p3).normalize();
 
-            Coordinate newC0 = p0.add(v1.scaleTo(dist)).toJtsCoordinate();
-            Coordinate newC3 = p3.add(v2.scaleTo(dist)).toJtsCoordinate();
+            Coordinate newC0 = Vector2D.create(p0).add(v1.multiply(dist)).toCoordinate();
+            Coordinate newC3 = Vector2D.create(p3).add(v2.multiply(dist)).toCoordinate();
 
             newCoords[0] = newC0;
             System.arraycopy(coords, 1, newCoords, 1, coords.length - 1 - 1);
@@ -386,14 +428,14 @@ public class ZFactory {
 
             return jtsgf.createLineString(newCoords);
         } else if (coords.length == 2) {
-            ZPoint p0 = new ZPoint(coords[0]);
-            ZPoint p1 = new ZPoint(coords[1]);
+            Coordinate p0 = coords[0];
+            Coordinate p1 = coords[1];
 
-            ZPoint v1 = p0.sub(p1).normalize();
-            ZPoint v2 = p1.sub(p0).normalize();
+            Vector2D v1 = new Vector2D(p1, p0).normalize();
+            Vector2D v2 = new Vector2D(p0, p1).normalize();
 
-            Coordinate newC0 = p0.add(v1.scaleTo(dist)).toJtsCoordinate();
-            Coordinate newC1 = p1.add(v2.scaleTo(dist)).toJtsCoordinate();
+            Coordinate newC0 = Vector2D.create(p0).add(v1.multiply(dist)).toCoordinate();
+            Coordinate newC1 = Vector2D.create(p1).add(v2.multiply(dist)).toCoordinate();
 
             return jtsgf.createLineString(new Coordinate[]{newC0, newC1});
         } else {
@@ -409,16 +451,18 @@ public class ZFactory {
      * @param end    start of the arc
      * @param segNum number of segments to divide
      * @param ccw    counter-clockwise or clockwise
-     * @return basicGeometry.ZPoint[]
      */
-    public static ZPoint[] createArc(final ZPoint center, final ZPoint start, final ZPoint end, final int segNum, final boolean ccw) {
+    public static Coordinate[] createArc(final Coordinate center, final Coordinate start, final Coordinate end, final int segNum, final boolean ccw) {
         double radius = start.distance(center);
-        ZPoint v2 = end.sub(center).normalize();
-        ZPoint v1 = start.sub(center).normalize();
+        Vector2D cen = Vector2D.create(center);
 
-        ZPoint[] arcPoints = new ZPoint[segNum + 1];
-        double cross = v1.cross2D(v2);
-        double dot = v1.dot2D(v2);
+
+        Vector2D v2 = Vector2D.create(end).subtract(Vector2D.create(center)).normalize();
+        Vector2D v1 = Vector2D.create(start).subtract(Vector2D.create(center)).normalize();
+
+        Coordinate[] arcPoints = new Coordinate[segNum + 1];
+        double cross = v1.getX() * v2.getY() - v1.getY() * v2.getX();
+        double dot = v1.dot(v2);
         if (ccw) {
             // generate the arc counter-clockwise
             if (cross > 0) {
@@ -426,24 +470,24 @@ public class ZFactory {
                 double angle = Math.acos(dot);
                 double step = angle / segNum;
                 for (int i = 0; i < segNum + 1; i++) {
-                    arcPoints[i] = v1.rotate2D(step * i).scaleTo(radius).add(center);
+                    arcPoints[i] = v1.rotate(step * i).multiply(radius).add(cen).toCoordinate();
                 }
             } else if (cross < 0) {
                 // reflex angle
                 double angle = Math.PI * 2 - Math.acos(dot);
                 double step = angle / segNum;
                 for (int i = 0; i < segNum + 1; i++) {
-                    arcPoints[i] = v1.rotate2D(step * i).scaleTo(radius).add(center);
+                    arcPoints[i] = v1.rotate(step * i).multiply(radius).add(cen).toCoordinate();
                 }
             } else {
                 if (dot >= 0) {
                     // collinear
-                    arcPoints = new ZPoint[]{start};
+                    arcPoints = new Coordinate[]{start};
                 } else {
                     // 180 degrees
                     double step = Math.PI / segNum;
                     for (int i = 0; i < segNum + 1; i++) {
-                        arcPoints[i] = v1.rotate2D(step * i).scaleTo(radius).add(center);
+                        arcPoints[i] = v1.rotate(step * i).multiply(radius).add(cen).toCoordinate();
                     }
                 }
             }
@@ -454,24 +498,24 @@ public class ZFactory {
                 double angle = Math.PI * 2 - Math.acos(dot);
                 double step = angle / segNum;
                 for (int i = 0; i < segNum + 1; i++) {
-                    arcPoints[i] = v1.rotate2D(-step * i).scaleTo(radius).add(center);
+                    arcPoints[i] = v1.rotate(-step * i).multiply(radius).add(cen).toCoordinate();
                 }
             } else if (cross < 0) {
                 // reflex angle
                 double angle = Math.acos(dot);
                 double step = angle / segNum;
                 for (int i = 0; i < segNum + 1; i++) {
-                    arcPoints[i] = v1.rotate2D(-step * i).scaleTo(radius).add(center);
+                    arcPoints[i] = v1.rotate(-step * i).multiply(radius).add(cen).toCoordinate();
                 }
             } else {
                 if (dot >= 0) {
                     // collinear
-                    arcPoints = new ZPoint[]{start};
+                    arcPoints = new Coordinate[]{start};
                 } else {
                     // 180 degrees
                     double step = Math.PI / segNum;
                     for (int i = 0; i < segNum + 1; i++) {
-                        arcPoints[i] = v1.rotate2D(-step * i).scaleTo(radius).add(center);
+                        arcPoints[i] = v1.rotate(-step * i).multiply(radius).add(cen).toCoordinate();
                     }
                 }
             }
@@ -486,13 +530,12 @@ public class ZFactory {
      * @param center center of the circle
      * @param r      radius of the circle
      * @param segNum number of segments to divide
-     * @return basicGeometry.ZPoint[]
      */
-    public static ZPoint[] createCircle(final ZPoint center, final double r, final int segNum) {
-        ZPoint[] cirPoints = new ZPoint[segNum + 1];
+    public static Coordinate[] createCircle(final Coordinate center, final double r, final int segNum) {
+        Coordinate[] cirPoints = new Coordinate[segNum + 1];
         double step = (Math.PI * 2) / segNum;
         for (int i = 0; i < segNum; i++) {
-            cirPoints[i] = center.add(r * Math.cos(step * segNum), r * Math.sin(step * segNum));
+            cirPoints[i] = new Coordinate(center.getX() + r * Math.cos(step * segNum), center.getX() + r * Math.sin(step * segNum));
         }
         cirPoints[cirPoints.length - 1] = cirPoints[0];
         return cirPoints;
@@ -558,55 +601,55 @@ public class ZFactory {
     public static LineString createOffsetLineString(final LineString ls, final double dist) {
         Coordinate[] coords = ls.getCoordinates();
         int coordNum = coords.length;
-        ZPoint[] bisectorVecs = new ZPoint[coordNum];
+        Vector2D[] bisectorVecs = new Vector2D[coordNum];
 
         // the first and last vector
-        bisectorVecs[0] = new ZPoint(
+        bisectorVecs[0] = new Vector2D(
                 coords[1].getX() - coords[0].getX(),
                 coords[1].getY() - coords[0].getY()
-        ).rotate2D(Math.PI * 0.5).normalize();
-        bisectorVecs[coordNum - 1] = new ZPoint(
+        ).rotate(Math.PI * 0.5).normalize();
+        bisectorVecs[coordNum - 1] = new Vector2D(
                 coords[coordNum - 2].getX() - coords[coordNum - 1].getX(),
                 coords[coordNum - 2].getY() - coords[coordNum - 1].getY()
-        ).rotate2D(Math.PI * -0.5).normalize();
+        ).rotate(Math.PI * -0.5).normalize();
 
         // middle vectors
         if (ls.getNumPoints() > 2) {
             for (int i = 1; i < coordNum - 1; i++) {
-                ZPoint prev = new ZPoint(
+                Vector2D prev = new Vector2D(
                         coords[i - 1].getX() - coords[i].getX(),
                         coords[i - 1].getY() - coords[i].getY()
                 ).normalize();
-                ZPoint next = new ZPoint(
+                Vector2D next = new Vector2D(
                         coords[i + 1].getX() - coords[i].getX(),
                         coords[i + 1].getY() - coords[i].getY()
                 ).normalize();
-                double halfAngle = Math.abs(next.angleWith(prev) * 0.5);
-                ZPoint norBisec = ZGeoMath.getAngleBisectorOrdered(next, prev);
-                bisectorVecs[i] = norBisec.scaleTo(1 / Math.sin((halfAngle / 180) * Math.PI));
+                double halfAngle = Math.abs(next.angleTo(prev) * 0.5);
+                Vector2D norBisec = ZGeoMath.getAngleBisectorOrdered(next, prev);
+                bisectorVecs[i] = norBisec.multiply(1 / Math.sin((halfAngle / 180) * Math.PI));
             }
         }
 
         // offset direction depends on positive/negative value of distance
         boolean dir = true;
         if (dist < 0) {
-            for (ZPoint v : bisectorVecs) {
-                v.scaleSelf(-1);
+            for (Vector2D v : bisectorVecs) {
+                v = v.multiply(-1);
             }
             dir = false;
         }
 
         // calculate the intersection point of each neighbor pair of vectors
-        ZPoint[][] rays = new ZPoint[coordNum][];
+        Vector2D[][] rays = new Vector2D[coordNum][];
         for (int i = 0; i < coordNum; i++) {
-            rays[i] = new ZPoint[]{
-                    new ZPoint(coords[i]),
+            rays[i] = new Vector2D[]{
+                    new Vector2D(coords[i]),
                     bisectorVecs[i]
             };
         }
-        ZPoint[] intersections = new ZPoint[coordNum - 1];
+        Coordinate[] intersections = new Coordinate[coordNum - 1];
         for (int i = 0; i < coordNum - 1; i++) {
-            ZPoint inter = ZGeoMath.rayIntersection2D(rays[i], rays[i + 1]);
+            Coordinate inter = ZGeoMath.rayIntersection2D(rays[i], rays[i + 1]);
             intersections[i] = inter;
         }
 
@@ -614,15 +657,9 @@ public class ZFactory {
         double[] distOfInter = new double[coordNum - 1];
         boolean nonInterFlag = true;
         for (int i = 0; i < coordNum - 1; i++) {
-            ZPoint inter = intersections[i];
+            Coordinate inter = intersections[i];
             if (inter != null) {
-                double distToSeg = WB_GeometryOp.getDistanceToLine2D(
-                        inter.toWB_Point(),
-                        new WB_Line(
-                                ZTransform.CoordinateToWB_Point(coords[i]),
-                                new WB_Vector(coords[i + 1].getX() - coords[i].getX(), coords[i + 1].getY() - coords[i].getY())
-                        )
-                );
+                double distToSeg = Distance.pointToSegment(inter, coords[i], coords[i + 1]);
                 distOfInter[i] = distToSeg;
                 nonInterFlag = false;
             } else {
@@ -649,10 +686,10 @@ public class ZFactory {
             // create new LineString, record the redundant distance
             List<Coordinate> newCoords = new ArrayList<>();
             for (int i = 0; i < coordNum; i++) {
-                ZPoint scaledVec = bisectorVecs[i].scaleTo(minDist);
+                Vector2D scaledVec = bisectorVecs[i].multiply(minDist);
                 Coordinate offsetTemp = new Coordinate(
-                        coords[i].getX() + scaledVec.xd(),
-                        coords[i].getY() + scaledVec.yd()
+                        coords[i].getX() + scaledVec.getX(),
+                        coords[i].getY() + scaledVec.getY()
                 );
                 newCoords.add(offsetTemp);
                 if (minIDs.contains(i)) {
@@ -669,10 +706,10 @@ public class ZFactory {
             // no intersection point disappears
             Coordinate[] resultCoords = new Coordinate[ls.getNumPoints()];
             for (int i = 0; i < ls.getNumPoints(); i++) {
-                ZPoint scaledVec = bisectorVecs[i].scaleTo(Math.abs(dist));
+                Vector2D scaledVec = bisectorVecs[i].multiply(Math.abs(dist));
                 resultCoords[i] = new Coordinate(
-                        coords[i].getX() + scaledVec.xd(),
-                        coords[i].getY() + scaledVec.yd()
+                        coords[i].getX() + scaledVec.getX(),
+                        coords[i].getY() + scaledVec.getY()
                 );
             }
             return jtsgf.createLineString(resultCoords);
