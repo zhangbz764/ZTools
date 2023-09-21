@@ -17,6 +17,10 @@ import render.JtsRender;
  * @time 21:00
  */
 public class BallBounce extends PApplet {
+    public static void main(String[] args) {
+        PApplet.main("testApps.BallBounce");
+    }
+
     /* ------------- settings ------------- */
 
     public void settings() {
@@ -36,7 +40,8 @@ public class BallBounce extends PApplet {
     private Polygon test;
     private JtsRender jtsRender;
 
-    public void setup() {jtsRender = new JtsRender(this);
+    public void setup() {
+        jtsRender = new JtsRender(this);
         this.ball = new float[]{random(width), random(height)};
         this.segment = new float[]{250, 250, 250, 400};
 

@@ -2,6 +2,8 @@ package render;
 
 import advancedGeometry.ZSkeleton;
 import basicGeometry.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineString;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import wblut.geom.WB_Polygon;
@@ -14,9 +16,14 @@ import wblut.geom.WB_Polygon;
  * @date 2020/9/29
  * @time 15:41
  */
-public class ZRender {
-
+public class ZRender extends JtsRender{
+    private PApplet app;
     public final static ZPoint origin = new ZPoint(0, 0, 0);
+
+    public ZRender(PApplet app) {
+        super(app);
+        this.app = app;
+    }
 
     /*-------- color format --------*/
 
@@ -186,36 +193,35 @@ public class ZRender {
     /**
      * draw ZSkeleton, all edges, ridges and ridge points
      *
-     * @param app      PApplet
      * @param skeleton ZSkeleton
      */
-    public static void drawSkeleton2D(PApplet app, ZSkeleton skeleton) {
+    public void drawSkeleton2D(ZSkeleton skeleton) {
         app.pushStyle();
 
         app.noFill();
 
         app.strokeWeight(1);
         app.stroke(150);
-        for (ZLine l : skeleton.getSideEdges()) {
-            drawZLine2D(app, l);
+        for (LineString l : skeleton.getSideEdges()) {
+            super.drawGeometry(l);
         }
 
         app.strokeWeight(3);
         app.stroke(190, 60, 45);
-        for (ZLine l : skeleton.getRidges()) {
-            drawZLine2D(app, l);
+        for (LineString l : skeleton.getRidges()) {
+            super.drawGeometry(l);
         }
 
         app.strokeWeight(3);
         app.stroke(0);
-        for (ZLine l : skeleton.getBottomEdges()) {
-            drawZLine2D(app, l);
+        for (LineString l : skeleton.getBottomEdges()) {
+            super.drawGeometry(l);
         }
 
         app.noStroke();
         app.fill(255, 79, 76, 150);
-        for (ZPoint p : skeleton.getRidgePoints()) {
-            drawZPoint2D(app, p, 2.5f);
+        for (Coordinate c : skeleton.getRidgePoints()) {
+            super.drawCoordinate2D(c, 2.5f);
         }
 
         app.popStyle();

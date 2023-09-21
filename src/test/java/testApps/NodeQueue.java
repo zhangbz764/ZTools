@@ -20,6 +20,9 @@ import render.ZRender;
  * @time 13:36
  */
 public class NodeQueue extends PApplet {
+    public static void main(String[] args) {
+        PApplet.main("testApps.NodeQueue");
+    }
 
     /* ------------- settings ------------- */
 
@@ -44,9 +47,9 @@ public class NodeQueue extends PApplet {
 
 
         createLS();
-        this.p1 = new Node(new ZPoint(210, 100), 20, ls);
-        this.p2 = new Node(new ZPoint(270, 100), 20, ls);
-        this.p3 = new Node(new ZPoint(299, 100), 20, ls);
+        this.p1 = new Node(new Coordinate(210, 100), 20, ls);
+        this.p2 = new Node(new Coordinate(270, 100), 20, ls);
+        this.p3 = new Node(new Coordinate(299, 100), 20, ls);
     }
 
     private void createLS() {
@@ -70,12 +73,12 @@ public class NodeQueue extends PApplet {
     public void draw() {
         background(255);
         jtsRender.drawGeometry(ls);
-        ZRender.drawZPoint2D(this, p1.pos, 5);
-        ellipse(p1.pos.xf(), p1.pos.yf(), (float) p1.r * 2, (float) p1.r * 2);
-        ZRender.drawZPoint2D(this, p2.pos, 5);
-        ellipse(p2.pos.xf(), p2.pos.yf(), (float) p2.r * 2, (float) p2.r * 2);
-        ZRender.drawZPoint2D(this, p3.pos, 5);
-        ellipse(p3.pos.xf(), p3.pos.yf(), (float) p3.r * 2, (float) p3.r * 2);
+//        ZRender.drawZPoint2D(this, p1.pos, 5);
+        ellipse((float) p1.pos.getX(), (float) p1.pos.getY(), (float) p1.r * 2, (float) p1.r * 2);
+//        ZRender.drawZPoint2D(this, p2.pos, 5);
+        ellipse((float) p2.pos.getX(), (float) p2.pos.getY(), (float) p2.r * 2, (float) p2.r * 2);
+//        ZRender.drawZPoint2D(this, p3.pos, 5);
+        ellipse((float) p3.pos.getX(), (float) p3.pos.getY(), (float) p3.r * 2, (float) p3.r * 2);
         updatePos();
     }
 
@@ -88,15 +91,15 @@ public class NodeQueue extends PApplet {
     /* ------------- inner class ------------- */
 
     static class Node {
-        private ZPoint pos;
+        private Coordinate pos;
         private double r;
 
-        private ZPoint targetCenter;
+        private Coordinate targetCenter;
         private double halfLength;
 
         private double forceBase = 2;
 
-        public Node(ZPoint pos, double r, LineString ls) {
+        public Node(Coordinate pos, double r, LineString ls) {
             this.pos = pos;
             this.r = r;
 

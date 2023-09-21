@@ -5,13 +5,15 @@ import basicGeometry.*;
 import math.ZGeoMath;
 import math.ZGraphMath;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import processing.core.PApplet;
-import render.ZRender;
 import transform.ZTransform;
+import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
+import wblut.geom.WB_Vector;
 import wblut.processing.WB_Render;
 
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ import java.util.List;
  */
 public class ZSD_SkeOBBStrip extends ZSubdivision {
     private ZSkeleton skeleton;
-    private List<ZPoint> generator;
+    private List<WB_Point> generator;
 
     private double span = 50;
 
@@ -52,27 +54,27 @@ public class ZSD_SkeOBBStrip extends ZSubdivision {
     @Override
     public void performDivide() {
         this.skeleton = new ZSkeleton(super.getOriginPolygon());
-        List<ZLine> topSegments = skeleton.getRidges();
+        List<LineString> topSegments = skeleton.getRidges();
         topSegments.addAll(skeleton.getExtendedRidges());
 
-        ZGraph tempGraph = ZFactory.createZGraphFromSegments(topSegments);
+        ZGraph tempGraph = ZFactory.createZGraphFromSegments(topSegments.toArray(new LineString[0]));
         graph = tempGraph;
         List<ZEdge> longestChain = ZGraphMath.longestChain(tempGraph);
-        WB_PolyLine polyLine = ZFactory.createWB_PolyLineFromZLines(longestChain);
+        WB_PolyLine polyLine = ZFactory.mergeWB_PolyLineFromZLines(longestChain);
 
         if (polyLine != null) {
-            ZPoint dir = ZGeoMath.obbDir(super.getOriginPolygon());
+            WB_Vector dir = ZGeoMath.obbDir(super.getOriginPolygon());
 
             // create divide line by extending
             List<ZLine> divideLine = new ArrayList<>();
-            generator = ZGeoMath.splitPolyLineByStep(polyLine, span);
+            generator = ZGeoMath.dividePolyLineByStep(polyLine, span);
             if (generator.size() > 2) {
                 generator.remove(0);
                 generator.remove(generator.size() - 1);
             }
-            for (ZPoint p : generator) {
+            for (WB_Point p : generator) {
                 ZLine dl = ZGeoMath.extendSegmentToPolygonBothSides(
-                        new ZPoint[]{p, dir}, super.getOriginPolygon()
+                        new ZPoint[]{new ZPoint(p), new ZPoint(dir)}, super.getOriginPolygon()
                 );
                 if (dl != null) {
                     divideLine.add(dl.extendBothSides(0.01));
@@ -112,26 +114,26 @@ public class ZSD_SkeOBBStrip extends ZSubdivision {
 
     @Override
     public void display(PApplet app, WB_Render render) {
-        app.pushStyle();
-
-        app.stroke(0);
-        app.strokeWeight(3);
-        app.fill(200);
-        super.displaySubPolygons(render);
-
-        skeleton.display(app);
-
-        app.noStroke();
-        app.fill(255, 0, 0);
-        for (ZPoint p : generator) {
-            ZRender.drawZPoint2D(app, p, 5);
-        }
-
-        app.popStyle();
-
-        app.pushMatrix();
-        app.translate(0, 0, 250);
-        graph.display(app);
-        app.popMatrix();
+//        app.pushStyle();
+//
+//        app.stroke(0);
+//        app.strokeWeight(3);
+//        app.fill(200);
+//        super.displaySubPolygons(render);
+//
+//        skeleton.display(app);
+//
+//        app.noStroke();
+//        app.fill(255, 0, 0);
+//        for (ZPoint p : generator) {
+//            ZRender.drawZPoint2D(app, p, 5);
+//        }
+//
+//        app.popStyle();
+//
+//        app.pushMatrix();
+//        app.translate(0, 0, 250);
+//        graph.display(app);
+//        app.popMatrix();
     }
 }

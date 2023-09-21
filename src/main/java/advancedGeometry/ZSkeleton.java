@@ -23,7 +23,7 @@ import java.util.Set;
 /**
  * compute straight skeleton using campskeleton by twak
  * and extract some geometries, support 2D polygon with holes
- * polygon shell must be counter clockwise
+ * polygon shell must be counterclockwise
  * polygon should be valid (first point coincides with last point)
  *
  * @author ZHANG Bai-zhou zhangbz

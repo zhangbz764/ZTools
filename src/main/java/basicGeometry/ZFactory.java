@@ -140,10 +140,39 @@ public class ZFactory {
      * create a WB_PolyLine from a list of segments
      * if the result is MultiLineString, choose the longest one
      *
+     * @param lines list of LineString
+     * @return org.locationtech.jts.geom.LineString
+     */
+    public static LineString mergeLineStrings(final List<? extends LineString> lines) {
+        LineMerger lineMerger = new LineMerger();
+        List<LineString> lineStrings = new ArrayList<>(lines);
+        lineMerger.add(lineStrings);
+
+        if (lineMerger.getMergedLineStrings().size() > 1) {
+            double[] lineStringLengths = new double[lineMerger.getMergedLineStrings().toArray().length];
+            for (int i = 0; i < lineMerger.getMergedLineStrings().toArray().length; i++) {
+                LineString l = (LineString) lineMerger.getMergedLineStrings().toArray()[i];
+                lineStringLengths[i] = l.getLength();
+            }
+//            System.out.println("lines:"+lineMerger.getMergedLineStrings().toArray().length);
+
+            return (LineString) lineMerger.getMergedLineStrings().toArray()[ZMath.getMaxIndex(lineStringLengths)];
+        } else if (lineMerger.getMergedLineStrings().size() == 1) {
+            return (LineString) lineMerger.getMergedLineStrings().toArray()[0];
+        } else {
+            return null;
+        }
+    }
+
+
+    /**
+     * create a WB_PolyLine from a list of segments
+     * if the result is MultiLineString, choose the longest one
+     *
      * @param lines list of lines
      * @return wblut.geom.WB_PolyLine
      */
-    public static WB_PolyLine createWB_PolyLineFromZLines(final List<? extends ZLine> lines) {
+    public static WB_PolyLine mergeWB_PolyLineFromZLines(final List<? extends ZLine> lines) {
         LineMerger lineMerger = new LineMerger();
         List<LineString> lineStrings = new ArrayList<>();
         for (ZLine line : lines) {
@@ -175,7 +204,7 @@ public class ZFactory {
      * @param segs list of WB_Segment
      * @return wblut.geom.WB_PolyLine
      */
-    public static WB_PolyLine createWB_PolyLineFromSegs(final List<? extends WB_Segment> segs) {
+    public static WB_PolyLine mergeWB_PolyLineFromSegs(final List<? extends WB_Segment> segs) {
         LineMerger lineMerger = new LineMerger();
         List<LineString> lineStrings = new ArrayList<>();
         for (WB_Segment seg : segs) {
@@ -717,6 +746,61 @@ public class ZFactory {
     }
 
     /*-------- create graphs --------*/
+
+    /**
+     * create a ZGraph from a list of segments
+     *
+     * @param lines input segments list
+     * @return geometry.ZGraph
+     */
+    public static ZGraph createZGraphFromSegments(final LineString[] lines) {
+        // create LineMergeGraph
+        LineMergeGraph lmg = new LineMergeGraph();
+        for (LineString l : lines) {
+            lmg.addEdge(l);
+        }
+        List<ZNode> nodes = new ArrayList<>();
+        List<ZEdge> edges = new ArrayList<>();
+        List<Node> tempNodes = new ArrayList<>();
+
+        // convert to ZGraph
+        for (Object o : lmg.getEdges()) {
+            if (o instanceof Edge) {
+                Edge e = (Edge) o;
+
+                Node from = e.getDirEdge(0).getFromNode();
+                ZNode start = new ZNode(from.getCoordinate());
+                Node to = e.getDirEdge(0).getToNode();
+                ZNode end = new ZNode(to.getCoordinate());
+
+                start.setRelationReady();
+                end.setRelationReady();
+
+                if (!tempNodes.contains(from)) {
+                    tempNodes.add(from);
+                    nodes.add(start);
+                } else {
+                    start = nodes.get(tempNodes.indexOf(from));
+                }
+
+                if (!tempNodes.contains(to)) {
+                    tempNodes.add(to);
+                    nodes.add(end);
+                } else {
+                    end = nodes.get(tempNodes.indexOf(to));
+                }
+
+                ZEdge edge = new ZEdge(start, end);
+                start.addNeighbor(end);
+                start.addLinkedEdge(edge);
+                end.addNeighbor(start);
+                end.addLinkedEdge(edge);
+
+                edges.add(edge);
+            }
+        }
+        return new ZGraph(nodes, edges);
+    }
 
     /**
      * create a ZGraph from a list of segments

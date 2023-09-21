@@ -12,11 +12,20 @@ import processing.core.PApplet;
  * @time 15:13
  */
 public class JtsRender {
-    private static final GeometryFactory gf = new GeometryFactory();
     private final PApplet app;
 
     public JtsRender(PApplet PApplet) {
         this.app = PApplet;
+    }
+
+    /**
+    * draw Coordinate as ellipse
+    *
+    * @param c Coordinate
+    * @param r radius
+    */
+    public void drawCoordinate2D(Coordinate c, double r) {
+        this.app.ellipse((float) c.getX(), (float) c.getY(), 2.0F * (float) r, 2.0F * (float) r);
     }
 
     /**
