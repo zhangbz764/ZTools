@@ -3,11 +3,19 @@ package testUtils;
 import basicGeometry.ZLine;
 import basicGeometry.ZPoint;
 import math.ZGeoMath;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.math.Vector2D;
 import processing.core.PApplet;
+import processing.core.PImage;
+import render.JtsRender;
 import render.ZRender;
+import transform.ZTransform;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Polygon;
 import wblut.processing.WB_Render;
+
+import java.util.List;
 
 /**
  * test extend and trim
@@ -18,6 +26,9 @@ import wblut.processing.WB_Render;
  * @time 15:34
  */
 public class Test2ExtendTrim extends PApplet {
+    public static void main(String[] args) {
+        PApplet.main("testUtils.Test2ExtendTrim");
+    }
 
     /* ------------- settings ------------- */
 
@@ -37,6 +48,7 @@ public class Test2ExtendTrim extends PApplet {
 
     // utils
     private WB_Render render;
+    private JtsRender jtsRender = new JtsRender(this);
 
     public void setup() {
         this.render = new WB_Render(this);
@@ -68,15 +80,35 @@ public class Test2ExtendTrim extends PApplet {
         strokeWeight(3);
         stroke(255, 0, 0);
         ZLine seg1 = new ZLine(origin1, new ZPoint(mouseX, mouseY));
-        this.extend = ZGeoMath.extendSegmentToPolygon(seg1.toLinePD(), poly);
-        if (extend != null) {
-            extend.display(this);
+
+        LineString e = ZGeoMath.extendSegmentToPolygon(
+                new Vector2D[]{
+                        new Vector2D(seg1.getPt0().toJtsCoordinate()),
+                        new Vector2D(seg1.getDirectionNor().toJtsCoordinate()),
+                },
+                ZTransform.WB_PolygonToPolygon(poly)
+        );
+        if (e != null) {
+            jtsRender.drawGeometry(e);
         }
+
+        this.extend = ZGeoMath.extendSegmentToPolygon(seg1.toLinePD(), poly);
+//        if (extend != null) {
+//            extend.display(this);
+//        }
         stroke(0, 255, 0);
         ZLine seg2 = new ZLine(origin2, new ZPoint(mouseX, mouseY));
         this.extend2 = ZGeoMath.extendSegmentToPolygonBothSides(seg2.toLinePD(), poly);
         if (extend2 != null) {
             extend2.display(this);
+        }
+    }
+
+
+    public void keyPressed() {
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
         }
     }
 }

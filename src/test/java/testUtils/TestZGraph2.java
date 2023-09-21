@@ -25,6 +25,11 @@ import java.util.*;
  * @time 17:02
  */
 public class TestZGraph2 extends PApplet {
+
+    public static void main(String[] args) {
+        PApplet.main("testUtils.TestZGraph2");
+    }
+
     /* ------------- settings ------------- */
 
     public void settings() {

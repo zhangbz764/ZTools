@@ -641,7 +641,7 @@ public final class ZMath {
     }
 
     /**
-     * generate random integers by given floor and ceiling
+     * generate non-redundant random integers by given floor and ceiling
      *
      * @param min   floor limit
      * @param max   ceil limit

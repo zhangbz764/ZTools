@@ -18,6 +18,10 @@ import java.util.List;
  * @time 14:22
  */
 public class Test6VectorTools extends PApplet {
+    public static void main(String[] args) {
+        PApplet.main("testUtils.Test6VectorTools");
+    }
+
     public void settings() {
         size(1000, 1000, P3D);
     }
@@ -59,6 +63,8 @@ public class Test6VectorTools extends PApplet {
 
     public void draw() {
         background(255);
+
+        strokeWeight(10);
         ellipse((float) pts[0].xf(), (float) pts[0].yd(), 5, 5);
 
         for (int i = 0; i < sort.length; i++) {
@@ -66,6 +72,8 @@ public class Test6VectorTools extends PApplet {
             line((float) o.xd(), (float) o.yd(), (float) pts[sort[i]].xd(), (float) pts[sort[i]].yd());
             text(i, (float) pts[sort[i]].xd(), (float) pts[sort[i]].yd());
         }
+
+        strokeWeight(2);
 
         bb.set(mouseX, mouseY);
         line((float) oo.xd(), (float) oo.yd(), (float) aa.xd(), (float) aa.yd());
@@ -76,8 +84,15 @@ public class Test6VectorTools extends PApplet {
 
         line((float) bb.xd(), (float) bb.yd(), (float) rotate.xd(), (float) rotate.yd());
 
-        bisector = new ZPoint(ZGeoMath.getAngleBisectorOrdered(aa.sub(oo).toWB_Vector(), bb.sub(oo).toWB_Vector()));
-        ZRender.drawZPointAsVec2D(this, bisector, oo, 50);
+        bisector = new ZPoint(ZGeoMath.getAngleBisectorOrdered(aa.sub(oo).toWB_Vector(), bb.sub(oo).toWB_Vector())).scaleTo(50);
+        ZRender.drawZPointAsVec2D(this, bisector, oo, 10);
+    }
+
+    public void keyPressed() {
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
+        }
     }
 
 }

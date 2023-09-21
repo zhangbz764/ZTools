@@ -301,7 +301,7 @@ public final class ZGeoMath {
             Coordinate c1 = poly.getCoordinates()[i + 1];
             Vector2D[] polySeg = new Vector2D[]{
                     Vector2D.create(c0),
-                    new Vector2D(c0, c1).normalize()
+                    new Vector2D(c0, c1)
             };
 
             Coordinate intersect = null;
@@ -963,7 +963,7 @@ public final class ZGeoMath {
      */
     public static ZLine extendSegmentToPolygon(final ZPoint[] segment, final WB_Polygon poly) {
         List<ZPoint> interResult = rayPolygonIntersection2D(segment, poly);
-        if (interResult.size() > 0) {
+        if (!interResult.isEmpty()) {
             for (int i = 0; i < interResult.size(); i++) {
                 if (interResult.get(i).distance(segment[0]) < epsilon) {
                     interResult.remove(i--);
@@ -2344,22 +2344,6 @@ public final class ZGeoMath {
     /*-------- geometry modifier (WB) --------*/
 
     /**
-     * copy a simple WB_Polygon
-     *
-     * @param polygon original WB_Polygon
-     * @return wblut.geom.WB_Polygon
-     */
-    public static WB_Polygon copySimple_WB_Polygon(WB_Polygon polygon) {
-        List<WB_Point> cs = new ArrayList<>();
-        int numberOfPoints = polygon.getNumberOfPoints();
-        for (int i = 0; i < numberOfPoints; i++) {
-            WB_Point p = polygon.getPoint(i);
-            cs.add(new WB_Point(p.xd(), p.yd(), p.zd()));
-        }
-        return wbgf.createSimplePolygon(cs);
-    }
-
-    /**
      * calculate area from a series of points, avoiding construct a polygon
      *
      * @param pts a series of points
@@ -2960,7 +2944,7 @@ public final class ZGeoMath {
         List<WB_Polygon> meshPolyFaceList = new ArrayList<>();
 
         // base
-        meshPolyFaceList.add(copySimple_WB_Polygon(basePoly));
+        meshPolyFaceList.add(ZFactory.copySimple_WB_Polygon(basePoly));
         // side
         for (int i = 0; i < basePoly.getNumberOfPoints() - 1; i++) {
             WB_Point p0 = basePoly.getPoint(i + 1).copy();

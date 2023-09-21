@@ -15,10 +15,10 @@ import render.JtsRender;
  * @date 2022/6/18
  * @time 16:06
  */
-public class TestJtsOffsetLS extends PApplet {
+public class Test17JtsOffsetLS extends PApplet {
 
     public static void main(String[] args) {
-        PApplet.main("testUtils.TestJtsOffsetLS");
+        PApplet.main("testUtils.Test17JtsOffsetLS");
     }
 
     /* ------------- settings ------------- */
@@ -34,6 +34,8 @@ public class TestJtsOffsetLS extends PApplet {
 
     private LineString ls;
     private LineString offsetLS;
+    private LineString offsetLS2;
+    private LineString offsetLS3;
     private double dist = 50;
 
     public void setup() {
@@ -53,7 +55,9 @@ public class TestJtsOffsetLS extends PApplet {
         this.ls = ZFactory.jtsgf.createLineString(coords);
 
         this.offsetLS = ZFactory.createOffsetLineString(ls, dist);
-        System.out.println("offset pts num: " + offsetLS.getNumPoints());
+        this.offsetLS2 = ZFactory.createOffsetLineString(ls, dist + 130);
+        this.offsetLS3 = ZFactory.createOffsetLineString(ls, dist - 120);
+        System.out.println("dist: " + dist);
     }
 
     /* ------------- draw ------------- */
@@ -61,12 +65,30 @@ public class TestJtsOffsetLS extends PApplet {
     public void draw() {
         background(255);
         strokeWeight(2);
+
         stroke(0);
         jtsRender.drawGeometry(ls);
         stroke(255, 0, 0);
         jtsRender.drawGeometry(offsetLS);
-
         for (Coordinate c : offsetLS.getCoordinates()) {
+            ellipse((float) c.getX(), (float) c.getY(), 5, 5);
+        }
+
+        translate(600, 0);
+        stroke(0);
+        jtsRender.drawGeometry(ls);
+        stroke(0, 255, 0);
+        jtsRender.drawGeometry(offsetLS2);
+        for (Coordinate c : offsetLS2.getCoordinates()) {
+            ellipse((float) c.getX(), (float) c.getY(), 5, 5);
+        }
+
+        translate(600, 0);
+        stroke(0);
+        jtsRender.drawGeometry(ls);
+        stroke(0, 0, 255);
+        jtsRender.drawGeometry(offsetLS3);
+        for (Coordinate c : offsetLS3.getCoordinates()) {
             ellipse((float) c.getX(), (float) c.getY(), 5, 5);
         }
     }
@@ -74,14 +96,23 @@ public class TestJtsOffsetLS extends PApplet {
 
     public void keyPressed() {
         if (key == 'q') {
-            dist += 10;
+            dist += 5;
             this.offsetLS = ZFactory.createOffsetLineString(ls, dist);
-            System.out.println("offset pts num: " + offsetLS.getNumPoints());
+            this.offsetLS2 = ZFactory.createOffsetLineString(ls, dist + 130);
+            this.offsetLS3 = ZFactory.createOffsetLineString(ls, dist - 120);
+            System.out.println("dist: " + dist);
         }
         if (key == 'w') {
-            dist -= 10;
+            dist -= 5;
             this.offsetLS = ZFactory.createOffsetLineString(ls, dist);
-            System.out.println("offset pts num: " + offsetLS.getNumPoints());
+            this.offsetLS2 = ZFactory.createOffsetLineString(ls, dist + 130);
+            this.offsetLS3 = ZFactory.createOffsetLineString(ls, dist - 120);
+            System.out.println("dist: " + dist);
+        }
+
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
         }
     }
 

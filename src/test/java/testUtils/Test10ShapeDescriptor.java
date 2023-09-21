@@ -31,6 +31,11 @@ import java.util.List;
  * @time 13:13
  */
 public class Test10ShapeDescriptor extends PApplet {
+
+    public static void main(String[] args) {
+        PApplet.main("testUtils.Test10ShapeDescriptor");
+    }
+
     // test shape descriptors of one polygon
     private Polygon polygon;
     private List<ZPoint> randomPts;
@@ -175,6 +180,10 @@ public class Test10ShapeDescriptor extends PApplet {
     public void keyPressed() {
         if (key == '1') {
             draw = !draw;
+        }
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
         }
     }
 

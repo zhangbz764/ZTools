@@ -2,13 +2,18 @@ package testUtils;
 
 import basicGeometry.ZFactory;
 import math.ZKMeans;
+import math.ZMath;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import processing.core.PApplet;
 import render.JtsRender;
+import render.ZRender;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 /**
  * description
@@ -19,6 +24,10 @@ import java.util.Arrays;
  * @time 19:41
  */
 public class Test11KMeans extends PApplet {
+
+    public static void main(String[] args) {
+        PApplet.main("testUtils.Test11KMeans");
+    }
 
     /* ------------- settings ------------- */
 
@@ -35,33 +44,25 @@ public class Test11KMeans extends PApplet {
     private JtsRender jtsRender;
 
     private int k = 8;
-    private int sampleNum = 5;
+    private int sampleNum = 100;
+
+    private List<ZRender.ZColor> colors;
+    private int[] colorsIDs;
+    private final Random random = new Random();
 
     /* ------------- setup ------------- */
 
     public void setup() {
         this.jtsRender = new JtsRender(this);
 
-
         this.samples = new double[sampleNum][];
         for (int i = 0; i < sampleNum; i++) {
             samples[i] = new double[]{
-                    263
-//                    random(100, 900),
-//                    random(100, 900)
+                    random(100, 900),
+                    random(100, 900)
             };
         }
 
-        samples[sampleNum - 1] = new double[]{335};
-//        for (int i = 500; i < 1000; i++) {
-//            samples[i] = new double[]{
-//                    350
-////                    random(100, 900),
-////                    random(100, 900)
-//            };
-//        }
-
-//        System.out.println(Arrays.deepToString(samples));
         ZKMeans kmeans = new ZKMeans(samples, k, 0.0001);
         kmeans.cluster();
         this.clusters = kmeans.getClusters();
@@ -84,57 +85,15 @@ public class Test11KMeans extends PApplet {
         } else {
             this.clusterConvexHull = new Geometry[0];
         }
+
+
+        this.colors = new ArrayList<>();
+        this.colorsIDs = ZMath.randomIntegers(0, ZRender.ZColor.values().length - 1, clusters.length);
+        colors.addAll(Arrays.asList(ZRender.ZColor.values()));
+        System.out.println(Arrays.toString(colorsIDs));
     }
 
     /* ------------- draw ------------- */
-
-//    public void draw() {
-//        background(255);
-//        noFill();
-//        for (Geometry g : clusterConvexHull) {
-//            jtsRender.drawGeometry(g);
-//        }
-//
-//        noStroke();
-//        fill(255, 0, 0);
-//        for (int i = 0; i < clusters[0].length; i++) {
-//            ellipse((float) samples[clusters[0][i]][0], (float) samples[clusters[0][i]][1], 10, 10);
-//        }
-//        stroke(0);
-//        ellipse((float) centroids[0][0], (float) centroids[0][1], 20, 20);
-//
-//        noStroke();
-//        fill(0, 255, 0);
-//        for (int i = 0; i < clusters[1].length; i++) {
-//            ellipse((float) samples[clusters[1][i]][0], (float) samples[clusters[1][i]][1], 10, 10);
-//        }
-//        stroke(0);
-//        ellipse((float) centroids[1][0], (float) centroids[1][1], 20, 20);
-//
-//        noStroke();
-//        fill(0, 0, 255);
-//        for (int i = 0; i < clusters[2].length; i++) {
-//            ellipse((float) samples[clusters[2][i]][0], (float) samples[clusters[2][i]][1], 10, 10);
-//        }
-//        stroke(0);
-//        ellipse((float) centroids[2][0], (float) centroids[2][1], 20, 20);
-//
-//        noStroke();
-//        fill(0, 255, 255);
-//        for (int i = 0; i < clusters[3].length; i++) {
-//            ellipse((float) samples[clusters[3][i]][0], (float) samples[clusters[3][i]][1], 10, 10);
-//        }
-//        stroke(0);
-//        ellipse((float) centroids[3][0], (float) centroids[3][1], 20, 20);
-//
-//        noStroke();
-//        fill(255, 0, 255);
-//        for (int i = 0; i < clusters[4].length; i++) {
-//            ellipse((float) samples[clusters[4][i]][0], (float) samples[clusters[4][i]][1], 10, 10);
-//        }
-//        stroke(0);
-//        ellipse((float) centroids[4][0], (float) centroids[4][1], 20, 20);
-//    }
 
     public void draw() {
         background(255);
@@ -143,20 +102,39 @@ public class Test11KMeans extends PApplet {
             jtsRender.drawGeometry(g);
         }
 
+
         for (int i = 0; i < clusters.length; i++) {
             noStroke();
-            fill(i * 25, 0, 0);
+            fill(colors.get(colorsIDs[i]).getColor());
             for (int j = 0; j < clusters[i].length; j++) {
-                ellipse((float) samples[clusters[i][j]][0], 500, 10, 10);
+                ellipse((float) samples[clusters[i][j]][0], (float) samples[clusters[i][j]][1], 10, 10);
             }
             stroke(0);
-
-            if (centroids[i].length > 0) {
-                ellipse((float) centroids[i][0], 500, 20, 20);
-            }
+            ellipse((float) centroids[0][0], (float) centroids[0][1], 20, 20);
         }
+    }
 
-
+//    public void draw() {
+//        background(255);
+//        noFill();
+//        for (Geometry g : clusterConvexHull) {
+//            jtsRender.drawGeometry(g);
+//        }
+//
+//        for (int i = 0; i < clusters.length; i++) {
+//            noStroke();
+//            fill(i * 25, 0, 0);
+//            for (int j = 0; j < clusters[i].length; j++) {
+//                ellipse((float) samples[clusters[i][j]][0], 500, 10, 10);
+//            }
+//            stroke(0);
+//
+//            if (centroids[i].length > 0) {
+//                ellipse((float) centroids[i][0], 500, 20, 20);
+//            }
+//        }
+//
+//
 //        noStroke();
 //        fill(255, 0, 0);
 //        for (int i = 0; i < clusters[0].length; i++) {
@@ -180,7 +158,7 @@ public class Test11KMeans extends PApplet {
 //        }
 //        stroke(0);
 //        ellipse((float) centroids[2][0], 500, 20, 20);
-
+//
 //        noStroke();
 //        fill(0, 255, 255);
 //        for (int i = 0; i < clusters[3].length; i++) {
@@ -196,5 +174,12 @@ public class Test11KMeans extends PApplet {
 //        }
 //        stroke(0);
 //        ellipse((float) centroids[4][0], 500, 20, 20);
+//    }
+
+    public void keyPressed() {
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
+        }
     }
 }

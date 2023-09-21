@@ -336,4 +336,35 @@ public class ZRender extends JtsRender{
             app.endShape(PConstants.CLOSE);
         }
     }
+
+
+    /*-------- color --------*/
+
+    public enum ZColor{
+        white(0xffffffff), // 实体白色
+        gray(0xff888888), // 实体灰色
+        lightGray(0xffbebebe),// 实体灰色
+        green(0xff77C955), // 实体绿色
+        yellow(0xffc9b487), // 木质黄色
+        red(0xFFFF0000),  // 实体红色
+        magenta(0xFFFF00FF),  // 实体粉色
+        orange(0xFFFF8000),  // 实体粉色
+        cyan(0xFF00FFFF),  // 实体青色
+        Redwood(0xFFaf3e4d),
+        MossGreen(0xFF758e4f),
+        DarkGray(0xFF545454),
+        MidGray(0xFF969696),
+        Gunmetal(0xFF002a32),
+        Silver(0xFFBCB8B1),
+        HarvestGold(0xFFd3941e);
+
+        private int color;
+
+        ZColor(int color) {
+            this.color = color;
+        }
+        public int getColor() {
+            return color;
+        }
+    }
 }

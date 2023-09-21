@@ -21,6 +21,10 @@ import wblut.processing.WB_Render;
  */
 public class Test4Curve extends PApplet {
 
+    public static void main(String[] args) {
+        PApplet.main("testUtils.Test4Curve");
+    }
+
     /* ------------- settings ------------- */
 
     public void settings() {
@@ -145,6 +149,11 @@ public class Test4Curve extends PApplet {
             // update bspline
             this.zbSpline = new ZBSpline(controlPoints, 3, 100, type);
             this.ls2 = zbSpline.getAsLineString();
+        }
+
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
         }
     }
 

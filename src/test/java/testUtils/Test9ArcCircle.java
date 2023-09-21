@@ -24,6 +24,10 @@ import java.util.List;
  */
 public class Test9ArcCircle extends PApplet {
 
+    public static void main(String[] args) {
+        PApplet.main("testUtils.Test9ArcCircle");
+    }
+
     /* ------------- settings ------------- */
 
     public void settings() {
@@ -108,5 +112,10 @@ public class Test9ArcCircle extends PApplet {
             ellipse(p.xf(), p.yf(), 10, 10);
         }
     }
-
+    public void keyPressed() {
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
+        }
+    }
 }

@@ -12,6 +12,7 @@ import transform.ZTransform;
 import wblut.geom.WB_Polygon;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -84,17 +85,16 @@ public class ZRectCover {
         for (int i = 0; i < dirs.length; i++) {
             dirs[i] = new Vector2D(Math.cos(step * i), Math.sin(step * i));
         }
-
         // TODO: 2021/4/30 no concave?
         // find concave points
         List<Coordinate> concave = ZGeoMath.getConcavePoints(boundary);
-
         // rays extends to boundary
         this.rayExtends = new ArrayList<>();
         for (Coordinate c : concave) {
             for (Vector2D dir : dirs) {
                 Vector2D[] ray = new Vector2D[]{Vector2D.create(c), dir};
                 LineString extendRay = ZGeoMath.extendSegmentToPolygon(ray, boundary);
+
                 if (extendRay != null) {
                     rayExtends.add(ZFactory.jtsgf.createLineString(new Coordinate[]{
                             c, extendRay.getCoordinateN(1)
@@ -102,7 +102,7 @@ public class ZRectCover {
                 }
             }
         }
-//        System.out.println("total rays num : " + rayExtends.size());
+        System.out.println("total rays num : " + rayExtends.size());
     }
 
     /**

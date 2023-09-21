@@ -18,6 +18,10 @@ import java.util.List;
  */
 public class Test8ZGraph extends PApplet {
 
+    public static void main(String[] args) {
+        PApplet.main("testUtils.Test8ZGraph");
+    }
+
     /* ------------- settings ------------- */
 
     public void settings() {
@@ -193,5 +197,11 @@ public class Test8ZGraph extends PApplet {
             ZPoint p = new ZPoint(mouseX, mouseY);
             this.graph.addNodeByDist(p);
         }
+
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
+        }
+
     }
 }

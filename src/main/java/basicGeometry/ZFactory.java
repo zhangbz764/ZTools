@@ -13,6 +13,7 @@ import transform.ZTransform;
 import wblut.geom.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -628,6 +629,10 @@ public class ZFactory {
      * @return org.locationtech.jts.geom.LineString
      */
     public static LineString createOffsetLineString(final LineString ls, final double dist) {
+        if (dist == 0) {
+            return (LineString) ls.copy();
+        }
+
         Coordinate[] coords = ls.getCoordinates();
         int coordNum = coords.length;
         Vector2D[] bisectorVecs = new Vector2D[coordNum];
@@ -655,15 +660,15 @@ public class ZFactory {
                 ).normalize();
                 double halfAngle = Math.abs(next.angleTo(prev) * 0.5);
                 Vector2D norBisec = ZGeoMath.getAngleBisectorOrdered(next, prev);
-                bisectorVecs[i] = norBisec.multiply(1 / Math.sin((halfAngle / 180) * Math.PI));
+                bisectorVecs[i] = norBisec.multiply(1 / Math.sin(halfAngle));
             }
         }
 
         // offset direction depends on positive/negative value of distance
         boolean dir = true;
         if (dist < 0) {
-            for (Vector2D v : bisectorVecs) {
-                v = v.multiply(-1);
+            for (int i = 0; i < bisectorVecs.length; i++) {
+                bisectorVecs[i] = bisectorVecs[i].multiply(-1);
             }
             dir = false;
         }
@@ -925,5 +930,23 @@ public class ZFactory {
             matrix[i - 1] = new int[]{i, parent[i]};
         }
         return new ZGraph(nodes, matrix);
+    }
+
+    /*-------- copy geometries --------*/
+
+    /**
+     * copy a simple WB_Polygon
+     *
+     * @param polygon original WB_Polygon
+     * @return wblut.geom.WB_Polygon
+     */
+    public static WB_Polygon copySimple_WB_Polygon(WB_Polygon polygon) {
+        List<WB_Point> cs = new ArrayList<>();
+        int numberOfPoints = polygon.getNumberOfPoints();
+        for (int i = 0; i < numberOfPoints; i++) {
+            WB_Point p = polygon.getPoint(i);
+            cs.add(new WB_Point(p.xd(), p.yd(), p.zd()));
+        }
+        return wbgf.createSimplePolygon(cs);
     }
 }

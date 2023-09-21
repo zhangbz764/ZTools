@@ -18,7 +18,11 @@ import java.util.List;
  * @date 2022/7/30
  * @time 15:40
  */
-public class TestZAABBTree extends PApplet {
+public class Test14ZAABBTree extends PApplet {
+
+    public static void main(String[] args) {
+        PApplet.main("testUtils.Test14ZAABBTree");
+    }
 
     /* ------------- settings ------------- */
 
@@ -68,6 +72,12 @@ public class TestZAABBTree extends PApplet {
                 System.out.println("leaf AABB num: " + zaabbTree.getLeafAABBNum());
             }
         }
+
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
+        }
+
     }
 
     /* ------------- draw ------------- */
@@ -96,5 +106,6 @@ public class TestZAABBTree extends PApplet {
         }
 
     }
+
 
 }

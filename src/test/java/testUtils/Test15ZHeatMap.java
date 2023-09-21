@@ -15,7 +15,12 @@ import render.ZHeatMap;
  * @date 2022/9/27
  * @time 11:00
  */
-public class TestZHeatMap extends PApplet {
+public class Test15ZHeatMap extends PApplet {
+
+    public static void main(String[] args) {
+        PApplet.main("testUtils.Test15ZHeatMap");
+    }
+
     /* ------------- settings ------------- */
 
     public void settings() {
@@ -86,5 +91,10 @@ public class TestZHeatMap extends PApplet {
             translate(0, 200);
         }
     }
-
+    public void keyPressed() {
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
+        }
+    }
 }

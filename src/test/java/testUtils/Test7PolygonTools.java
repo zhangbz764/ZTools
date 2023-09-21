@@ -22,6 +22,10 @@ import wblut.processing.WB_Render;
  */
 public class Test7PolygonTools extends PApplet {
 
+    public static void main(String[] args) {
+        PApplet.main("testUtils.Test7PolygonTools");
+    }
+
     /* ------------- settings ------------- */
 
     public void settings() {
@@ -169,4 +173,10 @@ public class Test7PolygonTools extends PApplet {
         render.drawPoint2D(onLine, 10);
     }
 
+    public void keyPressed() {
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
+        }
+    }
 }

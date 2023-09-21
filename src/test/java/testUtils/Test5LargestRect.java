@@ -25,6 +25,10 @@ import java.util.List;
  */
 public class Test5LargestRect extends PApplet {
 
+    public static void main(String[] args) {
+        PApplet.main("testUtils.Test5LargestRect");
+    }
+
     /* ------------- settings ------------- */
 
     public void settings() {
@@ -87,5 +91,10 @@ public class Test5LargestRect extends PApplet {
             render.drawPolygonEdges2D(rect);
         }
     }
-
+    public void keyPressed() {
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
+        }
+    }
 }

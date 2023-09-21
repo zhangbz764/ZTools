@@ -19,6 +19,10 @@ import wblut.processing.WB_Render;
  */
 public class TestSubdivision extends PApplet {
 
+    public static void main(String[] args) {
+        PApplet.main("testUtils.TestSubdivision");
+    }
+
     /* ------------- settings ------------- */
 
     public void settings() {

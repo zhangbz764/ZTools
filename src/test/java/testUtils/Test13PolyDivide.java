@@ -1,14 +1,11 @@
 package testUtils;
 
 import basicGeometry.ZFactory;
-import basicGeometry.ZLine;
-import basicGeometry.ZPoint;
 import math.ZGeoMath;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import processing.core.PApplet;
 import render.JtsRender;
-import render.ZRender;
 import transform.ZTransform;
 import wblut.geom.*;
 import wblut.processing.WB_Render2D;
@@ -23,9 +20,9 @@ import java.util.List;
  * @date 2020/10/24
  * @time 17:14
  */
-public class TestPolySplit extends PApplet {
+public class Test13PolyDivide extends PApplet {
     public static void main(String[] args) {
-        PApplet.main("testUtils.TestPolySplit");
+        PApplet.main("testUtils.Test13PolyDivide");
     }
 
     public void settings() {
@@ -159,5 +156,12 @@ public class TestPolySplit extends PApplet {
         step = mouseX;
         divide = ZGeoMath.dividePolyLineByStep(poly, step);
         println("divide: " + divide.size());
+    }
+
+    public void keyPressed() {
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
+        }
     }
 }

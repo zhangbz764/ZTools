@@ -1,7 +1,6 @@
 package testUtils;
 
 import basicGeometry.ZFactory;
-import basicGeometry.ZPoint;
 import guo_cam.CameraController;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
@@ -18,9 +17,9 @@ import transform.ZJtsTransform;
  * @date 2021/10/21
  * @time 12:27
  */
-public class TestJtsTransform extends PApplet {
+public class Test12JtsTransform extends PApplet {
     public static void main(String[] args) {
-        PApplet.main("testUtils.TestJtsTransform");
+        PApplet.main("testUtils.Test12JtsTransform");
     }
 
     /* ------------- settings ------------- */
@@ -85,8 +84,15 @@ public class TestJtsTransform extends PApplet {
         jtsRender.drawGeometry(reflect);
 
 
-        stroke(255, 255, 0);
+        stroke(0, 255, 0);
         jtsRender.drawGeometry(multi);
     }
 
+
+    public void keyPressed() {
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
+        }
+    }
 }

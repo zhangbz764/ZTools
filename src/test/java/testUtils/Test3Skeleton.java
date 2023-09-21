@@ -24,6 +24,10 @@ import wblut.processing.WB_Render;
  */
 public class Test3Skeleton extends PApplet {
 
+    public static void main(String[] args) {
+        PApplet.main("testUtils.Test3Skeleton");
+    }
+
     /* ------------- settings ------------- */
 
     public void settings() {
@@ -143,6 +147,13 @@ public class Test3Skeleton extends PApplet {
         for (Output.Face f : skel.output.faces.values()) {
             mach += ZMath.random(0, Math.PI / 16);
             f.edge.machine = new Machine(mach);
+        }
+    }
+
+    public void keyPressed() {
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
         }
     }
 

@@ -90,24 +90,24 @@ public class ZSD_SideStrip extends ZSubdivision {
      */
     private void createDivideLines() {
         WB_PolyLine boundary = ZFactory.createPolylineFromPolygon(super.getOriginPolygon(), offsetIndices);
-        List<ZPoint> splitPoints = new ArrayList<>();
+        List<WB_Point> splitPoints = new ArrayList<>();
 
         // random or not
         if (!randomMode) {
             for (WB_PolyLine pl : finalPolyLines) {
-                splitPoints = ZGeoMath.splitPolyLineByThreshold(pl, span + 3, span - 3);
+                splitPoints = ZGeoMath.dividePolyLineByThreshold(pl, span + 3, span - 3);
             }
         } else {
             for (WB_PolyLine pl : finalPolyLines) {
-                splitPoints = ZGeoMath.splitPolyLineByRandomStep(pl, span, 5);
+                splitPoints = ZGeoMath.dividePolyLineByRandomStep(pl, span, 5);
             }
         }
 
-        if (splitPoints.size() > 0) {
+        if (!splitPoints.isEmpty()) {
             List<ZLine> divideLinesOnPolyLine = new ArrayList<>();
-            for (ZPoint p : splitPoints) {
-                WB_Point closest = WB_GeometryOp.getClosestPoint2D(p.toWB_Point(), boundary);
-                divideLinesOnPolyLine.add(new ZLine(p, new ZPoint(closest)).extendBothSides(0.1));
+            for (WB_Point p : splitPoints) {
+                WB_Point closest = WB_GeometryOp.getClosestPoint2D(p, boundary);
+                divideLinesOnPolyLine.add(new ZLine(p, closest).extendBothSides(0.1));
             }
             divideLinesOnPolyLine.remove(0);
             divideLinesOnPolyLine.remove(divideLinesOnPolyLine.size() - 1);

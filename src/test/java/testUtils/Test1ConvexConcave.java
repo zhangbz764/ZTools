@@ -23,6 +23,9 @@ import java.util.Objects;
  * @time 20:48
  */
 public class Test1ConvexConcave extends PApplet {
+    public static void main(String[] args) {
+        PApplet.main("testUtils.Test1ConvexConcave");
+    }
 
     /* ------------- settings ------------- */
 
@@ -44,9 +47,7 @@ public class Test1ConvexConcave extends PApplet {
         this.jtsRender = new JtsRender(this);
 
         // convexHull
-        String path = Objects.requireNonNull(
-                this.getClass().getClassLoader().getResource("./test_convex_hull.3dm")
-        ).getPath();
+        String path = "src/test/resources/test_convex_hull.3dm";
 
         IG.init();
         IG.open(path);
@@ -98,4 +99,12 @@ public class Test1ConvexConcave extends PApplet {
         }
     }
 
+    public void keyPressed() {
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
+        }
+    }
+
 }
+
