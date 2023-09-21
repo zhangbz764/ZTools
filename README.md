@@ -9,7 +9,7 @@
 ---
 
 详细说明见 [instruction_detail](https://github.com/Agent14zbz/ZTools/blob/main/instruction_detail.md "instruction_detail.md")  
-测试类见 [test ](https://github.com/Agent14zbz/ZTools/tree/main/src/test/java "test ")文件夹
+测试类见 [Test Examples ](https://github.com/Agent14zbz/ZTools/tree/main/src/test "test ")
 
 ---
 
