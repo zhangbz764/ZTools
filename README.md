@@ -4,16 +4,15 @@
 
 其中包含了一些个人惯用的图元定义、几何运算方法、数学计算、图论算法、几何图元格式转换等等。
 
-本人对该仓库代码的鲁棒性无法保证，但随着个人研究的持续进行，仓库会不断更新。
+本人对该仓库代码的健壮程度无法保证，但随着个人研究的持续进行，仓库会不断更新。
 
 ---
 
-详细说明见 [instruction_detail](https://github.com/Agent14zbz/ZTools/blob/main/instruction_detail.md "instruction_detail.md")  
 测试类见 [Test Examples ](https://github.com/Agent14zbz/ZTools/tree/main/src/test "test ")
 
 ---
 
-### Global Dependencies:
+#### Global Dependencies:
 
 [Processing 3.3.7](https://processing.org/ "Processing")  
 [jts 1.16.1](https://github.com/locationtech/jts "jts")  
