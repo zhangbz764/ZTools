@@ -1,6 +1,5 @@
 package testDependencies;
 
-import basicGeometry.ZPoint;
 import guo_cam.CameraController;
 import igeo.ICurve;
 import igeo.IG;

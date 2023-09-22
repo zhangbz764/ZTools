@@ -1,7 +1,9 @@
 package advancedGeometry.subdivision;
 
 import advancedGeometry.ZSkeleton;
-import basicGeometry.*;
+import basicGeometry.ZEdge;
+import basicGeometry.ZFactory;
+import basicGeometry.ZGraph;
 import math.ZGeoMath;
 import math.ZGraphMath;
 import org.locationtech.jts.geom.LineString;

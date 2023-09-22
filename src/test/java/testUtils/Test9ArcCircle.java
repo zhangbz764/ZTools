@@ -1,7 +1,6 @@
 package testUtils;
 
 import basicGeometry.ZFactory;
-import basicGeometry.ZPoint;
 import math.ZGeoMath;
 import org.locationtech.jts.geom.Coordinate;
 import processing.core.PApplet;

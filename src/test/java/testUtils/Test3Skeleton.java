@@ -8,7 +8,6 @@ import org.twak.camp.Machine;
 import org.twak.camp.Output;
 import org.twak.camp.Skeleton;
 import processing.core.PApplet;
-import render.JtsRender;
 import render.ZRender;
 import transform.ZTransform;
 import wblut.geom.WB_Polygon;

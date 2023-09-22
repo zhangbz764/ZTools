@@ -1,6 +1,11 @@
 package fileIO;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 /**
  * file input & output
@@ -20,32 +25,23 @@ public class ZFileIO {
      * @return void
      */
     public static void writeStringToFile(String filePath, String data) {
-        BufferedWriter writer = null;
-        File file = new File(filePath);
-        // create a new file if doesn't exist
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        // write a file
         try {
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), "UTF-8"));
-            writer.write(data);
+            // 创建文件对象
+            File file = new File(filePath);
+
+            // 将字符串转换为字节数组，指定UTF-8编码
+            byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
+
+            // 写入文件
+            Path path = file.toPath();
+            Files.write(path, bytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+            System.out.println("File written successfully.");
         } catch (IOException e) {
+            // 处理异常情况
             e.printStackTrace();
-        } finally {
-            try {
-                if (writer != null) {
-                    writer.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            System.err.println("Error writing to the file: " + e.getMessage());
         }
-        System.out.println("file save success");
     }
 
     /**
@@ -55,22 +51,26 @@ public class ZFileIO {
      * @return java.lang.String
      */
     public static String readStringFromFile(String filePath) {
-        String str = "";
         try {
+            // 创建文件对象
             File file = new File(filePath);
-            FileReader fileReader = new FileReader(file);
-            Reader reader = new InputStreamReader(new FileInputStream(file), "utf-8");
-            int ch = 0;
-            StringBuffer sb = new StringBuffer();
-            while ((ch = reader.read()) != -1) {
-                sb.append((char) ch);
+
+            // 检查文件是否存在
+            if (!file.exists()) {
+                System.err.println("File not found: " + filePath);
+                return null;
             }
-            fileReader.close();
-            reader.close();
-            str = sb.toString();
-            return str;
+
+            // 读取文件内容
+            Path path = file.toPath();
+            byte[] bytes = Files.readAllBytes(path);
+
+            // 将字节数组转换为字符串，指定UTF-8编码
+            return new String(bytes, StandardCharsets.UTF_8);
         } catch (IOException e) {
+            // 处理异常情况
             e.printStackTrace();
+            System.err.println("Error reading from the file: " + e.getMessage());
             return null;
         }
     }

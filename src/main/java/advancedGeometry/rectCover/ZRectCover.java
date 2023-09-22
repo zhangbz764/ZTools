@@ -12,7 +12,6 @@ import transform.ZTransform;
 import wblut.geom.WB_Polygon;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 

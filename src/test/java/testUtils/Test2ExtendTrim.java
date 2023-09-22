@@ -3,19 +3,15 @@ package testUtils;
 import basicGeometry.ZLine;
 import basicGeometry.ZPoint;
 import math.ZGeoMath;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.math.Vector2D;
 import processing.core.PApplet;
-import processing.core.PImage;
 import render.JtsRender;
 import render.ZRender;
 import transform.ZTransform;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_Polygon;
 import wblut.processing.WB_Render;
-
-import java.util.List;
 
 /**
  * test extend and trim
