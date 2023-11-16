@@ -2344,6 +2344,36 @@ public final class ZGeoMath {
     /*-------- geometry modifier (WB) --------*/
 
     /**
+    * calculate area from points
+    *
+    * @param pts input points
+    * @return double
+    */
+    public static double areaFromPoints2D(final double... pts) {
+        // must be 2D coordinate (x,y)
+        // at least 3 pairs
+        if (pts.length % 2 != 0 || pts.length < 6) {
+            return 0;
+        }
+
+        double area = 0;
+        for (int i = 0; i < pts.length - 4; i++) {
+            double x1 = pts[i];
+            double y1 = pts[i + 1];
+            double x2 = pts[i + 2];
+            double y2 = pts[i + 3];
+            area += (x2 * y1 - x1 * y2);
+        }
+        double x1 = pts[pts.length - 2];
+        double y1 = pts[pts.length - 1];
+        double x2 = pts[0];
+        double y2 = pts[1];
+        area += (x2 * y1 - x1 * y2);
+
+        return 0.5 * Math.abs(area);
+    }
+
+    /**
      * calculate area from a series of points, avoiding construct a polygon
      *
      * @param pts a series of points

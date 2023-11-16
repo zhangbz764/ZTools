@@ -1,6 +1,8 @@
 package testUtils;
 
 import advancedGeometry.rectCover.ZRectCover;
+import advancedGeometry.rectCover.ZRectCover2;
+import guo_cam.CameraController;
 import igeo.ICurve;
 import igeo.IG;
 import org.locationtech.jts.geom.LineString;
@@ -33,16 +35,9 @@ public class Test16PolyDecomp extends PApplet {
 
     // concave + rays
     private ZRectCover zrc;
+    private ZRectCover2 zrc2;
 
-    // OBBTree
-    private List<Polygon> obbTree;
-    private Polygon[] halves;
-
-    // HE_Mesh WB_PolygonDecomposer
-    private List<WB_Polygon> decomposePolys;
-
-    private Collection<Polygon> splitPolyResults;
-    private List<Polygon> splitOBBResults;
+    private CameraController gcam;
 
     /* ------------- settings ------------- */
 
@@ -53,26 +48,23 @@ public class Test16PolyDecomp extends PApplet {
     /* ------------- setup ------------- */
 
     public void setup() {
-        render = new WB_Render(this);
-        zRender = new ZRender(this);
+        this.gcam = new CameraController(this);
+        this.render = new WB_Render(this);
+        this.zRender = new ZRender(this);
         setBoundary();
 
-        long start = System.currentTimeMillis();
+        long t1 = System.currentTimeMillis();
 
-        // test OBBTree
-//        this.obbTree = ZGeoMath.performOBBTree(ZTransform.WB_PolygonToJtsPolygon(boundary), 1);
-//        this.halves = ZGeoMath.halvingOBB(obbTree.get(0));
-
-        // test rays on concave
+        // rays on concave
         this.zrc = new ZRectCover(boundary, 3);
+        long t2 = System.currentTimeMillis();
 
-        // WB_PolygonDecomposer
-//        System.out.println(boundary.getNormal());
-//        this.decomposePolys = WB_PolygonDecomposer.decomposePolygon2D(ZGeoMath.reversePolygon(boundary));
-//        System.out.println("WB_PolygonDecomposer num: " + decomposePolys.size());
+        // jMetal
+        this.zrc2 = new ZRectCover2(boundary, 3);
+        long t3 = System.currentTimeMillis();
 
-        long end = System.currentTimeMillis();
-        System.out.println("---> time used: " + (end - start) + "ms");
+        System.out.println("rays: " + (t2 - t1) + "ms");
+        System.out.println("jMetal: " + (t3 - t2) + "ms");
     }
 
     /* ------------- function ------------- */
@@ -90,28 +82,10 @@ public class Test16PolyDecomp extends PApplet {
 
     public void draw() {
         background(255);
+
+        // zrc
         strokeWeight(3);
         render.drawPolygonEdges(boundary);
-
-//        pushStyle();
-//        stroke(0, 255, 0);
-//        strokeWeight(5);
-//        for (WB_Polygon p : decomposePolys) {
-//            render.drawPolygonEdges(p);
-//        }
-//        popStyle();
-
-//        if (obbTree != null) {
-//            for (Polygon p : obbTree) {
-//                jtsRender.drawGeometry(p);
-//            }
-//        }
-//        jtsRender.drawGeometry(MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToJtsPolygon(boundary)));
-//        if (halves != null) {
-//            for (Polygon p : halves) {
-//                jtsRender.drawGeometry(p);
-//            }
-//        }
 
         pushStyle();
         strokeWeight(0.5f);
@@ -122,6 +96,19 @@ public class Test16PolyDecomp extends PApplet {
         strokeWeight(2f);
         stroke(255, 0, 0);
         for (Polygon rect : zrc.getBestRects()) {
+            zRender.drawGeometry(rect);
+        }
+        popStyle();
+
+        // zrc2
+        translate(1000, 0, 0);
+        strokeWeight(1);
+        render.drawPolygonEdges(boundary);
+
+        pushStyle();
+        strokeWeight(2f);
+        stroke(255, 0, 0);
+        for (Polygon rect : zrc2.getBestRects()) {
             zRender.drawGeometry(rect);
         }
         popStyle();

@@ -1,4 +1,4 @@
-package advancedGeometry.largestRectangle;
+package advancedGeometry.largestQuad;
 
 import basicGeometry.ZFactory;
 import org.locationtech.jts.geom.Coordinate;
@@ -26,24 +26,24 @@ import java.util.List;
 /**
  * description
  *
- * @author ZHANG Bai-zhou zhangbz
- * @project shopping_mall
- * @date 2021/4/29
- * @time 17:41
+ * @author Baizhou Zhang zhangbz
+ * @project Ztools
+ * @date 2023/11/16
+ * @time 15:43
  */
-public class ZLargestRectangle {
+public class ZLargestQuad {
     private final Polygon boundary;
     private final WB_AABB boundaryAABB;
-    private Polygon rectResult;
+    private Polygon quadResult;
 
     /* ------------- constructor ------------- */
 
-    public ZLargestRectangle(WB_Polygon boundary) {
+    public ZLargestQuad(WB_Polygon boundary) {
         this.boundary = ZTransform.WB_PolygonToPolygon(boundary);
         this.boundaryAABB = boundary.getAABB();
     }
 
-    public ZLargestRectangle(Polygon boundary) {
+    public ZLargestQuad(Polygon boundary) {
         this.boundary = boundary;
         this.boundaryAABB = ZTransform.PolygonToWB_Polygon(boundary).getAABB();
     }
@@ -52,7 +52,7 @@ public class ZLargestRectangle {
 
     public void init() {
         //定义优化问题
-        LargestRectProblem problem = new LargestRectProblem(boundary, boundaryAABB);
+        LargestQuadProblem problem = new LargestQuadProblem(boundary, boundaryAABB);
 
         //配置交叉算子
         CrossoverOperator<DoubleSolution> crossover;
@@ -101,24 +101,25 @@ public class ZLargestRectangle {
         //System.out.println("obj " + population.get(0).objectives()[0]);
 
         List<Double> vars = population.get(0).variables();
-
-        this.rectResult = ZFactory.createPolygonFromXYWHA(
-                vars.get(0),
-                vars.get(1),
-                vars.get(2),
-                vars.get(3),
-                vars.get(4)
-        );
+        Coordinate[] coords = new Coordinate[]{
+                new Coordinate(vars.get(0), vars.get(1)),
+                new Coordinate(vars.get(2), vars.get(3)),
+                new Coordinate(vars.get(4), vars.get(5)),
+                new Coordinate(vars.get(6), vars.get(7)),
+                new Coordinate(vars.get(0), vars.get(1)),
+        };
+        this.quadResult = ZFactory.jtsgf.createPolygon(coords);
     }
 
 
     /* ------------- setter & getter ------------- */
 
-    public Polygon getRectResult() {
-        return rectResult;
+    public Polygon getQuadResult() {
+        return quadResult;
     }
 
-    public WB_Polygon getRectResult_WB() {
-        return ZTransform.PolygonToWB_Polygon(rectResult);
+    public WB_Polygon getQuadResult_WB() {
+        return ZTransform.PolygonToWB_Polygon(quadResult);
     }
+
 }

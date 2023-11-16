@@ -1,19 +1,16 @@
 package testUtils;
 
+import advancedGeometry.largestQuad.ZLargestQuad;
 import advancedGeometry.largestRectangle.ZLargestRectangle;
-import basicGeometry.ZFactory;
 import guo_cam.CameraController;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
-import render.JtsRender;
 import transform.ZTransform;
+import wblut.geom.WB_Point;
 import wblut.geom.WB_Polygon;
+import wblut.geom.WB_Vector;
 import wblut.processing.WB_Render;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * test ZLargestRectangle
@@ -37,41 +34,44 @@ public class Test5LargestRect extends PApplet {
 
     /* ------------- setup ------------- */
 
-    private List<Geometry> polys;
-    private List<WB_Polygon> largestRectangles;
+    private WB_Polygon boundary;
+    private WB_Polygon largestQuad;
+    private WB_Polygon largestRect;
 
-    private JtsRender jtsRender;
     private WB_Render render;
     private CameraController gcam;
 
     public void setup() {
         this.gcam = new CameraController(this);
-        this.jtsRender = new JtsRender(this);
         this.render = new WB_Render(this);
 
-        this.polys = new ArrayList<>();
-        polys.add(ZFactory.jtsgf.createPolygon(
-                new Coordinate[]{
-                        new Coordinate(0,0,0),
-                        new Coordinate(50,-12,0),
-                        new Coordinate(100,25,0),
-                        new Coordinate(80,50,0),
-                        new Coordinate(100,100,0),
-                        new Coordinate(-20,80,0),
-                        new Coordinate(0,0,0)
-                }
-        ));
+        cal();
+    }
 
+    private void cal() {
+        // random boundary polygon
+        WB_Point[] pts = new WB_Point[8];
+        double angle = Math.PI / 4;
+        for (int i = 0; i < 8; i++) {
+            WB_Vector v = new WB_Vector(Math.cos(angle * i), Math.sin(angle * i));
+            pts[i] = new WB_Point(0, 0).add(v.scale(Math.random() * 50 + 50));
+        }
+        this.boundary = new WB_Polygon(pts);
 
         // largest rectangle
-        this.largestRectangles = new ArrayList<>();
-        for (Geometry g : polys) {
-            if (g instanceof Polygon) {
-                ZLargestRectangle rectangle = new ZLargestRectangle(ZTransform.PolygonToWB_Polygon((Polygon) g));
-                rectangle.init();
-                largestRectangles.add(rectangle.getRectangleResult());
-            }
-        }
+        long t1 = System.currentTimeMillis();
+        ZLargestRectangle rectangle = new ZLargestRectangle(boundary);
+        rectangle.init();
+        this.largestRect = rectangle.getRectResult_WB();
+        // largest quad
+        long t2 = System.currentTimeMillis();
+        ZLargestQuad quad = new ZLargestQuad(boundary);
+        quad.init();
+        this.largestQuad = quad.getQuadResult_WB();
+        long t3 = System.currentTimeMillis();
+
+        System.out.println("largest rectangle: " + (t2 - t1) + "ms");
+        System.out.println("largest quad: " + (t3 - t2) + "ms");
     }
 
     /* ------------- draw ------------- */
@@ -80,21 +80,27 @@ public class Test5LargestRect extends PApplet {
         background(255);
         strokeWeight(1);
         stroke(0);
-        for (Geometry g : polys) {
-            jtsRender.drawGeometry(g);
-        }
+        render.drawPolygonEdges(boundary);
 
         // rectangle
         strokeWeight(3);
         stroke(255, 0, 0);
-        for (WB_Polygon rect : largestRectangles) {
-            render.drawPolygonEdges2D(rect);
-        }
+        render.drawPolygonEdges2D(largestRect);
+
+
+        translate(200, 0);
+        strokeWeight(1);
+        stroke(0);
+        render.drawPolygonEdges(boundary);
+        // quad
+        strokeWeight(3);
+        stroke(0, 0, 255);
+        render.drawPolygonEdges2D(largestQuad);
     }
+
     public void keyPressed() {
         if (key == 's') {
-            String className = getClass().getSimpleName();
-            save("./src/test/resources/exampleImgs/" + className + ".jpg");
+            cal();
         }
     }
 }

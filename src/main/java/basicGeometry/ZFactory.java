@@ -74,6 +74,41 @@ public class ZFactory {
     }
 
     /**
+     * create a Polygon from a base + wh + angle
+     *
+     * @param x base x (bottom left)
+     * @param y base y
+     * @param w width
+     * @param h height
+     * @param a rotate angle
+     * @return org.locationtech.jts.geom.Polygon
+     */
+    public static Polygon createPolygonFromXYWHA(
+            final double x,
+            final double y,
+            final double w,
+            final double h,
+            final double a
+    ) {
+        Coordinate base = new Coordinate(x, y);
+        Vector2D dir1 = new Vector2D(Math.cos(a), Math.sin(a));
+        double angle = Math.PI * 0.5;
+        Vector2D dir2 = dir1.rotate(angle);
+        Vector2D dir1Mul = dir1.multiply(w);
+        Coordinate base2 = new Coordinate(base.getX() + dir1Mul.getX(), base.getY() + dir1Mul.getY());
+
+        Coordinate[] coords = new Coordinate[5];
+        coords[0] = base;
+        coords[1] = base2;
+        Vector2D dir2Mul = dir2.multiply(h);
+        coords[2] = new Coordinate(base2.getX() + dir2Mul.getX(), base2.getY() + dir2Mul.getY());
+        coords[3] = new Coordinate(base.getX() + dir2Mul.getX(), base.getY() + dir2Mul.getY());
+        coords[4] = base;
+
+        return ZFactory.jtsgf.createPolygon(coords);
+    }
+
+    /**
      * create a Polygon with holes from Coordinate[] and Coordinate[][]
      *
      * @param exterior exterior Coordinates
