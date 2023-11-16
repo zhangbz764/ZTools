@@ -35,6 +35,8 @@ public class TestJtsBuffer extends PApplet {
 
     private Polygon poly1;
     private Polygon poly2;
+    private GeometryCollection collection;
+    private Geometry union;
     private LineString ls;
     private Point p = ZFactory.jtsgf.createPoint(new Coordinate(900, 100));
     private Geometry multiGeo;
@@ -81,6 +83,8 @@ public class TestJtsBuffer extends PApplet {
 
         this.poly1 = gf.createPolygon(polygonV1);
         this.poly2 = gf.createPolygon(polygonV2);
+        this.collection = gf.createGeometryCollection(new Geometry[]{poly1, poly2});
+        this.union = collection.buffer(0);
         this.ls = gf.createLineString(lineStringC);
         this.multiGeo = poly1;
         multiGeo = multiGeo.union(poly2);
@@ -113,6 +117,7 @@ public class TestJtsBuffer extends PApplet {
         jtsRender.drawGeometry(buffer3);
 
         strokeWeight(4);
+        jtsRender.drawGeometry(union);
         for (int i = 0; i < pl.getNumberOfPoints() - 1; i++) {
             line(
                     pl.getPoint(i).xf(),

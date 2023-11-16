@@ -1,16 +1,11 @@
 package advancedGeometry.rectCover;
 
 import basicGeometry.ZFactory;
-import math.ZGeoMath;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.math.Vector2D;
 import org.uma.jmetal.problem.doubleproblem.impl.AbstractDoubleProblem;
 import org.uma.jmetal.solution.doublesolution.DoubleSolution;
 import wblut.geom.WB_AABB;
-import wblut.geom.WB_Point;
-import wblut.geom.WB_Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;

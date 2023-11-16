@@ -2,13 +2,10 @@ package advancedGeometry.largestQuad;
 
 import basicGeometry.ZFactory;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 import org.uma.jmetal.problem.doubleproblem.impl.AbstractDoubleProblem;
 import org.uma.jmetal.solution.doublesolution.DoubleSolution;
 import wblut.geom.WB_AABB;
-import wblut.geom.WB_Point;
-import wblut.geom.WB_Polygon;
 
 import java.util.ArrayList;
 import java.util.Arrays;

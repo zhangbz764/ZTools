@@ -395,7 +395,10 @@ public class ZSkeleton {
                 List<HE_Vertex> verticesFromRidgeEnd = new ArrayList<>();
                 for (HE_Vertex vertex : v.getNeighborVertices()) {
                     if (!vertex.isBoundary() && !curr_vertices.contains(vertex)) {
-                        ridges.add(ZFactory.jtsgf.createLineString(new Coordinate[]{ZTransform.WB_CoordToCoordinate(v), ZTransform.WB_CoordToCoordinate(v)}));
+                        ridges.add(ZFactory.jtsgf.createLineString(new Coordinate[]{
+                                ZTransform.WB_CoordToCoordinate(v),
+                                ZTransform.WB_CoordToCoordinate(vertex)
+                        }));
                     }
                     if (vertex.isBoundary()) {
                         verticesFromRidgeEnd.add(vertex);

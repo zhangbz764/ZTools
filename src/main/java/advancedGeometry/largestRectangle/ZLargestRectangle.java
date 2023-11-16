@@ -1,7 +1,6 @@
 package advancedGeometry.largestRectangle;
 
 import basicGeometry.ZFactory;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
 import org.uma.jmetal.component.algorithm.EvolutionaryAlgorithm;
 import org.uma.jmetal.component.algorithm.multiobjective.NSGAIIBuilder;

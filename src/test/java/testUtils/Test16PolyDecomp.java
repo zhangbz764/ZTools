@@ -13,9 +13,6 @@ import transform.ZTransform;
 import wblut.geom.WB_Polygon;
 import wblut.processing.WB_Render;
 
-import java.util.Collection;
-import java.util.List;
-
 /**
  * test polygon decomposition and rect cover
  *

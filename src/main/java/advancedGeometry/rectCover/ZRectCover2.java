@@ -2,7 +2,8 @@ package advancedGeometry.rectCover;
 
 import basicGeometry.ZFactory;
 import org.locationtech.jts.algorithm.MinimumDiameter;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import org.uma.jmetal.component.algorithm.EvolutionaryAlgorithm;
 import org.uma.jmetal.component.algorithm.multiobjective.NSGAIIBuilder;
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
