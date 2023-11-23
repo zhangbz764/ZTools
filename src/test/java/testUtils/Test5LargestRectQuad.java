@@ -17,10 +17,10 @@ import wblut.processing.WB_Render;
  * @date 2021/9/7
  * @time 17:48
  */
-public class Test5LargestRect extends PApplet {
+public class Test5LargestRectQuad extends PApplet {
 
     public static void main(String[] args) {
-        PApplet.main("testUtils.Test5LargestRect");
+        PApplet.main("testUtils.Test5LargestRectQuad");
     }
 
     /* ------------- settings ------------- */
@@ -96,8 +96,12 @@ public class Test5LargestRect extends PApplet {
     }
 
     public void keyPressed() {
-        if (key == 's') {
+        if (key == 'a') {
             cal();
+        }
+        if (key == 's') {
+            String className = getClass().getSimpleName();
+            save("./src/test/resources/exampleImgs/" + className + ".jpg");
         }
     }
 }

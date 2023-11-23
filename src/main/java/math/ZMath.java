@@ -322,6 +322,19 @@ public final class ZMath {
     }
 
     /**
+     * the square of the 2d euclidean distance
+     *
+     * @param x1 x1
+     * @param y1 y1
+     * @param x2 x2
+     * @param y2 y2
+     * @return double
+     */
+    public static double distanceSq2D(final double x1, final double y1, final double x2, final double y2) {
+        return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+    }
+
+    /**
      * 2d euclidean distance
      *
      * @param x1 x1
@@ -687,6 +700,29 @@ public final class ZMath {
         } else {
             return num * factorial(num - 1);
         }
+    }
+
+    /**
+     * calculate variance of a series of data
+     *
+     * @param data number data
+     * @return double
+     */
+    public static double variance(final double[] data) {
+        int len = data.length;
+
+        double sum = 0;
+        for (double d : data) {
+            sum += d;
+        }
+        double avr = sum / len;
+
+        double sqSum = 0;
+        for (double d : data) {
+            sqSum += (d - avr) * (d - avr);
+        }
+
+        return sqSum / len;
     }
 
 }
