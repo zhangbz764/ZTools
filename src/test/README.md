@@ -43,5 +43,11 @@ example images from `textUtils`
     <td><img src="resources/exampleImgs/Test15ZHeatMap.jpg" width = "250" height = "250" /></td>
     <td><img src="resources/exampleImgs/Test16PolyDecomp.jpg" width = "250" height = "250" /></td>
     <td><img src="resources/exampleImgs/Test17JtsOffsetLS.jpg" width = "250" height = "250" /></td>
+</tr></table>  
+
+#### Test18PolyVoronoi | Test19Skeleton3D
+<table><tr>
+    <td><img src="resources/exampleImgs/Test18PolyVoronoi.jpg" width = "250" height = "250" /></td>
+    <td><img src="resources/exampleImgs/Test19Skeleton3D.jpg" width = "250" height = "250" /></td>
 </tr></table>
 

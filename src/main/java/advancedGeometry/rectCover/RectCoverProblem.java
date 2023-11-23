@@ -20,11 +20,11 @@ import java.util.stream.IntStream;
  * @date 2023/11/16
  * @time 11:50
  */
-public class RectCoverProblem extends AbstractDoubleProblem {
+class RectCoverProblem extends AbstractDoubleProblem {
     private final Polygon polygon;
     private final int rectNum;
 
-    public RectCoverProblem(Polygon polygon, WB_AABB aabb, int rectNum) {
+    protected RectCoverProblem(Polygon polygon, WB_AABB aabb, int rectNum) {
         this.polygon = polygon;
         this.rectNum = rectNum;
 

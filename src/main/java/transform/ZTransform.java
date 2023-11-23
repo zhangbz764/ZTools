@@ -17,7 +17,6 @@ import java.util.List;
  * @project shopping_mall
  * @date 2020/10/9
  * @time 17:27
- *
  */
 public class ZTransform {
     private static final WB_GeometryFactory wbgf = new WB_GeometryFactory();
@@ -588,6 +587,19 @@ public class ZTransform {
             points[i] = CoordinateToWB_Point(ls.getCoordinateN(i));
         }
         return new WB_PolyLine(points);
+    }
+
+    /**
+     * WB_Segment -> WB_PolyLine
+     *
+     * @param seg input WB_Segment
+     * @return wblut.geom.WB_PolyLine
+     */
+    public static WB_PolyLine WB_SegmentToWB_PolyLine(final WB_Segment seg) {
+        return new WB_PolyLine(new WB_Coord[]{
+                seg.getOrigin(),
+                seg.getEndpoint(),
+        });
     }
 
     /**

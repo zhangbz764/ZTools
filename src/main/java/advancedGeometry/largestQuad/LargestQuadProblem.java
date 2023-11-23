@@ -20,10 +20,10 @@ import java.util.stream.IntStream;
  * @date 2023/11/16
  * @time 11:50
  */
-public class LargestQuadProblem extends AbstractDoubleProblem {
+class LargestQuadProblem extends AbstractDoubleProblem {
     private Polygon boundary;
 
-    public LargestQuadProblem(Polygon boundary, WB_AABB aabb) {
+    protected LargestQuadProblem(Polygon boundary, WB_AABB aabb) {
         this.boundary = boundary;
         double minx = aabb.getMinX();
         double maxx = aabb.getMaxX();

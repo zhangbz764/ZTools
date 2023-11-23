@@ -19,10 +19,10 @@ import java.util.stream.IntStream;
  * @date 2023/11/16
  * @time 11:50
  */
-public class LargestRectProblem extends AbstractDoubleProblem {
+class LargestRectProblem extends AbstractDoubleProblem {
     private Polygon boundary;
 
-    public LargestRectProblem(Polygon boundary, WB_AABB aabb) {
+    protected LargestRectProblem(Polygon boundary, WB_AABB aabb) {
         this.boundary = boundary;
 
         this.numberOfObjectives(1);//定义目标的数量

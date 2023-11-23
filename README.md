@@ -10,16 +10,3 @@
 
 测试类见 [Test Examples ](https://github.com/Agent14zbz/ZTools/tree/main/src/test "test ")
 
----
-
-#### Global Dependencies:
-
-[Processing 3.3.7](https://processing.org/ "Processing")  
-[jts 1.16.1](https://github.com/locationtech/jts "jts")  
-[HE_Mesh 2019.0.1](https://github.com/wblut/HE_Mesh "HE_Mesh")  
-[igeo 0.9.3.0](http://igeo.jp/ "igeo")  
-[campskeleton](https://github.com/twak/campskeleton "campskeleton")  
-[JSwarm-PSO](http://jswarm-pso.sourceforge.net/ "JSwarm-PSO")  
-[Gurobi 9.1.1](https://www.gurobi.com/ "Gurobi")  
-[camera 1.1](https://github.com/archialgo/camera) by [Zifeng Guo](https://github.com/guozifeng91)  
-[commons-lang3 3.12.0](https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 "commons-lang3")

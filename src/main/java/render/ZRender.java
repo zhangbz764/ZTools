@@ -4,6 +4,7 @@ import advancedGeometry.ZSkeleton;
 import basicGeometry.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import wblut.geom.WB_Polygon;
@@ -16,7 +17,7 @@ import wblut.geom.WB_Polygon;
  * @date 2020/9/29
  * @time 15:41
  */
-public class ZRender extends JtsRender{
+public class ZRender extends JtsRender {
     private PApplet app;
     public final static ZPoint origin = new ZPoint(0, 0, 0);
 
@@ -228,6 +229,23 @@ public class ZRender extends JtsRender{
     }
 
     /**
+     * draw ZSkeleton, all edges, ridges and ridge points in 3D
+     *
+     * @param skeleton ZSkeleton
+     */
+    public void drawSkeleton3D(ZSkeleton skeleton) {
+        app.pushStyle();
+
+        app.strokeWeight(1);
+        app.fill(200);
+        for (Polygon f : skeleton.getAllFacePolys()) {
+            super.drawPolygon3D(f);
+        }
+
+        app.popStyle();
+    }
+
+    /**
      * draw ZGraph
      *
      * @param app   PApplet
@@ -340,7 +358,7 @@ public class ZRender extends JtsRender{
 
     /*-------- color --------*/
 
-    public enum ZColor{
+    public enum ZColor {
         white(0xffffffff), // 实体白色
         gray(0xff888888), // 实体灰色
         lightGray(0xffbebebe),// 实体灰色
@@ -363,6 +381,7 @@ public class ZRender extends JtsRender{
         ZColor(int color) {
             this.color = color;
         }
+
         public int getColor() {
             return color;
         }
