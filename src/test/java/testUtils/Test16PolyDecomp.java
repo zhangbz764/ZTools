@@ -57,7 +57,7 @@ public class Test16PolyDecomp extends PApplet {
         long t2 = System.currentTimeMillis();
 
         // jMetal
-        this.zrc2 = new ZRectCover2(boundary, 3);
+        this.zrc2 = new ZRectCover2(boundary, 2);
         long t3 = System.currentTimeMillis();
 
         System.out.println("rays: " + (t2 - t1) + "ms");

@@ -4,6 +4,9 @@ import basicGeometry.ZFactory;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
+import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
+import org.uma.jmetal.algorithm.multiobjective.nsgaiii.NSGAIII;
+import org.uma.jmetal.algorithm.multiobjective.nsgaiii.NSGAIIIBuilder;
 import org.uma.jmetal.component.algorithm.EvolutionaryAlgorithm;
 import org.uma.jmetal.component.algorithm.multiobjective.NSGAIIBuilder;
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
@@ -78,18 +81,18 @@ public class ZRectCover2 {
             crossover = new SBXCrossover(crossoverProbability, crossoverDistributionIndex);
 
             //配置变异算子
-            MutationOperator<DoubleSolution> mutation;
             double mutationProbability = 1.0 / problem.numberOfVariables();
             double mutationDistributionIndex = 20.0;
-            mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex);
+            MutationOperator<DoubleSolution> mutation = new PolynomialMutation(mutationProbability,
+                    mutationDistributionIndex);
 
             //配置选择算子
-            SelectionOperator<List<DoubleSolution>, DoubleSolution> selection = new BinaryTournamentSelection<DoubleSolution>(
-                    new RankingAndCrowdingDistanceComparator<DoubleSolution>());
+            SelectionOperator<List<DoubleSolution>, DoubleSolution> selection = new BinaryTournamentSelection<>(
+                    new RankingAndCrowdingDistanceComparator<>());
 
             //种群数量
-            int populationSize = 100;
-            int offspringPopulationSize = 100;
+            int populationSize = 300;
+            int offspringPopulationSize = 300;
 
             //设置排序方式为总体约束违反度
             Ranking<DoubleSolution> ranking = new FastNonDominatedSortRanking<>(
@@ -107,8 +110,19 @@ public class ZRectCover2 {
                     .setRanking(ranking)
                     .build();
 
+//            NSGAIII<DoubleSolution> algorithm = new NSGAIIIBuilder<>(
+//                    problem
+//            )
+//                            .setCrossoverOperator(crossover)
+//                            .setMutationOperator(mutation)
+//                            .setSelectionOperator(selection)
+//                            .setMaxIterations(1500)
+//                            .setNumberOfDivisions(12)
+//                            .build();
+
             //运行算法
-            algorithm.run();
+            AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
+//            algorithm.run();
 
             //获取结果集
             List<DoubleSolution> population = algorithm.getResult();

@@ -1,6 +1,7 @@
 package advancedGeometry.rectCover;
 
 import basicGeometry.ZFactory;
+import math.ZMath;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.uma.jmetal.problem.doubleproblem.impl.AbstractDoubleProblem;
@@ -28,7 +29,7 @@ class RectCoverProblem extends AbstractDoubleProblem {
         this.polygon = polygon;
         this.rectNum = rectNum;
 
-        this.numberOfObjectives(1);//定义目标的数量
+        this.numberOfObjectives(2);//定义目标的数量
         this.numberOfConstraints(1);//定义约束的数量
         this.name("RectCoverProblem");
 
@@ -36,8 +37,8 @@ class RectCoverProblem extends AbstractDoubleProblem {
         List<Double> upperLimit = new ArrayList<>();
 
         for (int i = 0; i < rectNum; i++) {
-            lowerLimit.addAll(Arrays.asList(aabb.getMinX() - aabb.getWidth() * 0.5, aabb.getMinY() - aabb.getHeight() * 0.5, 0.0D, 0.0D, -Math.PI));
-            upperLimit.addAll(Arrays.asList(aabb.getMaxX() + aabb.getWidth() * 0.5, aabb.getMaxY() + aabb.getHeight() * 0.5, aabb.getWidth() * 2, aabb.getHeight() * 2, -Math.PI));
+            lowerLimit.addAll(Arrays.asList(aabb.getMinX() - aabb.getWidth() * 0.3, aabb.getMinY() - aabb.getHeight() * 0.3, 0.0D, 0.0D, -Math.PI));
+            upperLimit.addAll(Arrays.asList(aabb.getMaxX() + aabb.getWidth() * 0.3, aabb.getMaxY() + aabb.getHeight() * 0.3, aabb.getWidth() , aabb.getHeight(), Math.PI));
         }
 
         //设置变量的取值范围
@@ -47,6 +48,7 @@ class RectCoverProblem extends AbstractDoubleProblem {
     //设置目标，用于评价解，默认求目标的最小值
     @Override
     public DoubleSolution evaluate(DoubleSolution solution) {
+        // 尽量包裹住
         double totalArea = 0;
         for (int i = 0; i < rectNum; i++) {
             double w = (Double) solution.variables().get(i * 5 + 2);
@@ -55,7 +57,29 @@ class RectCoverProblem extends AbstractDoubleProblem {
             totalArea += w * h;
         }
 
-        solution.objectives()[0] = totalArea / polygon.getArea();
+        Polygon[] covers = new Polygon[rectNum];
+        for (int i = 0; i < rectNum; i++) {
+            double x = (Double) solution.variables().get(i * 5);
+            double y = (Double) solution.variables().get(i * 5 + 1);
+            double w = (Double) solution.variables().get(i * 5 + 2);
+            double h = (Double) solution.variables().get(i * 5 + 3);
+            double a = (Double) solution.variables().get(i * 5 + 4);
+
+            // create rectangle
+            Polygon rect = ZFactory.createPolygonFromXYWHA(x, y, w, h, a);
+            covers[i] = rect;
+        }
+
+        // union
+        Geometry union = covers[0];
+        if (rectNum > 1) {
+            for (int i = 1; i < rectNum; i++) {
+                union = union.union(covers[i]);
+            }
+        }
+
+        solution.objectives()[0] = -union.intersection(polygon).getArea();
+        solution.objectives()[1] = union.difference(polygon).getArea();
 
         this.evaluateConstraints(solution);
         return solution;
@@ -69,11 +93,11 @@ class RectCoverProblem extends AbstractDoubleProblem {
 
         Polygon[] covers = new Polygon[rectNum];
         for (int i = 0; i < rectNum; i++) {
-            double x = (Double) solution.variables().get(0);
-            double y = (Double) solution.variables().get(1);
-            double w = (Double) solution.variables().get(2);
-            double h = (Double) solution.variables().get(3);
-            double a = (Double) solution.variables().get(4);
+            double x = (Double) solution.variables().get(i * 5);
+            double y = (Double) solution.variables().get(i * 5 + 1);
+            double w = (Double) solution.variables().get(i * 5 + 2);
+            double h = (Double) solution.variables().get(i * 5 + 3);
+            double a = (Double) solution.variables().get(i * 5 + 4);
 
             // create rectangle
             Polygon rect = ZFactory.createPolygonFromXYWHA(x, y, w, h, a);
