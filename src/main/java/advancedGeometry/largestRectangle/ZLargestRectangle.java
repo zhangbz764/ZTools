@@ -10,6 +10,7 @@ import org.uma.jmetal.operator.mutation.MutationOperator;
 import org.uma.jmetal.operator.mutation.impl.PolynomialMutation;
 import org.uma.jmetal.operator.selection.SelectionOperator;
 import org.uma.jmetal.operator.selection.impl.BinaryTournamentSelection;
+import org.uma.jmetal.problem.doubleproblem.impl.AbstractDoubleProblem;
 import org.uma.jmetal.solution.doublesolution.DoubleSolution;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.comparator.constraintcomparator.impl.OverallConstraintViolationDegreeComparator;
@@ -53,6 +54,45 @@ public class ZLargestRectangle {
         //定义优化问题
         LargestRectProblem problem = new LargestRectProblem(boundary, boundaryAABB);
 
+        List<DoubleSolution> population = setup(problem);
+
+        //打印结果
+        //System.out.println("var " + population.get(0).variables());
+        //System.out.println("obj " + population.get(0).objectives()[0]);
+
+        List<Double> vars = population.get(0).variables();
+
+        this.rectResult = ZFactory.createPolygonFromXYWHA(
+                vars.get(0),
+                vars.get(1),
+                vars.get(2),
+                vars.get(3),
+                vars.get(4)
+        );
+    }
+
+    public void init(double fixedAspectRatio) {
+        //定义优化问题
+        LargestFixedRatioRectProblem problem = new LargestFixedRatioRectProblem(boundary, boundaryAABB, fixedAspectRatio);
+
+        List<DoubleSolution> population = setup(problem);
+
+        //打印结果
+        //System.out.println("var " + population.get(0).variables());
+        //System.out.println("obj " + population.get(0).objectives()[0]);
+
+        List<Double> vars = population.get(0).variables();
+
+        this.rectResult = ZFactory.createPolygonFromXYWHA(
+                vars.get(0),
+                vars.get(1),
+                vars.get(2),
+                vars.get(2) * fixedAspectRatio,
+                vars.get(3)
+        );
+    }
+
+    private List<DoubleSolution> setup(AbstractDoubleProblem problem) {
         //配置交叉算子
         CrossoverOperator<DoubleSolution> crossover;
         double crossoverProbability = 0.9;
@@ -93,23 +133,8 @@ public class ZLargestRectangle {
         algorithm.run();
 
         //获取结果集
-        List<DoubleSolution> population = algorithm.getResult();
-
-        //打印结果
-        //System.out.println("var " + population.get(0).variables());
-        //System.out.println("obj " + population.get(0).objectives()[0]);
-
-        List<Double> vars = population.get(0).variables();
-
-        this.rectResult = ZFactory.createPolygonFromXYWHA(
-                vars.get(0),
-                vars.get(1),
-                vars.get(2),
-                vars.get(3),
-                vars.get(4)
-        );
+        return algorithm.getResult();
     }
-
 
     /* ------------- setter & getter ------------- */
 

@@ -34,6 +34,7 @@ public class Test5LargestRectQuad extends PApplet {
     private WB_Polygon boundary;
     private WB_Polygon largestQuad;
     private WB_Polygon largestRect;
+    private WB_Polygon largestRectFixed;
 
     private WB_Render render;
     private CameraController gcam;
@@ -60,15 +61,21 @@ public class Test5LargestRectQuad extends PApplet {
         ZLargestRectangle rectangle = new ZLargestRectangle(boundary);
         rectangle.init();
         this.largestRect = rectangle.getRectResult_WB();
-        // largest quad
+        // largest rectangle fixed
         long t2 = System.currentTimeMillis();
+        ZLargestRectangle rectangleFixed = new ZLargestRectangle(boundary);
+        rectangleFixed.init(0.5);
+        this.largestRectFixed = rectangleFixed.getRectResult_WB();
+        // largest quad
+        long t3 = System.currentTimeMillis();
         ZLargestQuad quad = new ZLargestQuad(boundary);
         quad.init();
         this.largestQuad = quad.getQuadResult_WB();
-        long t3 = System.currentTimeMillis();
+        long t4 = System.currentTimeMillis();
 
         System.out.println("largest rectangle: " + (t2 - t1) + "ms");
-        System.out.println("largest quad: " + (t3 - t2) + "ms");
+        System.out.println("largest rectangle fixed: " + (t3 - t2) + "ms");
+        System.out.println("largest quad: " + (t4 - t3) + "ms");
     }
 
     /* ------------- draw ------------- */
@@ -78,12 +85,19 @@ public class Test5LargestRectQuad extends PApplet {
         strokeWeight(1);
         stroke(0);
         render.drawPolygonEdges(boundary);
-
         // rectangle
         strokeWeight(3);
         stroke(255, 0, 0);
         render.drawPolygonEdges2D(largestRect);
 
+        translate(200, 0);
+        strokeWeight(1);
+        stroke(0);
+        render.drawPolygonEdges(boundary);
+        // rectangle
+        strokeWeight(3);
+        stroke(0, 255, 0);
+        render.drawPolygonEdges2D(largestRectFixed);
 
         translate(200, 0);
         strokeWeight(1);
