@@ -256,6 +256,33 @@ public final class ZGeoMath {
 
     /*-------- intersection 2D (jts) --------*/
 
+    /**
+     * get intersection points of two segments (given 4 coords)
+     *
+     * @param seg0c0
+     * @param seg0c1
+     * @param seg1c0
+     * @param seg1c1
+     * @return
+     */
+    public static Coordinate lineIntersection2D(final Coordinate seg0c0, final Coordinate seg0c1, final Coordinate seg1c0, final Coordinate seg1c1) {
+        Vector2D[] seg0 = new Vector2D[]{new Vector2D(seg0c0), new Vector2D(seg0c0, seg0c1).normalize()};
+        Vector2D[] seg1 = new Vector2D[]{new Vector2D(seg1c0), new Vector2D(seg1c0, seg1c1).normalize()};
+
+        Vector2D delta = seg1[0].subtract(seg0[0]);
+        double crossBase = cross2D(seg0[1], seg1[1]);
+        double crossDelta0 = cross2D(delta, seg0[1]);
+        double crossDelta1 = cross2D(delta, seg1[1]);
+
+        if (Math.abs(crossBase) < epsilon) {
+//            System.out.println("parallel or same or overlap");
+            return null;
+        } else {
+            double s = crossDelta1 / crossBase; // ray0
+            double t = crossDelta0 / crossBase; // ray1
+            return seg1[0].add(seg1[1].multiply(t)).toCoordinate();
+        }
+    }
 
     /**
      * get intersection points of two rays
@@ -2344,11 +2371,11 @@ public final class ZGeoMath {
     /*-------- geometry modifier (WB) --------*/
 
     /**
-    * calculate area from points
-    *
-    * @param pts input points
-    * @return double
-    */
+     * calculate area from points
+     *
+     * @param pts input points
+     * @return double
+     */
     public static double areaFromPoints2D(final double... pts) {
         // must be 2D coordinate (x,y)
         // at least 3 pairs
