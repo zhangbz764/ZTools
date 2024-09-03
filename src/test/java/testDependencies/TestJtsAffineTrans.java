@@ -1,23 +1,14 @@
 package testDependencies;
 
 import basicGeometry.ZFactory;
-import basicGeometry.ZGraph;
-import guo_cam.CameraController;
 import math.ZGeoMath;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.util.AffineTransformation;
-import org.locationtech.jts.geom.util.AffineTransformationBuilder;
-import org.locationtech.jts.geom.util.AffineTransformationFactory;
 import org.locationtech.jts.math.Vector2D;
 import processing.core.PApplet;
 import render.JtsRender;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * description

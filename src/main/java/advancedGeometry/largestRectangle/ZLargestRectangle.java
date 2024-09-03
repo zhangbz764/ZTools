@@ -62,7 +62,7 @@ public class ZLargestRectangle {
 
         List<Double> vars = population.get(0).variables();
 
-        this.rectResult = ZFactory.createPolygonFromXYWHA(
+        this.rectResult = ZFactory.createRectFromXYWHA(
                 vars.get(0),
                 vars.get(1),
                 vars.get(2),
@@ -83,7 +83,7 @@ public class ZLargestRectangle {
 
         List<Double> vars = population.get(0).variables();
 
-        this.rectResult = ZFactory.createPolygonFromXYWHA(
+        this.rectResult = ZFactory.createRectFromXYWHA(
                 vars.get(0),
                 vars.get(1),
                 vars.get(2),

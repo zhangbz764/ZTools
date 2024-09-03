@@ -5,8 +5,6 @@ import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
-import org.uma.jmetal.algorithm.multiobjective.nsgaiii.NSGAIII;
-import org.uma.jmetal.algorithm.multiobjective.nsgaiii.NSGAIIIBuilder;
 import org.uma.jmetal.component.algorithm.EvolutionaryAlgorithm;
 import org.uma.jmetal.component.algorithm.multiobjective.NSGAIIBuilder;
 import org.uma.jmetal.operator.crossover.CrossoverOperator;
@@ -133,7 +131,7 @@ public class ZRectCover2 {
 
             List<Double> vars = population.get(0).variables();
             for (int i = 0; i < rectNum; i++) {
-                Polygon rect = ZFactory.createPolygonFromXYWHA(
+                Polygon rect = ZFactory.createRectFromXYWHA(
                         vars.get(i * 5),
                         vars.get(i * 5 + 1),
                         vars.get(i * 5 + 2),

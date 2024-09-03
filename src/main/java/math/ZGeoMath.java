@@ -6,7 +6,6 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.math.Vector2D;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
-import org.locationtech.jts.operation.distance.DistanceOp;
 import transform.ZTransform;
 import wblut.geom.*;
 import wblut.hemesh.HEC_FromPolygons;

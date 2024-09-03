@@ -63,7 +63,7 @@ class LargestFixedRatioRectProblem extends AbstractDoubleProblem {
         double a = (Double) solution.variables().get(3);
 
         // create rectangle
-        Polygon rect = ZFactory.createPolygonFromXYWHA(x, y, l, l * fixedRatio, a);
+        Polygon rect = ZFactory.createRectFromXYWHA(x, y, l, l * fixedRatio, a);
 
         boolean contain = boundary.contains(rect);
         constraint[0] = contain ? 1.0D : -1.0D;

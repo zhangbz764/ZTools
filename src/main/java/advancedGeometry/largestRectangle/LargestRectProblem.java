@@ -61,7 +61,7 @@ class LargestRectProblem extends AbstractDoubleProblem {
         double a = (Double) solution.variables().get(4);
 
         // create rectangle
-        Polygon rect = ZFactory.createPolygonFromXYWHA(x, y, w, h, a);
+        Polygon rect = ZFactory.createRectFromXYWHA(x, y, w, h, a);
 
         boolean contain = boundary.contains(rect);
         constraint[0] = contain ? 1.0D : -1.0D;
@@ -69,4 +69,6 @@ class LargestRectProblem extends AbstractDoubleProblem {
         IntStream.range(0, this.numberOfConstraints())
                 .forEach(i -> solution.constraints()[i] = constraint[i]);
     }
+
+
 }

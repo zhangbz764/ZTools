@@ -4,16 +4,11 @@ import basicGeometry.ZFactory;
 import guo_cam.CameraController;
 import igeo.ICurve;
 import igeo.IG;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Polygon;
 import processing.core.PApplet;
 import render.JtsRender;
 import transform.ZTransform;
-
-import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * description

@@ -1,7 +1,6 @@
 package advancedGeometry.rectCover;
 
 import basicGeometry.ZFactory;
-import math.ZMath;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.uma.jmetal.problem.doubleproblem.impl.AbstractDoubleProblem;
@@ -66,7 +65,7 @@ class RectCoverProblem extends AbstractDoubleProblem {
             double a = (Double) solution.variables().get(i * 5 + 4);
 
             // create rectangle
-            Polygon rect = ZFactory.createPolygonFromXYWHA(x, y, w, h, a);
+            Polygon rect = ZFactory.createRectFromXYWHA(x, y, w, h, a);
             covers[i] = rect;
         }
 
@@ -100,7 +99,7 @@ class RectCoverProblem extends AbstractDoubleProblem {
             double a = (Double) solution.variables().get(i * 5 + 4);
 
             // create rectangle
-            Polygon rect = ZFactory.createPolygonFromXYWHA(x, y, w, h, a);
+            Polygon rect = ZFactory.createRectFromXYWHA(x, y, w, h, a);
             covers[i] = rect;
         }
 

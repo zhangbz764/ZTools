@@ -6,7 +6,6 @@ import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import processing.core.PApplet;
 import render.JtsRender;
-import wblut.geom.WB_PolyLine;
 
 /**
  * test jts buffer
