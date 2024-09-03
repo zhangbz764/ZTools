@@ -183,6 +183,20 @@ public class ZTransform {
     }
 
     /**
+     * WB_Polygon -> ICurve
+     *
+     * @param polyLine input WB_PolyLine
+     * @return igeo.ICurve
+     */
+    public static ICurve WB_PolygonToICurve(final WB_PolyLine polyLine) {
+        IVec[] vecs = new IVec[polyLine.getNumberOfPoints()];
+        for (int i = 0; i < polyLine.getNumberOfPoints(); i++) {
+            vecs[i] = WB_CoordToIVec(polyLine.getPoint(i));
+        }
+        return new ICurve(vecs, true);
+    }
+
+    /**
      * WB_Segment -> ICurve
      *
      * @param segment input WB_Segment

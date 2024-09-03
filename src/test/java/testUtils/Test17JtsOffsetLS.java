@@ -116,4 +116,8 @@ public class Test17JtsOffsetLS extends PApplet {
         }
     }
 
+    @Override
+    public void mouseMoved() {
+        this.offsetLS = ZFactory.createOffsetLineString(ls, -mouseX);
+    }
 }

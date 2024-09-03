@@ -25,7 +25,7 @@ example images from `textUtils`
     <td><img src="resources/exampleImgs/Test9ArcCircle.jpg" width = "250" height = "250" /></td>
 </tr></table>
 
-#### [Test10ShapeDescriptor](java/testUtils/Test10ShapeDescriptor.java) | [Test11KMeans](java/testUtils/Test11KMeans.java) | [Test3Skeleton](java/testUtils/Test3Skeleton.java)
+#### [Test10ShapeDescriptor](java/testUtils/Test10ShapeDescriptor.java) | [Test11KMeans](java/testUtils/Test11KMeans.java)
 <table><tr>
     <td><img src="resources/exampleImgs/Test10ShapeDescriptor.jpg" width = "475" height = "250" /></td>
     <td><img src="resources/exampleImgs/Test11KMeans.jpg" width = "250" height = "250" /></td>

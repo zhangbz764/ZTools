@@ -47,11 +47,17 @@ public class TestJtsAffineTrans extends PApplet {
     private Polygon furnitureT;
 
     private JtsRender jtsRender;
-    private CameraController gcam;
+    //    private CameraController gcam;
 
     public void setup() {
         this.jtsRender = new JtsRender(this);
-        this.gcam = new CameraController(this);
+        float fov      = PI/3;  // field of view
+        float nearClip = 1;
+        float farClip  = 100000;
+        float aspect   = (float) width / height;
+        perspective(fov, aspect, nearClip, farClip);
+//        perspective();
+
 
         this.boundary = ZFactory.jtsgf.createPolygon(new Coordinate[]{
                 new Coordinate(0, 0, 0),

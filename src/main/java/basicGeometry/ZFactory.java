@@ -32,6 +32,52 @@ public class ZFactory {
     /*-------- create geometries --------*/
 
     /**
+     * generate random simple polygon around origin
+     *
+     * @param ptNum     number of polygon points, excluding the last point
+     * @param scale     scale of the polygon
+     * @param threshold threshold to random
+     * @return Polygon
+     */
+    public static Polygon createRandomPolygon(int ptNum, double scale, double threshold) {
+        double thre = threshold > 1 || threshold < 0 ? 0.5 : threshold;
+        double angle = (Math.PI * 2) / ptNum;
+
+        Coordinate[] coords = new Coordinate[ptNum + 1];
+        for (int i = 0; i < ptNum; i++) {
+            double ran = (Math.random() * 2 * thre + 1 - thre) * scale;
+            Coordinate coord = new Coordinate(Math.cos(angle * i) * ran, Math.sin(angle * i) * ran);
+            coords[i] = coord;
+        }
+        coords[coords.length - 1] = new Coordinate(coords[0].x, coords[0].y);
+
+        return ZFactory.jtsgf.createPolygon(coords);
+    }
+
+    /**
+     * generate random simple WB_Polygon around origin
+     *
+     * @param ptNum     number of polygon points, excluding the last point
+     * @param scale     scale of the polygon
+     * @param threshold threshold to random
+     * @return WB_Polygon
+     */
+    public static WB_Polygon createRandomPolygonWB(int ptNum, double scale, double threshold) {
+        double thre = threshold > 1 || threshold < 0 ? 0.5 : threshold;
+        double angle = (Math.PI * 2) / ptNum;
+
+        WB_Point[] pts = new WB_Point[ptNum + 1];
+        for (int i = 0; i < ptNum; i++) {
+            double ran = (Math.random() * 2 * thre + 1 - thre) * scale;
+            WB_Point p = new WB_Point(Math.cos(angle * i) * ran, Math.sin(angle * i) * ran);
+            pts[i] = p;
+        }
+        pts[pts.length - 1] = new WB_Point(pts[0].xd(), pts[0].yd());
+
+        return new WB_Polygon(pts);
+    }
+
+    /**
      * create a LineString from a Coordinate list
      *
      * @param list Coordinate list
@@ -83,7 +129,7 @@ public class ZFactory {
      * @param a rotate angle
      * @return org.locationtech.jts.geom.Polygon
      */
-    public static Polygon createPolygonFromXYWHA(
+    public static Polygon createRectFromXYWHA(
             final double x,
             final double y,
             final double w,

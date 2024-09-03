@@ -1,13 +1,11 @@
 package testDependencies;
 
-import basicGeometry.ZFactory;
 import guo_cam.CameraController;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import processing.core.PApplet;
 import render.JtsRender;
-import transform.ZTransform;
 import wblut.geom.WB_PolyLine;
 
 /**
@@ -32,13 +30,18 @@ public class TestJtsBuffer extends PApplet {
     }
 
     /* ------------- setup ------------- */
+    // utils
+    private GeometryFactory gf = new GeometryFactory();
+    private CameraController gcam;
+    private JtsRender jtsRender;
+
 
     private Polygon poly1;
     private Polygon poly2;
     private GeometryCollection collection;
     private Geometry union;
     private LineString ls;
-    private Point p = ZFactory.jtsgf.createPoint(new Coordinate(900, 100));
+    private Point p = gf.createPoint(new Coordinate(900, 100));
     private Geometry multiGeo;
     private Geometry buffer1;
     private Geometry buffer2;
@@ -46,12 +49,6 @@ public class TestJtsBuffer extends PApplet {
     private int endCapStyle = 1;
     private int joinStyle = 2;
 
-    private WB_PolyLine pl;
-
-    // utils
-    private GeometryFactory gf = new GeometryFactory();
-    private CameraController gcam;
-    private JtsRender jtsRender;
 
     public void setup() {
         this.jtsRender = new JtsRender(this);
@@ -96,11 +93,6 @@ public class TestJtsBuffer extends PApplet {
         System.out.println("endCapStyle:  " + endCapStyle);
         System.out.println("joinStyle:  " + joinStyle);
         System.out.println("buffer.getNumPoints(): " + buffer1.getNumPoints());
-
-        pl = ZFactory.createPolylineFromPolygon(
-                ZTransform.PolygonToWB_Polygon(poly1), new int[]{2, 3, 4, 0}
-        );
-
     }
 
     /* ------------- draw ------------- */
@@ -118,14 +110,6 @@ public class TestJtsBuffer extends PApplet {
 
         strokeWeight(4);
         jtsRender.drawGeometry(union);
-        for (int i = 0; i < pl.getNumberOfPoints() - 1; i++) {
-            line(
-                    pl.getPoint(i).xf(),
-                    pl.getPoint(i).yf(),
-                    pl.getPoint(i + 1).xf(),
-                    pl.getPoint(i + 1).yf()
-            );
-        }
     }
 
     public void keyPressed() {
@@ -151,5 +135,6 @@ public class TestJtsBuffer extends PApplet {
             this.buffer3 = BufferOp.bufferOp(p, 20, parameters);
             System.out.println("buffer.getNumPoints(): " + buffer1.getNumPoints());
         }
+
     }
 }

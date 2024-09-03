@@ -63,7 +63,7 @@ public class ZSD_SkeOBBStrip extends ZSubdivision {
         WB_PolyLine polyLine = ZFactory.mergeWB_PolyLineFromZLines(longestChain);
 
         if (polyLine != null) {
-            WB_Vector dir = ZGeoMath.obbDir(super.getOriginPolygon());
+            WB_Vector dir = ZGeoMath.obbDir(super.getOriginPolygon())[0];
 
             // create divide line by extending
             List<ZLine> divideLine = new ArrayList<>();

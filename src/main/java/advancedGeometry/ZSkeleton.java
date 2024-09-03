@@ -60,7 +60,7 @@ public class ZSkeleton {
     }
 
     public ZSkeleton(Polygon polygon) {
-        // input polygon needs to be face up (norm)
+        // input polygon needs to be face up
         this.polygon = (Polygon) polygon.norm().reverse();
 
         initSkeleton();

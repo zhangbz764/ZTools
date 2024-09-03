@@ -6,6 +6,7 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.math.Vector2D;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.operation.distance.DistanceOp;
 import transform.ZTransform;
 import wblut.geom.*;
 import wblut.hemesh.HEC_FromPolygons;
@@ -25,7 +26,7 @@ import java.util.*;
  * <p>
  */
 public final class ZGeoMath {
-    public static final double epsilon = 0.00000001;
+    public static final double epsilon = 1e-5;
     private static final WB_GeometryFactory wbgf = new WB_GeometryFactory();
     private static final GeometryFactory jtsgf = new GeometryFactory();
 
@@ -1120,7 +1121,6 @@ public final class ZGeoMath {
         }
         return ZMath.getMinIndex(dist);
     }
-
 
     /*-------- geometry relation 2D --------*/
 
@@ -2487,30 +2487,6 @@ public final class ZGeoMath {
     }
 
     /**
-     * get the direction of a OBB
-     *
-     * @param polygon input polygon
-     */
-    public static WB_Vector obbDir(final WB_Polygon polygon) {
-        Polygon rect = (Polygon) MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToPolygon(polygon));
-        Coordinate c0 = rect.getCoordinates()[0];
-        Coordinate c1 = rect.getCoordinates()[1];
-        Coordinate c2 = rect.getCoordinates()[2];
-
-        WB_Vector dir1 = new WB_Vector(
-                new double[]{c1.getX(), c1.getY()},
-                new double[]{c0.getX(), c0.getY()}
-        );
-        dir1.normalizeSelf();
-        WB_Vector dir2 = new WB_Vector(
-                new double[]{c1.getX(), c1.getY()},
-                new double[]{c2.getX(), c2.getY()}
-        );
-        dir2.normalizeSelf();
-        return c0.distance(c1) >= c1.distance(c2) ? dir2 : dir1;
-    }
-
-    /**
      * reverse the order of a polygon (holes supported)
      *
      * @param original input polygon
@@ -2558,6 +2534,59 @@ public final class ZGeoMath {
             newOrder[i] = pl.getPoint(newOrder.length - 1 - i);
         }
         return new WB_PolyLine(newOrder);
+    }
+
+    /**
+    * get the 2-direction span of an OBB (0-larger)
+    *
+    * @param poly WB_Polygon
+    * @return double[]
+    */
+    public static double[] obbSpan(WB_Polygon poly) {
+        Polygon p = ZTransform.WB_PolygonToPolygon(poly);
+        Polygon bufferOBB = (Polygon) MinimumDiameter.getMinimumRectangle(p);
+        double obbW1 = bufferOBB.getCoordinates()[0].distance(bufferOBB.getCoordinates()[1]);
+        double obbW2 = bufferOBB.getCoordinates()[0].distance(bufferOBB.getCoordinates()[3]);
+
+        return obbW1 > obbW2 ? new double[]{obbW1, obbW2} : new double[]{obbW2, obbW1};
+    }
+
+    /**
+     * get the 2-direction span of an OBB (0-larger)
+     *
+     * @param poly Polygon
+     * @return double[]
+     */
+    public static double[] obbSpan(Polygon poly) {
+        Polygon bufferOBB = (Polygon) MinimumDiameter.getMinimumRectangle(poly);
+        double obbW1 = bufferOBB.getCoordinates()[0].distance(bufferOBB.getCoordinates()[1]);
+        double obbW2 = bufferOBB.getCoordinates()[0].distance(bufferOBB.getCoordinates()[3]);
+
+        return obbW1 > obbW2 ? new double[]{obbW1, obbW2} : new double[]{obbW2, obbW1};
+    }
+
+    /**
+     * get the direction of a OBB
+     *
+     * @param polygon input polygon
+     */
+    public static WB_Vector[] obbDir(final WB_Polygon polygon) {
+        Polygon rect = (Polygon) MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToPolygon(polygon));
+        Coordinate c0 = rect.getCoordinates()[0];
+        Coordinate c1 = rect.getCoordinates()[1];
+        Coordinate c2 = rect.getCoordinates()[2];
+
+        WB_Vector dir1 = new WB_Vector(
+                new double[]{c1.getX(), c1.getY()},
+                new double[]{c0.getX(), c0.getY()}
+        );
+        dir1.normalizeSelf();
+        WB_Vector dir2 = new WB_Vector(
+                new double[]{c1.getX(), c1.getY()},
+                new double[]{c2.getX(), c2.getY()}
+        );
+        dir2.normalizeSelf();
+        return c0.distance(c1) >= c1.distance(c2) ? new WB_Vector[]{dir2, dir1} : new WB_Vector[]{dir1, dir2};
     }
 
 
@@ -2706,7 +2735,7 @@ public final class ZGeoMath {
      *
      * @param polygon input polygon
      */
-    public static Vector2D obbDir(final Polygon polygon) {
+    public static Vector2D[] obbDir(final Polygon polygon) {
         Polygon rect = (Polygon) MinimumDiameter.getMinimumRectangle(polygon);
         Coordinate c0 = rect.getCoordinates()[0];
         Coordinate c1 = rect.getCoordinates()[1];
@@ -2715,7 +2744,7 @@ public final class ZGeoMath {
         Vector2D dir1 = new Vector2D(c1, c0).normalize();
         Vector2D dir2 = new Vector2D(c1, c2).normalize();
 
-        return c0.distance(c1) >= c1.distance(c2) ? dir2 : dir1;
+        return c0.distance(c1) >= c1.distance(c2) ? new Vector2D[]{dir2, dir1} : new Vector2D[]{dir1, dir2};
     }
 
     /**
@@ -2731,7 +2760,6 @@ public final class ZGeoMath {
         }
         return jtsgf.createLineString(newOrder);
     }
-
 
     /**
      * smooth LineString by connecting divided points
@@ -2898,7 +2926,7 @@ public final class ZGeoMath {
      * @param segNum  number of subdivision
      * @return org.locationtech.jts.geom.Polygon
      */
-    public static Polygon roundPolygon(final Polygon polygon, double r, int segNum) {
+    public static Polygon roundPolygon(final Polygon polygon, final double r, final int segNum) {
         // exterior
         LineString exterior = polygon.getExteriorRing();
         List<Coordinate> newCoordsE = roundPolygonCore(r, segNum, exterior);
@@ -2929,7 +2957,7 @@ public final class ZGeoMath {
      * @param oriLs  original LineString
      * @return void
      */
-    private static List<Coordinate> roundPolygonCore(double r, int segNum, LineString oriLs) {
+    private static List<Coordinate> roundPolygonCore(final double r, final int segNum, final LineString oriLs) {
         List<Coordinate> coords = new ArrayList<>();
         for (int j = 0; j < oriLs.getNumPoints() - 1; j++) {
             Coordinate base = oriLs.getCoordinates()[j];
@@ -2981,7 +3009,7 @@ public final class ZGeoMath {
      * @param extrudeSize extrude size
      * @return wblut.hemesh.HE_Mesh
      */
-    public static HE_Mesh extrudePolygon(WB_Polygon base, double extrudeSize) {
+    public static HE_Mesh extrudePolygon(final WB_Polygon base, final double extrudeSize) {
         if (base == null) return null;
 
         // use a face-down polygon as the base face of the mesh
@@ -3034,7 +3062,7 @@ public final class ZGeoMath {
      * @param extrudeSize extrude size
      * @return wblut.hemesh.HE_Mesh
      */
-    public static HE_Mesh extrudePolylineWithThickness(WB_PolyLine pl, double thickness, double extrudeSize) {
+    public static HE_Mesh extrudePolylineWithThickness(final WB_PolyLine pl, final double thickness, final double extrudeSize) {
         LineString ls = ZTransform.WB_PolyLineToLineString(pl);
         BufferOp bufferOp = new BufferOp(ls);
         bufferOp.setEndCapStyle(BufferParameters.CAP_FLAT);
@@ -3045,6 +3073,26 @@ public final class ZGeoMath {
     }
 
     /*-------- other methods --------*/
+
+    /**
+     * find the geometric centroid of a WB_polygon (within guaranteed)
+     *
+     * @param poly WB_polygon
+     * @return wblut.geom.WB_Point
+     */
+    public static WB_Point polygonGeoCentroid(final WB_Polygon poly) {
+        double A = Math.abs(poly.getSignedArea());
+        double sumX = 0, sumY = 0;
+        for (int i = 0; i < poly.getNumberOfPoints() - 1; i++) {
+            WB_Point c1 = poly.getPoint(i);
+            WB_Point c2 = poly.getPoint(i + 1);
+
+            sumX += (c1.xd() + c2.xd()) * (c1.xd() * c2.yd() - c2.xd() * c1.yd());
+            sumY += (c1.yd() + c2.yd()) * (c1.xd() * c2.yd() - c2.xd() * c1.yd());
+        }
+
+        return new WB_Point(sumX / (6 * A), sumY / (6 * A));
+    }
 
     /**
      * get the center of a series of points
