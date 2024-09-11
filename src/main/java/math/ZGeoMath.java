@@ -254,6 +254,22 @@ public final class ZGeoMath {
         return other.get(maxIndex);
     }
 
+    /**
+     * find the nearest vector in a list of vector
+     *
+     * @param target target vector
+     * @param other  vector list
+     * @return org.locationtech.jts.math.Vector2D
+     */
+    public static Vector2D getClosestVec(final Vector2D target, final Vector2D... other) {
+        double[] dotValue = new double[other.length];
+        for (int i = 0; i < other.length; i++) {
+            dotValue[i] = target.normalize().dot(other[i].normalize());
+        }
+        int maxIndex = ZMath.getMaxIndex(dotValue);
+        return other[maxIndex];
+    }
+
     /*-------- intersection 2D (jts) --------*/
 
     /**
@@ -2366,6 +2382,55 @@ public final class ZGeoMath {
         return divideJtsWithIndex(poly.getCoordinates(), step, "Polygon");
     }
 
+    /**
+     * random divide a segment (2 points) by min max step
+     *
+     * @param start
+     * @param end
+     * @param min
+     * @param max
+     * @param containEnds
+     * @return
+     */
+    public static List<WB_Point> divideSegmentByRandomStep(final WB_Point start, final WB_Point end, final double min, final double max, boolean containEnds) {
+        List<WB_Point> results = new ArrayList<>();
+        if (min > max || min < 0 || max <= 0) {
+            return results;
+        }
+
+        WB_Vector segDir = new WB_Vector(start, end);
+        segDir.normalizeSelf();
+
+        double curr_dist = start.getDistance(end);
+
+        if (containEnds) {
+            results.add(start);
+        }
+
+        Random random = new Random();
+        WB_Point currPt = start;
+        while (curr_dist > max) {
+            double step;
+            if (min == max) {
+                step = max;
+            } else {
+                step = random.nextDouble(max - min) + min;
+            }
+
+            WB_Point pt = currPt.add(segDir.scale(step));
+            results.add(pt);
+            currPt = pt;
+            curr_dist -= step;
+
+        }
+
+        if (containEnds) {
+            results.add(end);
+        }
+
+        return results;
+    }
+
 
     /*-------- geometry modifier (WB) --------*/
 
@@ -2536,11 +2601,11 @@ public final class ZGeoMath {
     }
 
     /**
-    * get the 2-direction span of an OBB (0-larger)
-    *
-    * @param poly WB_Polygon
-    * @return double[]
-    */
+     * get the 2-direction span of an OBB (0-larger)
+     *
+     * @param poly WB_Polygon
+     * @return double[]
+     */
     public static double[] obbSpan(WB_Polygon poly) {
         Polygon p = ZTransform.WB_PolygonToPolygon(poly);
         Polygon bufferOBB = (Polygon) MinimumDiameter.getMinimumRectangle(p);

@@ -43,11 +43,12 @@ public class Test20CircleCoverLazy extends PApplet {
 
     public void setup() {
         this.gcam = new CameraController(this);
+        gcam.top();
         this.render = new WB_Render(this);
 
         // points cover
         this.pts = new ArrayList<>();
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 1000; i++) {
             pts.add(new WB_Point(random(300, 700), random(0, 400)));
         }
 
@@ -87,11 +88,12 @@ public class Test20CircleCoverLazy extends PApplet {
         }
         render.drawPolygonEdges(polygon);
 
+        strokeWeight(2);
         stroke(255, 0, 0);
         for (int i = 0; i < centersPtCover.size(); i++) {
             ellipse(centersPtCover.get(i).xf(), centersPtCover.get(i).yf(), 240, 240);
         }
-
+        strokeWeight(1);
         stroke(0, 0, 255);
         for (int i = 0; i < centersPolyCover.size(); i++) {
             ellipse(centersPolyCover.get(i).xf(), centersPolyCover.get(i).yf(), 100, 100);

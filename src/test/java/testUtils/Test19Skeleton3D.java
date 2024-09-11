@@ -32,7 +32,7 @@ public class Test19Skeleton3D extends PApplet {
     /* ------------- settings ------------- */
 
     public void settings() {
-        size(1000, 1000, P3D);
+        size(1920, 1080, P3D);
     }
 
     /* ------------- setup ------------- */
@@ -81,6 +81,8 @@ public class Test19Skeleton3D extends PApplet {
 
     public void draw() {
         background(255);
+        directionalLight(100, 100, 100, 0, -1, -1);
+        ambientLight(200, 200, 200);
         noFill();
         render.drawPolygonEdges(boundaries);
 

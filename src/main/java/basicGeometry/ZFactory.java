@@ -32,6 +32,22 @@ public class ZFactory {
     /*-------- create geometries --------*/
 
     /**
+    * create random point within a range
+    *
+    * @param xmin
+    * @param xmax
+    * @param ymin
+    * @param ymax
+    * @return org.locationtech.jts.geom.Point
+    */
+    public static Point createRandomPoint(final double xmin, final double xmax, final double ymin, final double ymax) {
+        return jtsgf.createPoint(new Coordinate(
+                xmin + (Math.random() * (xmax - xmin)),
+                ymin + (Math.random() * (ymax - ymin))
+        ));
+    }
+
+    /**
      * generate random simple polygon around origin
      *
      * @param ptNum     number of polygon points, excluding the last point
@@ -441,6 +457,36 @@ public class ZFactory {
             coords[i] = lineString.getCoordinateN(i + count);
         }
         result.add(jtsgf.createLineString(coords));
+        return result;
+    }
+
+    /**
+    * break Geometry to segments (list of LineString)
+    *
+    * @param geo input Geometry
+    * @return java.util.List<org.locationtech.jts.geom.LineString>
+    */
+    public static List<LineString> breakGeometryToSegments(final Geometry geo) {
+        List<LineString> result = new ArrayList<>();
+        switch (geo.getGeometryType()) {
+            case "Point":
+                break;
+            case "LineString":
+            case "Polygon":
+                if (geo.getCoordinates().length > 1) {
+                    for (int i = 0; i < geo.getCoordinates().length - 1; i++) {
+                        result.add(jtsgf.createLineString(new Coordinate[]{
+                                geo.getCoordinates()[i], geo.getCoordinates()[i + 1]
+                        }));
+                    }
+                }
+                break;
+            case "GeometryCollection":
+                for (int i = 0; i < geo.getNumGeometries(); i++) {
+                    result.addAll(breakGeometryToSegments(geo.getGeometryN(i)));
+                }
+                break;
+        }
         return result;
     }
 

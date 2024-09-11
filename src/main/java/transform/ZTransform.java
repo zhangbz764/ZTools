@@ -900,4 +900,44 @@ public class ZTransform {
         Coordinate[] coordinates = ls.getCoordinates();
         return jtsgf.createLinearRing(coordinates);
     }
+
+    /**
+     * Envelope -> Polygon
+     *
+     * @param env
+     * @return org.locationtech.jts.geom.Polygon
+     */
+    public static Polygon EnvelopeToPolygon(final Envelope env) {
+        return jtsgf.createPolygon(new Coordinate[]{
+                new Coordinate(env.getMinX(), env.getMinY()),
+                new Coordinate(env.getMaxX(), env.getMinY()),
+                new Coordinate(env.getMaxX(), env.getMaxY()),
+                new Coordinate(env.getMinX(), env.getMaxY()),
+                new Coordinate(env.getMinX(), env.getMinY()),
+        });
+    }
+
+    /**
+     * union 2 envelop
+     * @param env1
+     * @param env2
+     * @return
+     */
+    public static Envelope addEnvelop(Envelope env1, Envelope env2) {
+        double minX1 = env1.getMinX();
+        double minY1 = env1.getMinY();
+        double minX2 = env2.getMinX();
+        double minY2 = env2.getMinY();
+        double maxX1 = env1.getMaxX();
+        double maxY1 = env1.getMaxY();
+        double maxX2 = env2.getMaxX();
+        double maxY2 = env2.getMaxY();
+
+        return new Envelope(
+                Math.min(minX1, minX2),
+                Math.max(maxX1, maxX2),
+                Math.min(minY1, minY2),
+                Math.max(maxY1, maxY2)
+        );
+    }
 }
