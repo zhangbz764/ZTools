@@ -52,3 +52,9 @@ example images from `textUtils`
     <td><img src="resources/exampleImgs/Test20CircleCoverLazy.jpg" width = "250" height = "250" /></td>
 </tr></table>
 
+#### [Test21PolygonCentroid](java/testUtils/Test21PolygonCentroid.java) | [Test22ProcessingGUI](java/testUtils/Test22ProcessingGUI.java) | [Test23RawField](java/testUtils/Test23RawField.java)
+<table><tr>
+    <td><img src="resources/exampleImgs/Test21PolygonCentroid.jpg" width = "250" height = "250" /></td>
+    <td><img src="resources/exampleImgs/Test22ProcessingGUI.jpg" width = "250" height = "250" /></td>
+    <td><img src="resources/exampleImgs/Test23RawField.jpg" width = "250" height = "250" /></td>
+</tr></table>
