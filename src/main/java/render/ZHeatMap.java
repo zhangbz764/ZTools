@@ -1,7 +1,5 @@
 package render;
 
-import java.util.Arrays;
-
 /**
  * create a heatmap color marks
  *
@@ -20,9 +18,11 @@ public class ZHeatMap {
     private int sectionNum;
     private double markStep;
 
+    private String paletteName;
+
     /* ------------- constructor ------------- */
 
-    public ZHeatMap(ZColorPalette palette, double _dataMin, double _dataMax) {
+    public ZHeatMap(ZHeatMapPalette palette, double _dataMin, double _dataMax) {
         this.dataMin = _dataMin;
         this.dataMax = _dataMax;
         this.k = 1 / (dataMax - dataMin);
@@ -32,6 +32,8 @@ public class ZHeatMap {
 
         this.sectionNum = colorMarks.length - 1;
         this.markStep = 1d / sectionNum;
+
+        this.paletteName = palette.getName();
     }
 
     public ZHeatMap(int[][] customMarks, double _dataMin, double _dataMax) {
@@ -76,10 +78,18 @@ public class ZHeatMap {
 
         this.sectionNum = colorMarks.length - 1;
         this.markStep = 1d / sectionNum;
+
+        this.paletteName = "Custom";
     }
 
     /* ------------- member function ------------- */
 
+    /**
+    * get color RGB values by given datum
+    *
+    * @param inputData
+    * @return int[]
+    */
     public int[] getColorRGB(double inputData) {
         double dataMapped = k * (inputData - dataMin);
 
@@ -135,6 +145,8 @@ public class ZHeatMap {
         return this;
     }
 
-
+    public String getPaletteName() {
+        return paletteName;
+    }
 }
 

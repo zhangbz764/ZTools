@@ -50,7 +50,7 @@ public class ZLargestRectangle {
 
     /* ------------- member function ------------- */
 
-    public void init() {
+    public void cal() {
         //定义优化问题
         LargestRectProblem problem = new LargestRectProblem(boundary, boundaryAABB);
 
@@ -71,7 +71,7 @@ public class ZLargestRectangle {
         );
     }
 
-    public void init(double fixedAspectRatio) {
+    public void cal(double fixedAspectRatio) {
         //定义优化问题
         LargestFixedRatioRectProblem problem = new LargestFixedRatioRectProblem(boundary, boundaryAABB, fixedAspectRatio);
 

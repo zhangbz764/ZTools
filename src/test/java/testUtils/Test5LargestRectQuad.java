@@ -59,12 +59,12 @@ public class Test5LargestRectQuad extends PApplet {
         // largest rectangle
         long t1 = System.currentTimeMillis();
         ZLargestRectangle rectangle = new ZLargestRectangle(boundary);
-        rectangle.init();
+        rectangle.cal();
         this.largestRect = rectangle.getRectResult_WB();
         // largest rectangle fixed
         long t2 = System.currentTimeMillis();
         ZLargestRectangle rectangleFixed = new ZLargestRectangle(boundary);
-        rectangleFixed.init(0.5);
+        rectangleFixed.cal(0.5);
         this.largestRectFixed = rectangleFixed.getRectResult_WB();
         // largest quad
         long t3 = System.currentTimeMillis();

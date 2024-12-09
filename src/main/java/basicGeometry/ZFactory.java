@@ -3,6 +3,7 @@ package basicGeometry;
 import math.ZGeoMath;
 import math.ZMath;
 import org.locationtech.jts.algorithm.Distance;
+import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.math.Vector2D;
 import org.locationtech.jts.operation.linemerge.LineMergeGraph;
@@ -200,6 +201,28 @@ public class ZFactory {
             in[i] = ZTransform.LineStringToLinearRing(interior[i]);
         }
         return jtsgf.createPolygon(ex, in);
+    }
+
+    /**
+    * create OBB from WB_Polygon
+    *
+    * @param geo WB_Polygon
+    * @return wblut.geom.WB_Polygon
+    */
+    public static WB_Polygon createWB_PolygonOBB(WB_Polygon geo) {
+        Geometry minimumRectangle = MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToPolygon(geo));
+        return ZTransform.PolygonToWB_Polygon((Polygon) minimumRectangle);
+    }
+
+    /**
+    * create OBB from WB_PolyLine
+    *
+    * @param geo WB_PolyLine
+    * @return wblut.geom.WB_Polygon
+    */
+    public static WB_Polygon createWB_PolylineOBB(WB_PolyLine geo) {
+        Geometry minimumRectangle = MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolyLineToLineString(geo));
+        return ZTransform.PolygonToWB_Polygon((Polygon) minimumRectangle);
     }
 
     /**

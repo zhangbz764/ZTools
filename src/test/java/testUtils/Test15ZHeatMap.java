@@ -4,7 +4,7 @@ import guo_cam.CameraController;
 import math.ZMath;
 import processing.core.PApplet;
 import processing.core.PImage;
-import render.ZColorPalette;
+import render.ZHeatMapPalette;
 import render.ZHeatMap;
 
 import java.util.Arrays;
@@ -33,7 +33,7 @@ public class Test15ZHeatMap extends PApplet {
 
     private CameraController gcam;
 
-    private int testMapNum = 7;
+    private int testMapNum = 8;
     private ZHeatMap[] heatMaps;
     private final int[] data = ZMath.createIntegerSeries(0, 601);
 
@@ -61,12 +61,13 @@ public class Test15ZHeatMap extends PApplet {
         heatMaps[0] = new ZHeatMap(custom, 0, 600);
 
         // 也可以直接调用调色盘预设的颜色
-        heatMaps[1] = new ZHeatMap(ZColorPalette.Grays, 0, 600);
-        heatMaps[2] = new ZHeatMap(ZColorPalette.Greens, 0, 600);
-        heatMaps[3] = new ZHeatMap(ZColorPalette.Viridis, 0, 600);
-        heatMaps[4] = new ZHeatMap(ZColorPalette.Magma, 0, 600);
-        heatMaps[5] = new ZHeatMap(ZColorPalette.Coolwarm, 0, 600);
-        heatMaps[6] = new ZHeatMap(ZColorPalette.Plasma, 0, 600);
+        heatMaps[1] = new ZHeatMap(ZHeatMapPalette.Grays, 0, 600);
+        heatMaps[2] = new ZHeatMap(ZHeatMapPalette.Greens, 0, 600);
+        heatMaps[3] = new ZHeatMap(ZHeatMapPalette.Viridis, 0, 600);
+        heatMaps[4] = new ZHeatMap(ZHeatMapPalette.Magma, 0, 600);
+        heatMaps[5] = new ZHeatMap(ZHeatMapPalette.CoolWarm, 0, 600);
+        heatMaps[6] = new ZHeatMap(ZHeatMapPalette.Plasma, 0, 600);
+        heatMaps[7] = new ZHeatMap(ZHeatMapPalette.HSB, 0, 600);
 
         System.out.println("数值 435.7 在 heatMaps[0] 里对应的颜色值为" + Arrays.toString(heatMaps[0].getColorRGB(435.7)));
 

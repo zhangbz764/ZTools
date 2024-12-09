@@ -2,6 +2,7 @@ package math;
 
 import basicGeometry.*;
 import org.locationtech.jts.algorithm.MinimumDiameter;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.math.Vector2D;
 import org.locationtech.jts.operation.buffer.BufferOp;
@@ -137,9 +138,15 @@ public final class ZGeoMath {
      */
     public static List<Coordinate> getConcavePoints(final Polygon polygon) {
         List<Coordinate> concavePoints = new ArrayList<>();
-        WB_Polygon wbPolygon = ZTransform.PolygonToWB_Polygon(polygon);
-        List<WB_Point> concave = getConcavePoints(wbPolygon);
-        concave.forEach(wbp -> concavePoints.add(ZTransform.WB_CoordToCoordinate(wbp)));
+        Polygon faceUp = polygonFaceUp(polygon);
+        for (int i = 1; i < faceUp.getCoordinates().length; i++) {
+            Vector2D prev = new Vector2D(faceUp.getCoordinates()[i - 1]).subtract(new Vector2D(faceUp.getCoordinates()[i]));
+            Vector2D next = new Vector2D(faceUp.getCoordinates()[(i + 1) % (faceUp.getCoordinates().length - 1)]).subtract(new Vector2D(faceUp.getCoordinates()[i]));
+            double crossValue = cross2D(next, prev);
+            if (crossValue < 0) {
+                concavePoints.add(faceUp.getCoordinates()[i]);
+            }
+        }
         return concavePoints;
     }
 
@@ -1346,6 +1353,36 @@ public final class ZGeoMath {
         return result;
     }
 
+    /**
+     * get the direction of a segment which a point is on the LineString
+     *
+     * @param p
+     * @param ls
+     * @return org.locationtech.jts.math.Vector2D
+     */
+    public static Vector2D getDirectionOnLS(final Point p, final LineString ls) {
+        // if point not on ls, return the start-to-end direction of the ls
+        Vector2D result = new Vector2D(
+                ls.getCoordinates()[ls.getCoordinates().length - 1].x - ls.getCoordinates()[0].x,
+                ls.getCoordinates()[ls.getCoordinates().length - 1].y - ls.getCoordinates()[0].y
+        );
+
+
+        for (int i = 0; i < ls.getCoordinates().length - 1; i++) {
+            Coordinate c0 = ls.getCoordinates()[i];
+            Coordinate c1 = ls.getCoordinates()[i + 1];
+
+            LineSegment lsg = new LineSegment(c0, c1);
+
+            if (lsg.distance(p.getCoordinate()) < epsilon) {
+                result = new Vector2D(lsg.p1.x - lsg.p0.x, lsg.p1.y - lsg.p0.y);
+                break;
+            }
+        }
+
+        return result.normalize();
+    }
+
 
     /*-------- boundary methods --------*/
 
@@ -2518,7 +2555,6 @@ public final class ZGeoMath {
         return plLength;
     }
 
-
     /**
      * given distance. get the point along the polyline (replace the method in HE_Mesh)
      *
@@ -3062,6 +3098,44 @@ public final class ZGeoMath {
             }
         }
         return coords;
+    }
+
+    /**
+     * make a polygon face up (normal vector is in the z direction)
+     *
+     * @param polygon
+     * @return org.locationtech.jts.geom.Polygon
+     */
+    public static Polygon polygonFaceUp(final Polygon polygon) {
+        boolean ccw = Orientation.isCCW(polygon.getCoordinates());
+        if (ccw) {
+            return polygon;
+        } else {
+            Coordinate[] reversedCoords = new Coordinate[polygon.getCoordinates().length];
+            for (int i = 0; i < polygon.getCoordinates().length; i++) {
+                reversedCoords[i] = polygon.getCoordinates()[polygon.getCoordinates().length - 1 - i];
+            }
+            return jtsgf.createPolygon(reversedCoords);
+        }
+    }
+
+    /**
+     * make a polygon face down (normal vector is in the reversed z direction)
+     *
+     * @param polygon
+     * @return org.locationtech.jts.geom.Polygon
+     */
+    public static Polygon polygonFaceDown(final Polygon polygon) {
+        boolean ccw = Orientation.isCCW(polygon.getCoordinates());
+        if (!ccw) {
+            return polygon;
+        } else {
+            Coordinate[] reversedCoords = new Coordinate[polygon.getCoordinates().length];
+            for (int i = 0; i < polygon.getCoordinates().length; i++) {
+                reversedCoords[i] = polygon.getCoordinates()[polygon.getCoordinates().length - 1 - i];
+            }
+            return jtsgf.createPolygon(reversedCoords);
+        }
     }
 
     /*-------- 3D methods --------*/
