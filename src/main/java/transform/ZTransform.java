@@ -108,7 +108,7 @@ public class ZTransform {
      * ICurve -> WB_PolyLine
      *
      * @param curve input ICurve
-     * @return wblut.geom.WB_Geometry2D
+     * @return wblut.geom.WB_PolyLine
      */
     public static WB_PolyLine ICurveToWB_PolyLine(final ICurve curve) {
         WB_Point[] points = new WB_Point[curve.cpNum()];
@@ -116,6 +116,20 @@ public class ZTransform {
             points[i] = new WB_Point(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z());
         }
         return wbgf.createPolyLine(points);
+    }
+
+    /**
+     * ICurve -> WB_Polygon
+     *
+     * @param curve input ICurve
+     * @return wblut.geom.WB_Polygon
+     */
+    public static WB_Polygon ICurveToWB_Polygon(final ICurve curve) {
+        WB_Point[] points = new WB_Point[curve.cpNum()];
+        for (int i = 0; i < curve.cpNum(); i++) {
+            points[i] = new WB_Point(curve.cp(i).x(), curve.cp(i).y(), curve.cp(i).z());
+        }
+        return new WB_Polygon(points);
     }
 
     /**

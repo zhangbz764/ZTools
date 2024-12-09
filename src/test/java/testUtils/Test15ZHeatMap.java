@@ -7,6 +7,8 @@ import processing.core.PImage;
 import render.ZColorPalette;
 import render.ZHeatMap;
 
+import java.util.Arrays;
+
 /**
  * description
  *
@@ -44,6 +46,9 @@ public class Test15ZHeatMap extends PApplet {
         gcam.top();
 
         this.heatMaps = new ZHeatMap[testMapNum];
+
+        // 从哪个颜色变到哪个颜色
+        // 可以写多个
         int[][] custom = new int[][]{
                 {255, 0, 0},
                 {0, 255, 0},
@@ -54,12 +59,16 @@ public class Test15ZHeatMap extends PApplet {
                 {255, 0, 0},
         };
         heatMaps[0] = new ZHeatMap(custom, 0, 600);
+
+        // 也可以直接调用调色盘预设的颜色
         heatMaps[1] = new ZHeatMap(ZColorPalette.Grays, 0, 600);
         heatMaps[2] = new ZHeatMap(ZColorPalette.Greens, 0, 600);
         heatMaps[3] = new ZHeatMap(ZColorPalette.Viridis, 0, 600);
         heatMaps[4] = new ZHeatMap(ZColorPalette.Magma, 0, 600);
         heatMaps[5] = new ZHeatMap(ZColorPalette.Coolwarm, 0, 600);
         heatMaps[6] = new ZHeatMap(ZColorPalette.Plasma, 0, 600);
+
+        System.out.println("数值 435.7 在 heatMaps[0] 里对应的颜色值为" + Arrays.toString(heatMaps[0].getColorRGB(435.7)));
 
         // create bars to display
         this.heatBars = new PImage[testMapNum];
@@ -91,10 +100,5 @@ public class Test15ZHeatMap extends PApplet {
             translate(0, 200);
         }
     }
-    public void keyPressed() {
-        if (key == 's') {
-            String className = getClass().getSimpleName();
-            save("./src/test/resources/exampleImgs/" + className + ".jpg");
-        }
-    }
+
 }

@@ -110,9 +110,9 @@ public class ZHeatMap {
         return new int[]{R, G, B};
     }
 
-    public String getColorHEX() {
-        return "";
-    }
+//    public String getColorHEX() {
+//        return "";
+//    }
 
     /* ------------- setter & getter ------------- */
 
@@ -122,7 +122,7 @@ public class ZHeatMap {
                 {(int) (colorMarks[colorMarks.length - 1][0] * 255), (int) (colorMarks[colorMarks.length - 1][1] * 255), (int) (colorMarks[colorMarks.length - 1][2] * 255)}
         };
 
-        System.out.println("colorMinMax: " + Arrays.deepToString(colorMinMax));
+        //System.out.println("colorMinMax: " + Arrays.deepToString(colorMinMax));
     }
 
     public ZHeatMap setReverse() {
