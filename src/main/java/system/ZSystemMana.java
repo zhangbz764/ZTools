@@ -1,7 +1,5 @@
 package system;
 
-import com.google.gson.JsonObject;
-
 import java.lang.reflect.Field;
 import java.util.Queue;
 import java.util.concurrent.*;
@@ -28,10 +26,10 @@ public class ZSystemMana {
     /**
      * HE_Mesh memory cleaner
      *
-     * @param
+     * @param minute time
      * @return void
      */
-    public void startHE_MeshCleanupTask() {
+    public void startHE_MeshCleanupTask(int minute) {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> {
             try {
@@ -49,7 +47,7 @@ public class ZSystemMana {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }, 0, 2, TimeUnit.MINUTES); // 每隔1分钟执行一次检查任务
+        }, 0, minute, TimeUnit.MINUTES); // 定期执行一次检查任务
     }
 
     /**

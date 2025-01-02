@@ -3,8 +3,7 @@ package transform;
 import igeo.*;
 import org.locationtech.jts.geom.*;
 import wblut.geom.*;
-import wblut.hemesh.HEC_FromFacelist;
-import wblut.hemesh.HE_Mesh;
+import wblut.hemesh.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -284,6 +283,51 @@ public class ZTransform {
         creator.setVertices(pts);
         creator.setFaces(faceList);
         return new HE_Mesh(creator);
+    }
+
+    /**
+     * HE_Mesh -> IMesh
+     *
+     * @param mesh input HE_Mesh
+     * @return igeo.IMesh
+     */
+    public static IMesh HE_MeshToIMesh(final HE_Mesh mesh) {
+        mesh.triangulate();
+
+        // vertices
+        List<HE_Vertex> vertices = mesh.getVertices();
+        IVertex[] iVertices = new IVertex[vertices.size()];
+        for (int i = 0; i < vertices.size(); i++) {
+            iVertices[i] = new IVertex(vertices.get(i).xd(), vertices.get(i).yd(), vertices.get(i).zd());
+        }
+
+        // edges
+        List<HE_Halfedge> edges = mesh.getEdges();
+        IEdge[] iEdges = new IEdge[edges.size()];
+        for (int i = 0; i < edges.size(); i++) {
+            HE_Vertex start = edges.get(i).getStartVertex();
+            HE_Vertex end = edges.get(i).getEndVertex();
+            int startID = vertices.indexOf(start);
+            int endID = vertices.indexOf(end);
+
+            iEdges[i] = new IEdge(iVertices[startID], iVertices[endID]);
+        }
+
+        // faces
+        List<HE_Face> faces = mesh.getFaces();
+        IFace[] iFaces = new IFace[faces.size()];
+        for (int i = 0; i < faces.size(); i++) {
+            List<HE_Halfedge> faceEdges = faces.get(i).getFaceEdges();
+            IEdge[] iFaceEdges = new IEdge[faceEdges.size()];
+            for (int j = 0; j < faceEdges.size(); j++) {
+                int id = edges.indexOf(faceEdges.get(j));
+                iFaceEdges[j] = iEdges[id];
+            }
+
+            iFaces[i] = new IFace(iFaceEdges);
+        }
+
+        return new IMesh(iVertices, iEdges, iFaces);
     }
 
     /*-------- IGeo <-> Jts --------*/
@@ -933,6 +977,7 @@ public class ZTransform {
 
     /**
      * union 2 envelop
+     *
      * @param env1
      * @param env2
      * @return
