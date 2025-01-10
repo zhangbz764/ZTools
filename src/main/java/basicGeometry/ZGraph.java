@@ -197,6 +197,26 @@ public class ZGraph {
         return isPath;
     }
 
+    /**
+    * get the closest node to a given point
+    *
+    * @param x point x
+    * @param y point y
+    * @return basicGeometry.ZNode
+    */
+    public ZNode closestNode(double x, double y) {
+        ZNode node = null;
+        double minD = Double.MAX_VALUE;
+        for (ZNode n : nodes) {
+            double dist = n.distanceSq(x, y, 0);
+            if (dist < minD) {
+                minD = dist;
+                node = n;
+            }
+        }
+        return node;
+    }
+
     /* ------------- setter & getter ------------- */
 
     public void setEdges(List<ZEdge> edges) {
