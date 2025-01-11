@@ -12,6 +12,8 @@ import org.locationtech.jts.planargraph.Edge;
 import org.locationtech.jts.planargraph.Node;
 import transform.ZTransform;
 import wblut.geom.*;
+import wblut.hemesh.HE_Mesh;
+import wblut.hemesh.HE_MeshOp;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,14 +35,14 @@ public class ZFactory {
     /*-------- create geometries --------*/
 
     /**
-    * create random point within a range
-    *
-    * @param xmin
-    * @param xmax
-    * @param ymin
-    * @param ymax
-    * @return org.locationtech.jts.geom.Point
-    */
+     * create random point within a range
+     *
+     * @param xmin
+     * @param xmax
+     * @param ymin
+     * @param ymax
+     * @return org.locationtech.jts.geom.Point
+     */
     public static Point createRandomPoint(final double xmin, final double xmax, final double ymin, final double ymax) {
         return jtsgf.createPoint(new Coordinate(
                 xmin + (Math.random() * (xmax - xmin)),
@@ -204,22 +206,22 @@ public class ZFactory {
     }
 
     /**
-    * create OBB from WB_Polygon
-    *
-    * @param geo WB_Polygon
-    * @return wblut.geom.WB_Polygon
-    */
+     * create OBB from WB_Polygon
+     *
+     * @param geo WB_Polygon
+     * @return wblut.geom.WB_Polygon
+     */
     public static WB_Polygon createWB_PolygonOBB(WB_Polygon geo) {
         Geometry minimumRectangle = MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolygonToPolygon(geo));
         return ZTransform.PolygonToWB_Polygon((Polygon) minimumRectangle);
     }
 
     /**
-    * create OBB from WB_PolyLine
-    *
-    * @param geo WB_PolyLine
-    * @return wblut.geom.WB_Polygon
-    */
+     * create OBB from WB_PolyLine
+     *
+     * @param geo WB_PolyLine
+     * @return wblut.geom.WB_Polygon
+     */
     public static WB_Polygon createWB_PolylineOBB(WB_PolyLine geo) {
         Geometry minimumRectangle = MinimumDiameter.getMinimumRectangle(ZTransform.WB_PolyLineToLineString(geo));
         return ZTransform.PolygonToWB_Polygon((Polygon) minimumRectangle);
@@ -484,11 +486,11 @@ public class ZFactory {
     }
 
     /**
-    * break Geometry to segments (list of LineString)
-    *
-    * @param geo input Geometry
-    * @return java.util.List<org.locationtech.jts.geom.LineString>
-    */
+     * break Geometry to segments (list of LineString)
+     *
+     * @param geo input Geometry
+     * @return java.util.List<org.locationtech.jts.geom.LineString>
+     */
     public static List<LineString> breakGeometryToSegments(final Geometry geo) {
         List<LineString> result = new ArrayList<>();
         switch (geo.getGeometryType()) {
@@ -1020,7 +1022,7 @@ public class ZFactory {
     public static ZGraph createMiniSpanningTree(final List<? extends ZPoint> generator) {
         List<ZNode> nodes = new ArrayList<>();
         for (ZPoint pt : generator) {
-            nodes.add((ZNode) pt);
+            nodes.add(new ZNode(pt.xd(), pt.yd()));
         }
 
         // create adjacency matrix based on distance

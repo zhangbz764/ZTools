@@ -429,6 +429,15 @@ public class ZPoint {
 
     /**
      * get the square of distance with the other point
+     * <p>
+     * =     * @return double
+     */
+    public double distanceSq(double _x, double _y, double _z) {
+        return ((x - _x) * (x - _x) + (y - _y) * (y - _y) + (z - _z) * (z - _z));
+    }
+
+    /**
+     * get the square of distance with the other point
      *
      * @param other the other point
      * @return double
